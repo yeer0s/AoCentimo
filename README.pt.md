@@ -133,6 +133,8 @@ não cria qualquer relação profissional. Todos os valores, recomendações e d
 produzidos têm de ser verificados por um contabilista certificado (OCC) ou outro
 profissional qualificado antes de entregar, assinar, pagar ou agir com base neles.**
 
+Termos completos: **[DISCLAIMER.md](DISCLAIMER.md)**.
+
 Apenas a [Autoridade Tributária](https://info.portaldasfinancas.gov.pt) e o Diário da
 República são autoritativos. As capturas offline da lei degradam-se a cada Orçamento do
 Estado. Uma calculadora não pode assinar o seu Modelo 3, não o pode representar perante a

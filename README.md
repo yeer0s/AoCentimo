@@ -131,6 +131,8 @@ relationship is created. Every figure, recommendation and document produced here
 verified by a contabilista certificado (OCC) or other qualified professional before you
 file, sign, pay, or act on it.**
 
+Full terms: **[DISCLAIMER.md](DISCLAIMER.md)**.
+
 Only the [Autoridade Tributária](https://info.portaldasfinancas.gov.pt) and the Diário da
 República are authoritative. The offline law snapshots here decay with every Orçamento do
 Estado. A calculator cannot sign your Modelo 3, cannot represent you before the AT, and
