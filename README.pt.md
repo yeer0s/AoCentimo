@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/depend%C3%AAncias-s%C3%B3%20stdlib-00a8a8" alt="sem dependências">
   <img src="https://img.shields.io/badge/anos-2022--2025-orange" alt="anos de rendimento">
   <a href="https://mowei.pt"><img src="https://img.shields.io/badge/por-mowei.pt-111111" alt="mowei.pt"></a>
+  <a href="https://buymeacoffee.com/letsmoweis"><img src="https://img.shields.io/badge/%E2%98%95-paga--me%20um%20caf%C3%A9-FFDD00" alt="Paga-me um caf&eacute;"></a>
 </p>
 
 <h3 align="center">
@@ -158,11 +159,8 @@ numa tarifa qualquer.
 
 <p align="center">
   <a href="https://mowei.pt"><b>&#127477;&#127481; mowei.pt &mdash; ferramentas gratuitas</b></a>
-  <!-- TODO badge de donativo: substituir BUYMEACOFFEE_URL abaixo pelo URL do Buy Me a
-       Coffee ou Ko-fi, e apagar este abre-coment&aacute;rio e o respetivo fecho.
   &nbsp;&middot;&nbsp;
-  <a href="BUYMEACOFFEE_URL"><img src="https://img.shields.io/badge/%E2%98%95-Paga--me%20um%20caf%C3%A9-FFDD00?style=for-the-badge" alt="Paga-me um caf&eacute;"></a>
-  -->
+  <a href="https://buymeacoffee.com/letsmoweis"><img src="https://img.shields.io/badge/%E2%98%95-Paga--me%20um%20caf%C3%A9-FFDD00?style=for-the-badge" alt="Paga-me um caf&eacute;"></a>
 </p>
 
 O apoio é totalmente opcional e sempre será — o projeto está completo sem ele.
