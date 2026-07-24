@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: ⚠️ I need actual tax advice
+    url: https://www.occ.pt/
+    about: "This project cannot advise you and cannot sign your Modelo 3. Find a contabilista certificado (OCC)."
+  - name: 🏛️ The official position / simulator
+    url: https://info.portaldasfinancas.gov.pt/
+    about: "Portal das Finanças is the only authority on Portuguese tax law. This project is not."
+  - name: 🇵🇹 Free tools & guides (energy, telecoms, insurance, banking, credit, grants)
+    url: https://mowei.pt
+    about: "Mowei — the site this project came from."

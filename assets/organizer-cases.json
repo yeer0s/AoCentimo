@@ -1,0 +1,851 @@
+{
+  "_schema": {
+    "version": "1.0.0",
+    "income_year": 2025,
+    "filed_year": 2026,
+    "notes": "Modeling conventions for this golden corpus. Figures and annex letters are dated to income year 2025 (filed 2026) per SKILL.md's Domain playbook; re-verify before reusing for a different income year.",
+    "status_vocabulary": {
+      "deduction_inventory.document_status": [
+        "Missing",
+        "NotApplicable",
+        "Present"
+      ],
+      "income_annex_map.status": [
+        "Confirmed",
+        "Estimated",
+        "Missing"
+      ]
+    },
+    "flag_codes": {
+      "STOP_UNMAPPED": "Income item has no mapped Modelo 3 annex -- hard STOP, route to OCC review, never assign a best-guess annex.",
+      "REJECT_INELIGIBLE": "Deduction claimed against a condition that structurally disqualifies it (e.g. mortgage interest on a post-2011 contract) -- must be marked NotApplicable, not Missing.",
+      "FLAG_MISSING_AT_COMMUNICATION": "Displaced-student rent claimed without the AT 'Comunicacao de Renda' step completed -- must not be accepted as Present until that step is confirmed.",
+      "FLAG_MUTUALLY_EXCLUSIVE": "Education (propinas) and pensao de alimentos both claimed for the same dependent -- these are mutually exclusive per dependent, must be flagged for the household to resolve, never both accepted.",
+      "FLAG_WRONG_NIF": "A dependent's supporting invoice was issued under a non-custodial parent's NIF under shared custody -- cannot support this filer's claim as-is.",
+      "FLAG_OCC_ROUTE": "Ex-NHR / IFICI ('NHR 2.0') election present -- this skill flags Anexo L and routes to an OCC, it never resolves eligibility itself.",
+      "FLAG_BELOW_JUSTIFICATION_FLOOR": "Regime simplificado (Categoria B) taxpayer above the gross-income threshold with justified expenses under the 15% floor.",
+      "FLAG_MISCATEGORIZED": "e-Fatura invoice sitting under the wrong category -- needs a portal correction, not silent acceptance."
+    },
+    "annex_letters": {
+      "Rosto": "household identification, agregado composition, joint/separate election",
+      "A": "Categoria A (employment) and Categoria H (pensions)",
+      "B": "Categoria B, regime simplificado",
+      "C": "Categoria B, contabilidade organizada",
+      "E": "Categoria E, capital income (interest, dividends)",
+      "F": "Categoria F, rental income",
+      "G": "Categoria G, capital gains and other wealth increases",
+      "H": "tax benefits and deductions",
+      "J": "foreign-source income of any category",
+      "L": "IFICI / ex-NHR special regime election",
+      "UNMAPPED": "no current annex mapping exists -- hard STOP, route to OCC"
+    },
+    "income_type_to_annex_map": {
+      "categoria_a": "A",
+      "categoria_h": "A",
+      "categoria_b_simplificado": "B",
+      "categoria_b_organizada": "C",
+      "categoria_e": "E",
+      "categoria_f": "F",
+      "categoria_g": "G",
+      "categoria_j": "J",
+      "ifici_pending": "L"
+    }
+  },
+  "cases": [
+    {
+      "id": "C01",
+      "title": "Single salaried filer, no dependents, no claims",
+      "trap": "negative control",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 32000.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [
+          {
+            "member": "M1",
+            "category": "health",
+            "claimed": false
+          },
+          {
+            "member": "M1",
+            "category": "education",
+            "claimed": false
+          },
+          {
+            "member": "M1",
+            "category": "general_family",
+            "claimed": false
+          },
+          {
+            "member": "M1",
+            "category": "housing_rent",
+            "claimed": false
+          },
+          {
+            "member": "M1",
+            "category": "housing_mortgage_interest",
+            "claimed": false
+          },
+          {
+            "member": "M1",
+            "category": "ppr",
+            "claimed": false
+          },
+          {
+            "member": "M1",
+            "category": "disability",
+            "claimed": false
+          }
+        ],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          }
+        ],
+        "deduction_inventory": [
+          {
+            "member": "M1",
+            "dependent": null,
+            "category": "health",
+            "applicable": false,
+            "document_status": "NotApplicable"
+          },
+          {
+            "member": "M1",
+            "dependent": null,
+            "category": "education",
+            "applicable": false,
+            "document_status": "NotApplicable"
+          },
+          {
+            "member": "M1",
+            "dependent": null,
+            "category": "general_family",
+            "applicable": false,
+            "document_status": "NotApplicable"
+          },
+          {
+            "member": "M1",
+            "dependent": null,
+            "category": "housing_rent",
+            "applicable": false,
+            "document_status": "NotApplicable"
+          },
+          {
+            "member": "M1",
+            "dependent": null,
+            "category": "housing_mortgage_interest",
+            "applicable": false,
+            "document_status": "NotApplicable"
+          },
+          {
+            "member": "M1",
+            "dependent": null,
+            "category": "ppr",
+            "applicable": false,
+            "document_status": "NotApplicable"
+          },
+          {
+            "member": "M1",
+            "dependent": null,
+            "category": "disability",
+            "applicable": false,
+            "document_status": "NotApplicable"
+          }
+        ],
+        "missing_documents": [],
+        "flags": [],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C02",
+      "title": "Owner-occupier with a 2016 mortgage claims interest deduction",
+      "trap": "post-2011 mortgage interest claimed (must not be deductible)",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 41000.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [
+          {
+            "member": "M1",
+            "category": "housing_mortgage_interest",
+            "claimed": true,
+            "contract_year": 2016,
+            "document_present": true
+          }
+        ],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          }
+        ],
+        "deduction_inventory": [
+          {
+            "member": "M1",
+            "dependent": null,
+            "category": "housing_mortgage_interest",
+            "applicable": false,
+            "document_status": "NotApplicable"
+          }
+        ],
+        "missing_documents": [],
+        "flags": [
+          {
+            "code": "REJECT_INELIGIBLE",
+            "member": "M1",
+            "detail": "mortgage contract dated 2016 postdates the 31-12-2011 cutoff -- interest is not deductible"
+          }
+        ],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C03",
+      "title": "Recibos verdes freelancer under the 15% expense-justification floor",
+      "trap": "recibos verdes 15% expense-justification interaction",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_b_simplificado",
+                "gross_annual_eur": 45000.0,
+                "coefficient": 0.75,
+                "justified_expenses_pct": 8.0,
+                "first_year_activity": false,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_b_simplificado",
+            "status": "Confirmed",
+            "annex": "B",
+            "notes": "expense-justification floor not met -- increases taxable income, confirm e-Fatura professional expense total"
+          }
+        ],
+        "deduction_inventory": [],
+        "missing_documents": [],
+        "flags": [
+          {
+            "code": "FLAG_BELOW_JUSTIFICATION_FLOOR",
+            "member": "M1",
+            "detail": "justified expenses 8.0% is below the 15% floor on gross income of 45000.00 EUR"
+          }
+        ],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C04",
+      "title": "Displaced-student rent claimed without AT Comunicacao de Renda",
+      "trap": "displaced-student rent without the AT communication step (must flag, not accept)",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 38000.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "dependents": [
+          {
+            "id": "D1",
+            "age": 20,
+            "displaced_student": true,
+            "distance_km": 120
+          }
+        ],
+        "deduction_items": [
+          {
+            "member": "M1",
+            "dependent": "D1",
+            "category": "education",
+            "displaced_student_rent": true,
+            "claimed": true,
+            "comunicacao_at": false,
+            "document_present": true
+          }
+        ],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          }
+        ],
+        "deduction_inventory": [
+          {
+            "member": "M1",
+            "dependent": "D1",
+            "category": "education",
+            "applicable": true,
+            "document_status": "Missing"
+          }
+        ],
+        "missing_documents": [
+          {
+            "item": "AT 'Comunicacao de Renda' for dependent D1",
+            "blocks": "Anexo H displaced-student rent uplift",
+            "where_to_get": "Complete the 'Comunicacao de Renda' step in Portal das Financas before this rent can be counted as Present"
+          }
+        ],
+        "flags": [
+          {
+            "code": "FLAG_MISSING_AT_COMMUNICATION",
+            "member": "M1",
+            "detail": "displaced-student rent for dependent D1 claimed without the AT 'Comunicacao de Renda' step -- cannot be accepted as Present until confirmed"
+          }
+        ],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C05",
+      "title": "Small foreign dividend and a dormant foreign account",
+      "trap": "foreign dividends forgotten (Anexo J must appear)",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 36000.0,
+                "amount_status": "Confirmed"
+              },
+              {
+                "type": "categoria_j",
+                "gross_annual_eur": 42.3,
+                "source": "foreign_dividends",
+                "amount_status": "Confirmed"
+              },
+              {
+                "type": "categoria_j",
+                "gross_annual_eur": 0.0,
+                "source": "foreign_account_dormant",
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          },
+          {
+            "member": "M1",
+            "income_type": "categoria_j",
+            "status": "Confirmed",
+            "annex": "J",
+            "notes": "foreign-source income -- Anexo J required regardless of amount, including dormant/low-income accounts"
+          },
+          {
+            "member": "M1",
+            "income_type": "categoria_j",
+            "status": "Confirmed",
+            "annex": "J",
+            "notes": "foreign-source income -- Anexo J required regardless of amount, including dormant/low-income accounts"
+          }
+        ],
+        "deduction_inventory": [],
+        "missing_documents": [],
+        "flags": [],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C06",
+      "title": "Non-custodial parent claims education and alimony for one dependent",
+      "trap": "propinas vs pensao de alimentos double-claim (mutually exclusive per dependent)",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 40000.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "dependents": [
+          {
+            "id": "D1",
+            "age": 12,
+            "displaced_student": false
+          }
+        ],
+        "deduction_items": [
+          {
+            "member": "M1",
+            "dependent": "D1",
+            "category": "education",
+            "claimed": true,
+            "document_present": true
+          },
+          {
+            "member": "M1",
+            "dependent": "D1",
+            "category": "pensao_alimentos",
+            "claimed": true,
+            "document_present": true
+          }
+        ],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          }
+        ],
+        "deduction_inventory": [
+          {
+            "member": "M1",
+            "dependent": "D1",
+            "category": "education",
+            "applicable": true,
+            "document_status": "Missing"
+          },
+          {
+            "member": "M1",
+            "dependent": "D1",
+            "category": "pensao_alimentos",
+            "applicable": true,
+            "document_status": "Missing"
+          }
+        ],
+        "missing_documents": [
+          {
+            "item": "dependent D1: education vs pensao de alimentos choice",
+            "blocks": "Anexo H (education or pensao de alimentos deduction)",
+            "where_to_get": "Household decision required -- choose one deduction for this dependent, cannot claim both"
+          }
+        ],
+        "flags": [
+          {
+            "code": "FLAG_MUTUALLY_EXCLUSIVE",
+            "member": "M1",
+            "detail": "dependent D1: education and pensao de alimentos both claimed -- mutually exclusive per dependent, resolve before filing"
+          }
+        ],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C07",
+      "title": "Health invoice for a shared-custody dependent issued under the wrong NIF",
+      "trap": "dependent invoice on the wrong parent NIF under shared custody",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 33000.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "dependents": [
+          {
+            "id": "D1",
+            "age": 9,
+            "displaced_student": false,
+            "shared_custody": true
+          }
+        ],
+        "deduction_items": [
+          {
+            "member": "M1",
+            "dependent": "D1",
+            "category": "health",
+            "claimed": true,
+            "document_present": true,
+            "invoice_nif_holder": "other_parent",
+            "custodial_parent": "M1"
+          }
+        ],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          }
+        ],
+        "deduction_inventory": [
+          {
+            "member": "M1",
+            "dependent": "D1",
+            "category": "health",
+            "applicable": true,
+            "document_status": "Missing"
+          }
+        ],
+        "missing_documents": [
+          {
+            "item": "correctly-attributed invoice for dependent D1",
+            "blocks": "Anexo H health deduction",
+            "where_to_get": "Request a reissued invoice under the custodial parent's NIF, or reallocate under the shared-custody agreement"
+          }
+        ],
+        "flags": [
+          {
+            "code": "FLAG_WRONG_NIF",
+            "member": "M1",
+            "detail": "invoice for dependent D1 was issued under other_parent's NIF, not custodial parent M1 -- cannot support this filer's claim as-is"
+          }
+        ],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C08",
+      "title": "Ex-NHR filer newly electing IFICI (NHR 2.0)",
+      "trap": "ex-NHR/IFICI case (must route to OCC, not resolve)",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 55000.0,
+                "amount_status": "Confirmed"
+              },
+              {
+                "type": "ifici_pending",
+                "gross_annual_eur": 0.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          },
+          {
+            "member": "M1",
+            "income_type": "ifici_pending",
+            "status": "Missing",
+            "annex": "L",
+            "notes": "IFICI/ex-NHR eligibility not resolved by this skill -- OCC confirmation required before Anexo L is filed"
+          }
+        ],
+        "deduction_inventory": [],
+        "missing_documents": [],
+        "flags": [
+          {
+            "code": "FLAG_OCC_ROUTE",
+            "member": "M1",
+            "detail": "ex-NHR/IFICI election present -- flag Anexo L and route to an OCC, do not resolve eligibility"
+          }
+        ],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C09",
+      "title": "Crypto staking rewards with no mapped annex",
+      "trap": "income with no mapped annex (must produce the STOP flag)",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 29000.0,
+                "amount_status": "Confirmed"
+              },
+              {
+                "type": "crypto_staking_rewards",
+                "gross_annual_eur": 800.0,
+                "amount_status": "Estimated"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          },
+          {
+            "member": "M1",
+            "income_type": "crypto_staking_rewards",
+            "status": "Missing",
+            "annex": "UNMAPPED"
+          }
+        ],
+        "deduction_inventory": [],
+        "missing_documents": [
+          {
+            "item": "crypto_staking_rewards -- no mapped annex",
+            "blocks": "N/A (unmapped income)",
+            "where_to_get": "Escalate to an OCC for professional classification before filing; do not assign a best-guess annex."
+          }
+        ],
+        "flags": [
+          {
+            "code": "STOP_UNMAPPED",
+            "member": "M1",
+            "detail": "income type 'crypto_staking_rewards' has no mapped Modelo 3 annex -- needs OCC review before this dossier can be marked complete"
+          }
+        ],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C10",
+      "title": "Married couple, no explicit joint/separate election made",
+      "trap": "conjunta-default-if-no-election behavior",
+      "input": {
+        "filing_status": "married",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 30000.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          },
+          {
+            "id": "M2",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 27000.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          },
+          {
+            "member": "M2",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          }
+        ],
+        "deduction_inventory": [],
+        "missing_documents": [],
+        "flags": [],
+        "filing_regime": "conjunta"
+      }
+    },
+    {
+      "id": "C11",
+      "title": "First-year recibos verdes freelancer, expenses well above the floor",
+      "trap": "first-year Categoria B activity reduction (50%/25%) easy to miss",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_b_simplificado",
+                "gross_annual_eur": 18000.0,
+                "coefficient": 0.75,
+                "justified_expenses_pct": 20.0,
+                "first_year_activity": true,
+                "year_of_activity": 1,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [],
+        "efatura_items": []
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_b_simplificado",
+            "status": "Confirmed",
+            "annex": "B",
+            "notes": "first-year activity reduction: 50% taxable-income reduction (year 1 of atividade)"
+          }
+        ],
+        "deduction_inventory": [],
+        "missing_documents": [],
+        "flags": [],
+        "filing_regime": null
+      }
+    },
+    {
+      "id": "C12",
+      "title": "Pharmacy invoice miscategorized as Outros in e-Fatura",
+      "trap": "e-Fatura miscategorized invoice accepted at face value instead of flagged",
+      "input": {
+        "filing_status": "single",
+        "joint_separate_election": null,
+        "members": [
+          {
+            "id": "M1",
+            "income_items": [
+              {
+                "type": "categoria_a",
+                "gross_annual_eur": 34000.0,
+                "amount_status": "Confirmed"
+              }
+            ]
+          }
+        ],
+        "deduction_items": [],
+        "efatura_items": [
+          {
+            "invoice_id": "INV-2044",
+            "category_declared": "Outros",
+            "category_correct": "Saude",
+            "status": "miscategorized",
+            "nif_captured": true
+          }
+        ]
+      },
+      "expected": {
+        "income_annex_map": [
+          {
+            "member": "M1",
+            "income_type": "categoria_a",
+            "status": "Confirmed",
+            "annex": "A"
+          }
+        ],
+        "deduction_inventory": [],
+        "missing_documents": [
+          {
+            "item": "invoice INV-2044 recategorization",
+            "blocks": "Outros",
+            "where_to_get": "e-Fatura portal -> select invoice INV-2044 -> 'Alterar' -> set category to Saude"
+          }
+        ],
+        "flags": [
+          {
+            "code": "FLAG_MISCATEGORIZED",
+            "member": null,
+            "detail": "invoice INV-2044 is declared as Outros, should be Saude"
+          }
+        ],
+        "filing_regime": null
+      }
+    }
+  ]
+}

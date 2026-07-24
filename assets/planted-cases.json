@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Planted expense-set golden cases for the deduction scanner. Fictional households only (no real people, no names beyond neutral member ids). Each case lists expected_findings the scanner MUST reproduce exactly (order-independent). One negative control expects zero findings. Amounts are illustrative, not tied to any real taxpayer.",
+  "deadline_default": "2026-03-02",
+  "cases": [
+    {
+      "case_id": "cap-health-over-1000",
+      "description": "Household health spend so high that the 15% credit exceeds the 1000 EUR/household art. 78-C cap.",
+      "run_date": "2026-02-20",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true } ] },
+      "expenses": [
+        { "matrix_id": "saude-standard", "claimed_category": "Saude", "spend": 8000, "iva_borne": 0, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" }
+      ],
+      "expected_findings": ["CAP_EXCEEDANCE"]
+    },
+    {
+      "case_id": "health-downgraded-to-general",
+      "description": "A prescription-required health invoice landed in Despesas Gerais Familiares (15%/1000 downgraded to 35%/250). Downgrade detection.",
+      "run_date": "2026-02-18",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true } ] },
+      "expenses": [
+        { "matrix_id": "saude-standard", "claimed_category": "Despesas Gerais Familiares", "spend": 400, "iva_borne": 0, "status": "validated", "prescription_linked": false, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" }
+      ],
+      "expected_findings": ["HEALTH_IN_GENERAL"]
+    },
+    {
+      "case_id": "displaced-rent-no-at-communication",
+      "description": "Displaced-student rent claimed without the AT communication step (landlord-then-student sequence not confirmed).",
+      "run_date": "2026-02-22",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true } ] },
+      "expenses": [
+        { "matrix_id": "educacao-deslocado-renda", "claimed_category": "Educacao", "spend": 1200, "iva_borne": 0, "status": "validated", "prescription_linked": true, "at_communication": false, "child_id": "child_1", "is_propina": false, "nif_owner": "member_A" }
+      ],
+      "expected_findings": ["DISPLACED_RENT_NO_COMMUNICATION"]
+    },
+    {
+      "case_id": "propinas-and-pensao-same-child",
+      "description": "Same child claimed under both education (propinas) and pensao de alimentos in the same year - mutually exclusive per dependent.",
+      "run_date": "2026-02-19",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true } ] },
+      "expenses": [
+        { "matrix_id": "educacao-base", "claimed_category": "Educacao", "spend": 1500, "iva_borne": 0, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": "child_1", "is_propina": true, "nif_owner": "member_A" },
+        { "matrix_id": "pensao-alimentos", "claimed_category": "Pensoes de alimentos", "spend": 3000, "iva_borne": 0, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": "child_1", "is_propina": false, "nif_owner": "member_A" }
+      ],
+      "expected_findings": ["PROPINAS_PENSAO_DOUBLE"]
+    },
+    {
+      "case_id": "pending-invoice-after-deadline",
+      "description": "Scanner run on 10 March finds an invoice still pending - past the 2 March validation deadline.",
+      "run_date": "2026-03-10",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true } ] },
+      "expenses": [
+        { "matrix_id": "gerais-standard", "claimed_category": "Despesas Gerais Familiares", "spend": 300, "iva_borne": 0, "status": "pending", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" }
+      ],
+      "expected_findings": ["POST_DEADLINE_PENDING"]
+    },
+    {
+      "case_id": "wrong-nif-dependent-outside-agregado",
+      "description": "A health invoice was captured under a dependent's NIF who files outside the agregado; reallocating to the in-agregado parent would capture the deduction.",
+      "run_date": "2026-02-17",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true }, { "id": "member_D", "role": "dependent", "in_agregado": false } ] },
+      "expenses": [
+        { "matrix_id": "saude-standard", "claimed_category": "Saude", "spend": 200, "iva_borne": 0, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_D" }
+      ],
+      "expected_findings": ["WRONG_NIF_ALLOCATION"]
+    },
+    {
+      "case_id": "clean-negative-control",
+      "description": "Fully clean household: everything validated, correctly categorized, under caps, before the deadline, no double claims. Scanner must return ZERO findings.",
+      "run_date": "2026-02-15",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true }, { "id": "member_B", "role": "parent", "in_agregado": true } ] },
+      "expenses": [
+        { "matrix_id": "saude-standard", "claimed_category": "Saude", "spend": 500, "iva_borne": 0, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" },
+        { "matrix_id": "educacao-base", "claimed_category": "Educacao", "spend": 1000, "iva_borne": 0, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": "child_1", "is_propina": false, "nif_owner": "member_B" },
+        { "matrix_id": "iva-restauracao", "claimed_category": "Restauracao e alojamento", "spend": 0, "iva_borne": 100, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" },
+        { "matrix_id": "iva-ginasios", "claimed_category": "Ginasios e atividades desportivas", "spend": 0, "iva_borne": 200, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_B" },
+        { "matrix_id": "gerais-standard", "claimed_category": "Despesas Gerais Familiares", "spend": 400, "iva_borne": 0, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" }
+      ],
+      "expected_findings": []
+    },
+    {
+      "case_id": "rent-missing-manual-registration",
+      "description": "Permanent-residence rent that never auto-populated and was never manually registered before the deadline.",
+      "run_date": "2026-02-18",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true } ] },
+      "expenses": [
+        { "matrix_id": "habitacao-renda-2025", "claimed_category": "Rendas (Anexo H, seccao 7)", "spend": 3000, "iva_borne": 0, "status": "not_registered", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" }
+      ],
+      "expected_findings": ["MISSING_MANUAL_REGISTRATION"]
+    },
+    {
+      "case_id": "iva-78f-shared-cap-exceeded",
+      "description": "Neither the gym (30% of IVA) nor the restaurant (15% of IVA) row alone breaches 250 EUR, but combined they exceed the single shared art. 78-F household cap.",
+      "run_date": "2026-02-21",
+      "household": { "type": "standard", "members": [ { "id": "member_A", "role": "parent", "in_agregado": true } ] },
+      "expenses": [
+        { "matrix_id": "iva-ginasios", "claimed_category": "Ginasios e atividades desportivas", "spend": 0, "iva_borne": 700, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" },
+        { "matrix_id": "iva-restauracao", "claimed_category": "Restauracao e alojamento", "spend": 0, "iva_borne": 400, "status": "validated", "prescription_linked": true, "at_communication": true, "child_id": null, "is_propina": false, "nif_owner": "member_A" }
+      ],
+      "expected_findings": ["CAP_EXCEEDANCE"]
+    }
+  ]
+}

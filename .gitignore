@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- AoCentimo-specific ---------------------------------------------------
+# `estimator.py <candidate.json>` is a documented mode: a user scoring their own
+# return creates a file holding real income, dependants and health spending.
+# Ignored by default so an absent-minded `git add -A` cannot publish a tax return.
+candidate*.json
+*.local.json
+scratch/

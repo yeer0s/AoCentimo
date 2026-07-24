@@ -19,3 +19,23 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+ADDITIONAL NOTICE — NOT PROFESSIONAL ADVICE
+
+This Software produces ESTIMATES of Portuguese personal income tax (IRS) from
+publicly available tax law. It is not tax, legal, accounting or financial
+advice, and it does not create a professional relationship of any kind.
+
+Nothing this Software outputs may be filed, relied upon, or acted on without
+independent verification by a contabilista certificado (OCC), a lawyer, or
+another appropriately qualified professional. The Autoridade Tributaria e
+Aduaneira (AT) and the Diario da Republica are the only authorities on
+Portuguese tax law; this Software's offline snapshots of that law decay with
+every Orcamento do Estado.
+
+The authors accept no liability for any tax assessed, penalty incurred,
+deduction lost, or decision taken on the basis of this Software's output.
+
+Built by Mowei — https://mowei.pt
