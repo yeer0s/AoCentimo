@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/deps-stdlib%20only-00a8a8" alt="no dependencies">
   <img src="https://img.shields.io/badge/income%20years-2022--2025-orange" alt="income years">
   <a href="https://mowei.pt"><img src="https://img.shields.io/badge/by-mowei.pt-111111" alt="mowei.pt"></a>
+  <a href="https://buymeacoffee.com/letsmoweis"><img src="https://img.shields.io/badge/%E2%98%95-buy%20me%20a%20coffee-FFDD00" alt="Buy me a coffee"></a>
 </p>
 
 <h3 align="center">
@@ -155,11 +156,8 @@ money on your IRS, the same household is usually overpaying on a tariff somewher
 
 <p align="center">
   <a href="https://mowei.pt"><b>&#127477;&#127481; mowei.pt &mdash; ferramentas gratuitas</b></a>
-  <!-- TODO donation badge: replace BUYMEACOFFEE_URL below with your Buy Me a Coffee
-       or Ko-fi URL, then delete this comment opener and its closer to switch it on.
   &nbsp;&middot;&nbsp;
-  <a href="BUYMEACOFFEE_URL"><img src="https://img.shields.io/badge/%E2%98%95-Buy%20me%20a%20coffee-FFDD00?style=for-the-badge" alt="Buy me a coffee"></a>
-  -->
+  <a href="https://buymeacoffee.com/letsmoweis"><img src="https://img.shields.io/badge/%E2%98%95-Buy%20me%20a%20coffee-FFDD00?style=for-the-badge" alt="Buy me a coffee"></a>
 </p>
 
 Support is entirely optional and always will be — the project is complete without it.
