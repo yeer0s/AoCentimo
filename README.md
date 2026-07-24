@@ -13,6 +13,7 @@
   <img src="https://img.shields.io/badge/income%20years-2022--2025-orange" alt="income years">
   <a href="https://mowei.pt"><img src="https://img.shields.io/badge/by-mowei.pt-111111" alt="mowei.pt"></a>
   <a href="https://buymeacoffee.com/letsmoweis"><img src="https://img.shields.io/badge/%E2%98%95-buy%20me%20a%20coffee-FFDD00" alt="Buy me a coffee"></a>
+  <a href="https://ko-fi.com/letsmowei"><img src="https://img.shields.io/badge/ko--fi-support-FF5E5B" alt="Ko-fi"></a>
 </p>
 
 <h3 align="center">
@@ -161,6 +162,8 @@ money on your IRS, the same household is usually overpaying on a tariff somewher
   <a href="https://mowei.pt"><b>&#127477;&#127481; mowei.pt &mdash; ferramentas gratuitas</b></a>
   &nbsp;&middot;&nbsp;
   <a href="https://buymeacoffee.com/letsmoweis"><img src="https://img.shields.io/badge/%E2%98%95-Buy%20me%20a%20coffee-FFDD00?style=for-the-badge" alt="Buy me a coffee"></a>
+  &nbsp;&middot;&nbsp;
+  <a href="https://ko-fi.com/letsmowei"><img src="https://img.shields.io/badge/Ko--fi-support-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Ko-fi"></a>
 </p>
 
 Support is entirely optional and always will be — the project is complete without it.
