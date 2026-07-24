@@ -230,8 +230,19 @@ def disclaimer_check():
         lt = open(lic, encoding="utf-8").read()
         check("license-is-mit", "MIT License" in lt and "WITHOUT WARRANTY OF ANY KIND" in lt,
               "MIT terms intact")
-        check("license-carries-advice-notice", "NOT PROFESSIONAL ADVICE" in lt,
-              "LICENSE repeats the not-advice notice for anyone who only reads the licence")
+        # LICENSE must stay VERBATIM MIT. Appending a notice to it makes GitHub's
+        # licence detector return NOASSERTION and the repo loses its MIT badge —
+        # so the not-advice notice lives in its own file instead.
+        check("license-is-unmodified-mit", "ADDITIONAL NOTICE" not in lt,
+              "no appendix that would defeat licence detection")
+    dis = os.path.join(ROOT, "DISCLAIMER.md")
+    check("disclaimer-file-present", os.path.exists(dis), "DISCLAIMER.md shipped")
+    if os.path.exists(dis):
+        dt = open(dis, encoding="utf-8").read()
+        flat = " ".join(dt.split())
+        check("disclaimer-file-carries-duty",
+              "verified by a contabilista certificado (OCC)" in flat,
+              "DISCLAIMER.md states the verification duty")
 
 
 def pii_check():
