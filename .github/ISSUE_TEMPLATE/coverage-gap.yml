@@ -1,0 +1,29 @@
+name: "🧩 Coverage gap"
+description: "A rule the engine does not model — or models only partly."
+title: "[gap] "
+labels: ["coverage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check `assets/constants.json → documented_approximations` first: sixteen gaps
+        are already declared, each with its direction of error. If yours is listed and
+        you want it *closed* rather than merely declared, say so — that's a valid issue.
+  - type: input
+    id: rule
+    attributes:
+      label: Which rule / article
+      placeholder: "CIRS art. ..., Anexo G, Anexo J, categoria H, ..."
+    validations: {required: true}
+  - type: dropdown
+    id: declared
+    attributes:
+      label: Is it already in documented_approximations?
+      options: ["No — undeclared gap", "Yes — declared, but I want it implemented", "Not sure"]
+    validations: {required: true}
+  - type: textarea
+    id: direction
+    attributes:
+      label: Direction of error
+      description: "Does the omission overstate or understate tax? Every gap in this repo carries this."
+    validations: {required: true}

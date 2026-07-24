@@ -1,0 +1,233 @@
+{
+  "schema_version": "1.0.0",
+  "description": "AT binding-ruling (informacao vinculativa / ficha doutrinaria) index for the household deducao-a-coleta matrix. Each entry pins a real published AT holding to the matrix row(s) it clarifies. ruling_ref is the processo/identifier AS PUBLISHED (or the literal string UNKNOWN when the source copy did not print it). confidence='primary' means the AT ficha-doutrinaria text itself was read this run (portaldasfinancas.gov.pt or a verbatim mirror); 'secondary' means a press/law-firm summary of the ruling. Holdings are faithful paraphrases, not tax advice; verify against the source_url before relying on any of them for a filing. matrix_row_ids reference ids in assets/deduction-matrix.json.",
+  "as_of_corpus": "2026-07-10",
+  "note_on_civa_entries": "Several entries are CIVA (VAT) fichas rather than CIRS. They are included because a service's IVA-exemption / rate status is what determines whether the underlying expense routes cleanly into a CIRS art.78-C health / art.78-D education / art.78-F invoice-IVA deduction (e.g. an unrecognised tutoring or health-adjacent service is taxed at 23% and does not auto-qualify). Each such entry states which deduction row it gates.",
+  "entries": [
+    {
+      "ruling_ref": "26060",
+      "date_or_year": "2024-11-27",
+      "legal_basis": "CIRS art. 78-D",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_26060.pdf",
+      "holding": "Monthly invoices for a displaced student's room in a university residence, billed by a company enquadrada in CAE 68200 (arrendamento de bens imobiliarios) and marked as destined to arrendamento de estudante deslocado, are eligible as art.78-D education expenses even though the contract is styled a 'contrato de alojamento' rather than a lease.",
+      "matrix_row_ids": ["educacao-deslocado-renda", "educacao-deslocado-uplift"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "28223",
+      "date_or_year": "2025-04-16",
+      "legal_basis": "CIRS art. 78-C",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_28223.pdf",
+      "holding": "The purchase of an electric access stairlift for the home is NOT deductible as a health expense, because art.78-C requires the invoice issuer to be enquadrado in a health CAE (Q86, or G47730/47740/47782); a general seller does not qualify even with a medical prescription.",
+      "matrix_row_ids": ["saude-standard"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "3447/17",
+      "date_or_year": "2017-10-31",
+      "legal_basis": "CIRS art. 83-A",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_12628.pdf",
+      "holding": "Pensao de alimentos for an adult child continues deductible until the child turns 25 (art.13 n.5 requirements), and its deductible value includes not only the fixed cash sum but also the propinas and saude the parent is bound by the sentenca/acordo to pay; the beneficiary child is taxed autonomously at 20% (art.72 n.5).",
+      "matrix_row_ids": ["pensao-alimentos", "educacao-base"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "25466",
+      "date_or_year": "2025-01-15",
+      "legal_basis": "CIRS art. 78-D",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_25466.pdf",
+      "holding": "A displaced student's accommodation at a Pousada de Juventude under a 'contrato de utilizacao' (CAE 55204/55900, not 68200) is accepted as an art.78-D education expense on a substancia-sobre-forma basis, so that students in PNAES/Pousada housing are not treated worse than those in traditional leases.",
+      "matrix_row_ids": ["educacao-deslocado-renda", "educacao-deslocado-uplift"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "26319",
+      "date_or_year": "2024-04-17",
+      "legal_basis": "CIRS art. 78-E",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_26319.pdf",
+      "holding": "Rent paid on a room taken near the workplace is NOT deductible where the taxpayer keeps their domicilio fiscal (permanent home) elsewhere: the art.78-E rent deduction applies only to the arrendatario's habitacao permanente, which coincides with the fiscal domicile.",
+      "matrix_row_ids": ["habitacao-renda-2025"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "25098",
+      "date_or_year": "2024-11-27",
+      "legal_basis": "EBF art. 21",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_25098.pdf",
+      "holding": "A partial PPR resgate outside the legally permitted situations voids the fiscal benefit already taken: the amounts previously deducted, majorados 10% per year (or fraction) since the year of subscription, are added back to the coleta (quadro 8 campo 803 of Anexo H) in the year of the levantamento.",
+      "matrix_row_ids": ["ppr-under35", "ppr-35to50", "ppr-over50"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "27323",
+      "date_or_year": "2025-01-23",
+      "legal_basis": "EBF art. 62 / 66 (mecenato)",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/circ/Documents/PIV_27323.pdf",
+      "holding": "A donation is only fiscally deductible if it is gratuitous, without counterpart, and made to an eligible mecenato beneficiary, AND is evidenced by a recibo from the beneficiary carrying the mandatory art.66 EBF elements (date, donor name/NIF, the entity's mecenato enquadramento, statement that it is gratuitous, and identification of goods for in-kind gifts).",
+      "matrix_row_ids": ["donativos"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "1871/2019",
+      "date_or_year": "2019-07-02",
+      "legal_basis": "CIRS art. 78 n.11 / art. 22 n.9",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_15811.pdf",
+      "holding": "The split of a shared-custody child's deductions only takes effect when BOTH parents communicate harmonized alternating-residence and expense-share information on the Portal by 15 February; if their declarations disagree, the supletive rule applies (no alternating residence, 50/50 split, fields non-editable) and can only be changed later by reclamacao graciosa.",
+      "matrix_row_ids": ["gerais-standard", "saude-standard", "educacao-base"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "2789/2018",
+      "date_or_year": "2018-12-06",
+      "legal_basis": "CIRS art. 78-D",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_14331.pdf",
+      "holding": "For a displaced-student lease to count as an art.78-D education expense, the landlord (locador) must issue the invoice under CAE 68200 and inscribe on it the indication 'o arrendamento/subarrendamento destina-se a estudante deslocado'; without both, the faturas do not route to the education sector.",
+      "matrix_row_ids": ["educacao-deslocado-renda", "educacao-deslocado-uplift"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "3587/2017",
+      "date_or_year": "2017-10-31",
+      "legal_basis": "CIRS art. 78-F",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_12684_Deducao_coleta_Despesa_aquisicao_bilhete_comboio.pdf",
+      "holding": "Individual train tickets do NOT count for the art.78-F invoice-IVA benefit; the transport component of art.78-F is reserved for MONTHLY passes (passes mensais) of collective public transport issued by operators with the CAE classes listed in art.78-F n.3.",
+      "matrix_row_ids": ["iva-transportes-publicos"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "25893",
+      "date_or_year": "2024-02-22",
+      "legal_basis": "CIRS art. 87 (deficiencia)",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/rendimento/cirs/Documents/PIV_25893.pdf",
+      "holding": "When a multiuso incapacity certificate is re-assessed below the fiscally relevant 60% threshold, the deficiencia benefit is lost from the year of the re-assessment onward (IRS being an annual tax judged on 31 Dec status); the more-favourable prior assessment is safeguarded only for the already-exercised prior years. Gates the disability-linked eligibility that the lares row applies to disabled ascendants/dependents.",
+      "matrix_row_ids": ["lares"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "26987",
+      "date_or_year": "2024-10-30",
+      "legal_basis": "CIVA art. 9 al. 11 (gates CIRS art. 78-D)",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/despesa/civa/Documents/PIV_26987.pdf",
+      "holding": "Lessons on school/higher-education matters are IVA-exempt under art.9 al.11 CIVA (so they route cleanly as education), but when supplied TO a school by a formador who is not a habilitated docente/professor the service falls outside the exemption and is taxed at 23%. Relevant to whether explicacoes/formacao qualify as art.78-D education expenses.",
+      "matrix_row_ids": ["educacao-base"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "28654",
+      "date_or_year": "2025-09-23",
+      "legal_basis": "CIVA art. 9 al. 1 (gates CIRS art. 78-C)",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/despesa/civa/Documents/PIV_28654.pdf",
+      "holding": "Reabilitacao psicomotora is not listed as a regulated paramedical profession (DL 261/93 / DL 320/99), so it does not benefit from the art.9 al.1 CIVA health exemption and is taxed at 23%; a 23%-IVA health-adjacent service only counts as an art.78-C health expense if backed by a receita medica.",
+      "matrix_row_ids": ["saude-standard"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "3916/2019",
+      "date_or_year": "2019-12-20",
+      "legal_basis": "CIRS art. 78-D",
+      "source_url": "https://www.lexpoint.pt/PhotoHandler.ashx?i=45967&CKEditor=true&File=application/pdf",
+      "holding": "For education abroad (Erasmus, Univ. Lund): airfare is NOT deductible (not IVA-exempt/reduced), the foreign rent under a lease in the student's name IS deductible if the displaced-student conditions are met, and meals at a foreign university canteen are NOT deductible because the provider is not on the AT school-meals list.",
+      "matrix_row_ids": ["educacao-base", "educacao-deslocado-renda"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "27251",
+      "date_or_year": "2024-12-26",
+      "legal_basis": "CIRS art. 83-A",
+      "source_url": "https://www.lexpoint.pt/Fileget.aspx?FileId=56168",
+      "holding": "Where court-ordered pensao de alimentos is collected by direct deduction from the payer's own reforma pension, the pension recibos suffice as proof; overdue back-payments count as pensao in the year actually paid, but juros de mora and judicial penalties do not; the NIF to declare is the beneficiary child's, and nothing may be claimed if the child is in the payer's agregado.",
+      "matrix_row_ids": ["pensao-alimentos"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "26309",
+      "date_or_year": "2024-06-14",
+      "legal_basis": "CIVA art. 9 al. 11 (gates CIRS art. 78-D)",
+      "source_url": "https://www.lexpoint.pt/Fileget.aspx?FileId=54017",
+      "holding": "Music lessons are IVA-exempt under art.9 al.11 CIVA only when they constitute 'materias do ensino escolar ou superior': lessons to creches/pre-escolar do not qualify (23%), while lessons to 1st-cycle basico pupils qualify if they are curriculum matters. Gates whether extracurricular music routes as an art.78-D education expense.",
+      "matrix_row_ids": ["educacao-base"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "25509",
+      "date_or_year": "2023-12-31",
+      "legal_basis": "CIVA art. 9 al. 1 (gates CIRS art. 78-C)",
+      "source_url": "https://www.lexpoint.pt/Fileget.aspx?FileId=52288",
+      "holding": "Pilates clinico is IVA-exempt under art.9 al.1 CIVA only when it falls within the functional scope of fisioterapia, is delivered by a habilitated fisioterapeuta, and has a therapeutic purpose; performed by an auxiliar de fisioterapia it is taxed at 23%. A medical prescription is not itself decisive for the VAT exemption.",
+      "matrix_row_ids": ["saude-standard"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "24202",
+      "date_or_year": "2023-01-26",
+      "legal_basis": "CIVA art. 9 al. 1 (gates CIRS art. 78-C)",
+      "source_url": "https://www.lexpoint.pt/Fileget.aspx?FileId=51094",
+      "holding": "Terapeuticas nao convencionais (fitoterapia, naturopatia, acupuntura, osteopatia, medicina tradicional chinesa) are IVA-exempt as paramedical services (art.9 al.1 CIVA, Lei 71/2013) when delivered by habilitated professionals with a therapeutic purpose; generic 'massagens e terapias diversas', yoga and meditacao are not exempt and are taxed at 23%.",
+      "matrix_row_ids": ["saude-standard"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "11511",
+      "date_or_year": "2017-03-30",
+      "legal_basis": "CIVA verba 4.2 Lista I / art. 18 (gates CIRS art. 78-F)",
+      "source_url": "https://www.lexpoint.pt/Fileget.aspx?FileId=23084",
+      "holding": "Veterinary services for pets/companion animals are taxed at the normal 23% IVA rate; the reduced 6% rate (verba 4.2 Lista I) applies only to vet services connected to agricultural animal production. Community vet services delivered by university-hospital students are veterinary acts, not exempt teaching.",
+      "matrix_row_ids": ["iva-veterinarios", "saude-pet-vet-medication"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "15061",
+      "date_or_year": "2019-06-05",
+      "legal_basis": "CIVA verba 4.2 Lista I / art. 18 (gates CIRS art. 78-F)",
+      "source_url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/informacoes_vinculativas/despesa/civa/Documents/INFORMACAO_15061.pdf",
+      "holding": "Confirms that veterinary sanitary services for farm ruminants connected to agricultural production take the reduced 6% IVA rate (verba 4.2), while pet/companion-animal services stay at 23%; where an ADS re-invoices vet costs in the producer's name and books them in third-party accounts (art.16 n.6 c) CIVA), the debit is not itself IVA-taxed.",
+      "matrix_row_ids": ["iva-veterinarios"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "I301 2007010",
+      "date_or_year": "2009-02-09",
+      "legal_basis": "CIVA art. 9 n.9 / n.11 (gates CIRS art. 78-D)",
+      "source_url": "http://taxfile.pt/file_bank/news0212_8_1.pdf",
+      "holding": "Explicacoes (tutoring) on school/higher-education matters are IVA-exempt under art.9 n.11 CIVA only when given by the explicador/professor personally and directly to the student; when supplied through a company / centro de estudos (the company, not the tutor, contracting with the student) they are taxed at the normal 23% rate. Gates whether explicacoes count as art.78-D education.",
+      "matrix_row_ids": ["educacao-base"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "13559",
+      "date_or_year": "UNKNOWN",
+      "legal_basis": "CIVA art. 9 al. 7 (gates CIRS art. 78-D)",
+      "source_url": "https://www.lexpoint.pt/Fileget.aspx?FileId=27461",
+      "holding": "Extracurricular activities (yoga, musica, danca, ingles, informatica, tenis) supplied by an IPSS to the users of the creches, infantarios and centros de atividades de tempos livres it runs are IVA-exempt as social-assistance services under art.9 al.7 CIVA. The source copy does not print the despacho date (the ruling cites 2017 and 2014 IVs, so it is later than 2017).",
+      "matrix_row_ids": ["educacao-base"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "24153",
+      "date_or_year": "2023-01-25",
+      "legal_basis": "CIVA art. 9 al. 9 (gates CIRS art. 78-D)",
+      "source_url": "https://www.lexpoint.pt/Fileget.aspx?FileId=51095",
+      "holding": "Extracurricular activities are IVA-exempt under art.9 al.9 CIVA only when they are AAAF/AEC run per Portaria 644-A/2015 (offer obligatory and free of charge) by an establishment integrated in or recognised as equivalent to the Sistema Nacional de Educacao; a private infantario billing them with a margin does not meet those conditions and charges 23%.",
+      "matrix_row_ids": ["educacao-base"],
+      "confidence": "primary"
+    },
+    {
+      "ruling_ref": "30151",
+      "date_or_year": "2026 (reported ECO 2026-05-28)",
+      "legal_basis": "CIRS art. 83-A",
+      "source_url": "https://www.tofadvogados.com/post/informa%C3%A7%C3%A3o-vinculativa-da-at-proferida-no-%C3%A2mbito-do-processo-30151",
+      "holding": "Reported AT ruling: propinas (and other education/health charges) that a divorced parent is bound by the parental-responsibility agreement to pay for an adult child up to 25 may be added into the pensao de alimentos and deducted together under art.83-A, rather than only the fixed monthly cash sum.",
+      "matrix_row_ids": ["pensao-alimentos", "educacao-base"],
+      "confidence": "secondary"
+    },
+    {
+      "ruling_ref": "Oficio-Circulado 20252/2023",
+      "date_or_year": "2023-02-24",
+      "legal_basis": "CIRS art. 78-D",
+      "source_url": "https://www.idealista.pt/news/financas/fiscalidade/2023/02/16/56765-estudantes-no-estrangeiro-podem-deduzir-ao-irs-gastos-com-alojamento",
+      "holding": "Reported AT instrument on education expenses incurred abroad (e.g. Erasmus): propinas and displaced-student accommodation at an institution integrated in the national education system are deductible under art.78-D and can be entered via e-Fatura 'faturas emitidas no estrangeiro' / Anexo H; foreign canteen meals are not. (Distinct instrument from ficha 3916/2019, which treats the same theme case-by-case.)",
+      "matrix_row_ids": ["educacao-base", "educacao-deslocado-renda"],
+      "confidence": "secondary"
+    }
+  ]
+}

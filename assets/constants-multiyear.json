@@ -1,0 +1,706 @@
+{
+  "_meta": {
+    "asset": "IRS multi-year estimator constants (income years 2022, 2023, 2024)",
+    "covers_income_years": [
+      2022,
+      2023,
+      2024
+    ],
+    "declared_years": {
+      "2022": 2023,
+      "2023": 2024,
+      "2024": 2025
+    },
+    "excludes": "Income year 2025 lives in constants.json and is NOT duplicated here. The estimator loads 2025 from constants.json and 2022-2024 from this file.",
+    "as_of": "2026-07-10",
+    "purpose": "Retro-audit engine: recompute already-filed past returns (2022-2024) to find recoverable money (missed PPR / rent / health / IRS Jovem). Each year-set is independently source-cited so a retro recomputation stands on the law as it actually stood that year, never on the current year's numbers.",
+    "provenance": "Every value below was confirmed against a public authoritative source fetched during the 2026-07-10 research run: AT (Autoridade Tributaria) official folhetos for IRS Jovem 2022/2023/2024 (info.portaldasfinancas.gov.pt and mirror at.madeira.gov.pt / iseg.ulisboa.pt), Lei 33/2024 and Lei 32/2024 (Assembleia da Republica), and cross-corroborating practitioner tables (Doutor Financas, economiafinancas.com, Montepio, PwC). Structural knowledge of public tax law only; zero proprietary code.",
+    "unknown_contract": "Any value that could not be confirmed this run is stored as the literal string \"UNKNOWN\". The estimator REFUSES to compute a path that depends on an UNKNOWN value and raises a clear error naming the year and field, rather than guessing. As of this build, all load-bearing values below are CONFIRMED; no UNKNOWN blocks are active.",
+    "verification_tiers": {
+      "brackets": "CONFIRMED per year: two independent sources each (2022 Doutor Financas + economiafinancas; 2023 Doutor Financas + ACIAB; 2024 economiafinancas Aug-2024 final table + internal consistency with the already-gated 2025 constants, which state 2024 rates == 2025 rates and 2024 1st-bracket ceiling 7703 -> 8059 in 2025).",
+      "ias": "CONFIRMED: DGAEP / Diario da Republica / apcmc (2022=443.20 Port. 294/2021; 2023=480.43 Port. 298/2022; 2024=509.26 Port. 421/2023).",
+      "categoria_a_specific_deduction": "CONFIRMED: 2022 & 2023 = 4104.00 (frozen >decade); 2024 = 4350.24 (Lei 32/2024, de 7 de agosto; +6% == IAS update rate). Sources: Montepio, ECO, Doutor Financas, acontabilista.pt.",
+      "rent_cap": "CONFIRMED per year (this is the cap that MOVED): 2022=502, 2023=502, 2024=600. Sources: idealista/CGD/Montepio (2023 max was 502), Publico OE2024 (raised to 600 for 2024). Earlier stray '550 for 2023' was a non-adopted figure; explicit sources confirm 502 held for 2023.",
+      "global_cap": "CONFIRMED structure (Art. 78 n.7 CIRS, stable statute): uncapped below the 1st-bracket ceiling; tapered 2500->1000 between the 1st and last(8th) bracket ceilings; flat 1000 above. Endpoints AUTO-TRACK each year's Art. 68 bracket ceilings, so they are taken from this file's own bracket rows.",
+      "irs_jovem": "CONFIRMED from the AT official folhetos IRS Jovem 2022, 2023, 2024 (verbatim schedules + euro caps read this run). The regime changed MATERIALLY each year - see irs_jovem.regime_note per year.",
+      "other_deduction_caps": "REASONED-STABLE (health 15%/1000, education 30%/800 base, despesas gerais 35%/250, PPR 20% age-bands 400/350/300, dependent 600): these statutory caps held unchanged across 2022-2025; they were NOT independently re-fetched per year this run. Honesty flag: verification tier is 'stable-statute + 2025 cross-check', not 'per-year primary fetch'. Verify at Portal das Financas before quoting to a user near a filing deadline."
+    },
+    "correction_paths": {
+      "_intro": "Legal spine for turning a recomputation into recovered money. Each instrument confirmed this run against OCC guides, CPPT/LGT/CIRS and Doutor Financas 'como corrigir a declaracao de IRS'. Deadlines are outer bounds; specific facts can shorten them - route edge cases to an OCC.",
+      "declaracao_de_substituicao": {
+        "what": "Taxpayer re-files the Modelo 3 replacing the original; keeps the original submission date/identity.",
+        "window_in_taxpayer_favour": "A declaracao de substituicao that LOWERS the tax (recovers money) may be filed within the reclamacao graciosa deadline; for a pure own-omission the practical channel is reclamacao graciosa / revisao. (CPPT art. 59.)",
+        "window_against_taxpayer": "If it RAISES tax, it can be filed within 30 days of the filing deadline without penalty, or later within the reclamacao (120d) / impugnacao (90d) windows.",
+        "source": "CPPT art. 59; OCC 'Modelo 3 - Substituicao'; Doutor Financas 'Como corrigir a declaracao de IRS'."
+      },
+      "reclamacao_graciosa": {
+        "deadline_days": 120,
+        "counted_from": "termo do prazo para pagamento do imposto (or, for own-declaration errors, the special 2-year window of CIRS art. 140).",
+        "filed_at": "Direcao de Financas competente, via e-Balcao no Portal das Financas (or in person).",
+        "source": "CPPT art. 70 (deadline), art. 102 (computation); CIRS art. 140 (IRS 2-year special); OCC Guia Pratico dos Graciosos 2023."
+      },
+      "revisao_oficiosa": {
+        "deadline_years": 4,
+        "counted_from": "a liquidacao (or a qualquer tempo se o tributo nao foi pago).",
+        "ground": "erro imputavel aos servicos. A PURE voluntary omission of the taxpayer's own deduction is generally NOT 'erro imputavel aos servicos' - this longer window may be unavailable for simple forgotten-deduction cases; route contested cases to an OCC.",
+        "source": "LGT art. 78 n.1; CAAD/STA jurisprudence on erro imputavel aos servicos."
+      },
+      "caducidade": {
+        "deadline_years": 4,
+        "counted_from": "o facto tributario (for IRS, from the end of the income year).",
+        "effect": "outer bound on the liquidation/correction; once elapsed the amount is time-barred and unrecoverable.",
+        "source": "LGT art. 45."
+      }
+    }
+  },
+  "years": {
+    "2022": {
+      "income_year": 2022,
+      "declared_year": 2023,
+      "legal_basis": "Art. 68 CIRS as in force for 2022 income (9 escaloes, OE2022 desdobramento dos 3.o e 6.o escaloes).",
+      "ias_eur": {
+        "value": 443.2,
+        "source": "IAS 2022 = 443.20 (Portaria n.o 294/2021, de 13 de dezembro); cited in the AT IRS Jovem 2022 folheto."
+      },
+      "categoria_a_specific_deduction_eur": {
+        "value": 4104.0,
+        "source": "Deducao especifica cat. A frozen at 4104.00 for 2022 (Montepio, Doutor Financas, CGD); CIRS art. 25."
+      },
+      "brackets": {
+        "method": "Art. 68 CIRS 2022. coleta computed cumulatively on marginal rates.",
+        "confirmation": "CONFIRMED by two independent sources: Doutor Financas (escaloes-de-irs) and economiafinancas.com/2021/escaloes-irs-2022 - identical limits and taxa_normal.",
+        "sources": [
+          "Doutor Financas - Escaloes do IRS 2022",
+          "Economia e Financas - Escaloes IRS 2022"
+        ],
+        "rows": [
+          {
+            "n": 1,
+            "lower_eur": 0.0,
+            "upper_eur": 7116.0,
+            "taxa_normal": 0.145,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 2,
+            "lower_eur": 7116.0,
+            "upper_eur": 10736.0,
+            "taxa_normal": 0.23,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 3,
+            "lower_eur": 10736.0,
+            "upper_eur": 15216.0,
+            "taxa_normal": 0.265,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 4,
+            "lower_eur": 15216.0,
+            "upper_eur": 19696.0,
+            "taxa_normal": 0.285,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 5,
+            "lower_eur": 19696.0,
+            "upper_eur": 25076.0,
+            "taxa_normal": 0.35,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 6,
+            "lower_eur": 25076.0,
+            "upper_eur": 36757.0,
+            "taxa_normal": 0.37,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 7,
+            "lower_eur": 36757.0,
+            "upper_eur": 48033.0,
+            "taxa_normal": 0.435,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 8,
+            "lower_eur": 48033.0,
+            "upper_eur": 75009.0,
+            "taxa_normal": 0.45,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 9,
+            "lower_eur": 75009.0,
+            "upper_eur": null,
+            "taxa_normal": 0.48,
+            "status": "CONFIRMED"
+          }
+        ]
+      },
+      "global_cap": {
+        "first_ceiling_eur": 7116.0,
+        "last_ceiling_eur": 80000.0,
+        "slope_eur": 1500.0,
+        "clamp_low_eur": 1000.0,
+        "clamp_high_eur": 2500.0,
+        "formula": "limit = 1000 + 1500 * (80000 - RC) / (80000 - 7116.0), clamped [1000, 2500]; uncapped for RC <= 7116.0; flat 1000 for RC > 80000.",
+        "applies_to": "health + education + rent_habitacao + ppr (inside-cap deductions).",
+        "source": "Art. 78 n.7 CIRS (endpoints track the 2022 1st and last Art. 68 ceilings).",
+        "last_ceiling_previous_value": 75009.0,
+        "last_ceiling_note": "Artigo 78.º n.º 7 c) fixes this endpoint as 'o valor mínimo do primeiro escalão do n.º 1 do artigo 68.º-A' = 80 000 EUR, estável desde a Lei 82-B/2014 (ver assets/law/irs68a.md). Corrigido 2026-07-24: este campo seguia o teto do 8.º escalão do artigo 68.º (75 009 em 2022, 78 834 em 2023, 80 000 em 2024) — um número de OUTRO artigo, que só por coincidência acertou em 2024."
+      },
+      "deducoes_a_coleta": {
+        "dependent_fixed_eur": {
+          "value": 600.0,
+          "inside_global_cap": false,
+          "source": "CIRS art. 78-A (stable)."
+        },
+        "health": {
+          "rate": 0.15,
+          "cap_eur": 1000.0,
+          "inside_global_cap": true,
+          "source": "CIRS art. 78-C (stable 2022-2025)."
+        },
+        "education": {
+          "rate": 0.3,
+          "cap_eur": 800.0,
+          "inside_global_cap": true,
+          "note": "Base cap only (uplifts not modeled).",
+          "source": "CIRS art. 78-D (stable)."
+        },
+        "rent_habitacao": {
+          "rate": 0.15,
+          "cap_eur": 502.0,
+          "inside_global_cap": true,
+          "note": "2022 base rent cap = 502 (this is the year-varying cap).",
+          "source": "CIRS art. 78-E; idealista/CGD/Montepio 2022."
+        },
+        "ppr": {
+          "rate": 0.2,
+          "cap_by_age_band_eur": {
+            "under_35": 400.0,
+            "from_35_to_50": 350.0,
+            "over_50": 300.0
+          },
+          "inside_global_cap": true,
+          "source": "EBF art. 21 (stable)."
+        },
+        "despesas_gerais_familiares": {
+          "rate": 0.35,
+          "cap_eur_per_taxpayer": 250.0,
+          "monoparental_rate": 0.45,
+          "monoparental_cap_eur": 335.0,
+          "inside_global_cap": false,
+          "source": "CIRS art. 78-B (stable)."
+        }
+      },
+      "categoria_b_simplified": {
+        "coefficient_services_151": 0.75,
+        "coefficient_other_services": 0.35,
+        "source": "CIRS art. 31 (stable)."
+      },
+      "irs_jovem": {
+        "regime_note": "OE2022 version (art. 12-B CIRS, Lei 12/2022): 5-year schedule 30/30/20/20/10, LOW per-year euro caps (7.5/7.5/5/5/2.5 x IAS). Requires a completed study cycle >= nivel 4 QNQ; age 18-26 (30 if doutoramento nivel 8), max 35 during.",
+        "max_year": 5,
+        "age_window_inclusive": [
+          18,
+          26
+        ],
+        "age_window_doctorate_inclusive": [
+          18,
+          30
+        ],
+        "age_max_during": 35,
+        "study_requirement": "Completed cycle >= nivel 4 QNQ (dupla certificacao / vocacional + estagio).",
+        "applies_to_categories": [
+          "A",
+          "B"
+        ],
+        "schedule": [
+          {
+            "year": 1,
+            "exempt_pct": 0.3,
+            "cap_eur": 3324.0,
+            "cap_basis": "7.5 x IAS"
+          },
+          {
+            "year": 2,
+            "exempt_pct": 0.3,
+            "cap_eur": 3324.0,
+            "cap_basis": "7.5 x IAS"
+          },
+          {
+            "year": 3,
+            "exempt_pct": 0.2,
+            "cap_eur": 2216.0,
+            "cap_basis": "5 x IAS"
+          },
+          {
+            "year": 4,
+            "exempt_pct": 0.2,
+            "cap_eur": 2216.0,
+            "cap_basis": "5 x IAS"
+          },
+          {
+            "year": 5,
+            "exempt_pct": 0.1,
+            "cap_eur": 1108.0,
+            "cap_basis": "2.5 x IAS"
+          }
+        ],
+        "exempt_semantics": "exempt = min(exempt_pct * qualifying_income, cap_eur) for the applicable year.",
+        "source": "AT official folheto 'IRS Jovem 2022 e anos seguintes' (junho 2022), verbatim."
+      },
+      "taxa_adicional_solidariedade": {
+        "bands": [
+          {
+            "lower_eur": 80000.0,
+            "upper_eur": 250000.0,
+            "rate": 0.025
+          },
+          {
+            "lower_eur": 250000.0,
+            "upper_eur": null,
+            "rate": 0.05
+          }
+        ],
+        "source": "Artigo 68.º-A CIRS (assets/law/irs68a.md); bands unchanged since Lei 82-B/2014.",
+        "note": "Added 2026-07-24; previously not modelled for this year, which understated tax above 80 000 EUR."
+      }
+    },
+    "2023": {
+      "income_year": 2023,
+      "declared_year": 2024,
+      "legal_basis": "Art. 68 CIRS as in force for 2023 income (OE2023: 2.o escalao 23%->21%, limites +5.1%).",
+      "ias_eur": {
+        "value": 480.43,
+        "source": "IAS 2023 = 480.43 (Portaria n.o 298/2022, de 16 de dezembro); cited in the AT IRS Jovem 2023 folheto."
+      },
+      "categoria_a_specific_deduction_eur": {
+        "value": 4104.0,
+        "source": "Deducao especifica cat. A still frozen at 4104.00 for 2023 (Montepio, Doutor Financas); CIRS art. 25."
+      },
+      "brackets": {
+        "method": "Art. 68 CIRS 2023. coleta computed cumulatively on marginal rates.",
+        "confirmation": "CONFIRMED by Doutor Financas (taxas-de-irs) full 2023 table; corroborated by ACIAB/Santander (2nd escalao 21%, limits +5.1%).",
+        "sources": [
+          "Doutor Financas - Taxas de IRS 2023",
+          "ACIAB - Taxas e escaloes do IRS 2023"
+        ],
+        "rows": [
+          {
+            "n": 1,
+            "lower_eur": 0.0,
+            "upper_eur": 7479.0,
+            "taxa_normal": 0.145,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 2,
+            "lower_eur": 7479.0,
+            "upper_eur": 11284.0,
+            "taxa_normal": 0.21,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 3,
+            "lower_eur": 11284.0,
+            "upper_eur": 15992.0,
+            "taxa_normal": 0.265,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 4,
+            "lower_eur": 15992.0,
+            "upper_eur": 20700.0,
+            "taxa_normal": 0.285,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 5,
+            "lower_eur": 20700.0,
+            "upper_eur": 26355.0,
+            "taxa_normal": 0.35,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 6,
+            "lower_eur": 26355.0,
+            "upper_eur": 38632.0,
+            "taxa_normal": 0.37,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 7,
+            "lower_eur": 38632.0,
+            "upper_eur": 50483.0,
+            "taxa_normal": 0.435,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 8,
+            "lower_eur": 50483.0,
+            "upper_eur": 78834.0,
+            "taxa_normal": 0.45,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 9,
+            "lower_eur": 78834.0,
+            "upper_eur": null,
+            "taxa_normal": 0.48,
+            "status": "CONFIRMED"
+          }
+        ]
+      },
+      "global_cap": {
+        "first_ceiling_eur": 7479.0,
+        "last_ceiling_eur": 80000.0,
+        "slope_eur": 1500.0,
+        "clamp_low_eur": 1000.0,
+        "clamp_high_eur": 2500.0,
+        "formula": "limit = 1000 + 1500 * (80000 - RC) / (80000 - 7479.0), clamped [1000, 2500]; uncapped for RC <= 7479.0; flat 1000 for RC > 80000.",
+        "applies_to": "health + education + rent_habitacao + ppr.",
+        "source": "Art. 78 n.7 CIRS (endpoints track the 2023 Art. 68 ceilings).",
+        "last_ceiling_previous_value": 78834.0,
+        "last_ceiling_note": "Artigo 78.º n.º 7 c) fixes this endpoint as 'o valor mínimo do primeiro escalão do n.º 1 do artigo 68.º-A' = 80 000 EUR, estável desde a Lei 82-B/2014 (ver assets/law/irs68a.md). Corrigido 2026-07-24: este campo seguia o teto do 8.º escalão do artigo 68.º (75 009 em 2022, 78 834 em 2023, 80 000 em 2024) — um número de OUTRO artigo, que só por coincidência acertou em 2024."
+      },
+      "deducoes_a_coleta": {
+        "dependent_fixed_eur": {
+          "value": 600.0,
+          "inside_global_cap": false,
+          "source": "CIRS art. 78-A (stable)."
+        },
+        "health": {
+          "rate": 0.15,
+          "cap_eur": 1000.0,
+          "inside_global_cap": true,
+          "source": "CIRS art. 78-C (stable)."
+        },
+        "education": {
+          "rate": 0.3,
+          "cap_eur": 800.0,
+          "inside_global_cap": true,
+          "note": "Base cap only.",
+          "source": "CIRS art. 78-D (stable)."
+        },
+        "rent_habitacao": {
+          "rate": 0.15,
+          "cap_eur": 502.0,
+          "inside_global_cap": true,
+          "note": "2023 base rent cap = 502 (explicitly confirmed: 'para 2023 o valor maximo era de 502 euros').",
+          "source": "CIRS art. 78-E; idealista/CGD/Montepio 2023."
+        },
+        "ppr": {
+          "rate": 0.2,
+          "cap_by_age_band_eur": {
+            "under_35": 400.0,
+            "from_35_to_50": 350.0,
+            "over_50": 300.0
+          },
+          "inside_global_cap": true,
+          "source": "EBF art. 21 (stable)."
+        },
+        "despesas_gerais_familiares": {
+          "rate": 0.35,
+          "cap_eur_per_taxpayer": 250.0,
+          "monoparental_rate": 0.45,
+          "monoparental_cap_eur": 335.0,
+          "inside_global_cap": false,
+          "source": "CIRS art. 78-B (stable)."
+        }
+      },
+      "categoria_b_simplified": {
+        "coefficient_services_151": 0.75,
+        "coefficient_other_services": 0.35,
+        "source": "CIRS art. 31 (stable)."
+      },
+      "irs_jovem": {
+        "regime_note": "OE2023 version (art. 12-B CIRS): 5-year schedule 50/40/30/30/25, RAISED caps (12.5/10/7.5/7.5/5 x IAS). Study cycle >= nivel 4 QNQ still required; age 18-26 (30 doutoramento), max 35 during. Materially more generous than 2022.",
+        "max_year": 5,
+        "age_window_inclusive": [
+          18,
+          26
+        ],
+        "age_window_doctorate_inclusive": [
+          18,
+          30
+        ],
+        "age_max_during": 35,
+        "study_requirement": "Completed cycle >= nivel 4 QNQ.",
+        "applies_to_categories": [
+          "A",
+          "B"
+        ],
+        "schedule": [
+          {
+            "year": 1,
+            "exempt_pct": 0.5,
+            "cap_eur": 6005.38,
+            "cap_basis": "12.5 x IAS"
+          },
+          {
+            "year": 2,
+            "exempt_pct": 0.4,
+            "cap_eur": 4804.3,
+            "cap_basis": "10 x IAS"
+          },
+          {
+            "year": 3,
+            "exempt_pct": 0.3,
+            "cap_eur": 3603.23,
+            "cap_basis": "7.5 x IAS"
+          },
+          {
+            "year": 4,
+            "exempt_pct": 0.3,
+            "cap_eur": 3603.23,
+            "cap_basis": "7.5 x IAS"
+          },
+          {
+            "year": 5,
+            "exempt_pct": 0.25,
+            "cap_eur": 2402.15,
+            "cap_basis": "5 x IAS"
+          }
+        ],
+        "exempt_semantics": "exempt = min(exempt_pct * qualifying_income, cap_eur).",
+        "source": "AT official folheto 'IRS Jovem 2023' (marco 2024), verbatim."
+      },
+      "taxa_adicional_solidariedade": {
+        "bands": [
+          {
+            "lower_eur": 80000.0,
+            "upper_eur": 250000.0,
+            "rate": 0.025
+          },
+          {
+            "lower_eur": 250000.0,
+            "upper_eur": null,
+            "rate": 0.05
+          }
+        ],
+        "source": "Artigo 68.º-A CIRS (assets/law/irs68a.md); bands unchanged since Lei 82-B/2014.",
+        "note": "Added 2026-07-24; previously not modelled for this year, which understated tax above 80 000 EUR."
+      }
+    },
+    "2024": {
+      "income_year": 2024,
+      "declared_year": 2025,
+      "legal_basis": "Art. 68 CIRS FINAL for 2024 income after Lei 33/2024, de 7 de agosto (retroactive to 1 Jan 2024). Rates equal the 2025 rates; ceilings are ~4.6% below 2025.",
+      "ias_eur": {
+        "value": 509.26,
+        "source": "IAS 2024 = 509.26 (Portaria n.o 421/2023, de 11 de dezembro); cited in the AT IRS Jovem 2024 folheto."
+      },
+      "categoria_a_specific_deduction_eur": {
+        "value": 4350.24,
+        "source": "Deducao especifica cat. A raised to 4350.24 for 2024 by Lei 32/2024, de 7 de agosto (+6% = IAS update rate). Sources: ECO, Montepio, Doutor Financas, acontabilista.pt."
+      },
+      "brackets": {
+        "method": "Art. 68 CIRS 2024 FINAL (Lei 33/2024). coleta cumulatively on marginal rates.",
+        "confirmation": "CONFIRMED by economiafinancas.com/2024/novos-escaloes-irs-2024 (Aug-2024 final table) AND by internal consistency with the already-gated 2025 constants (which record 2024 rates == 2025 rates and 2024 1st-ceiling 7703 rising to 8059 in 2025).",
+        "sources": [
+          "Economia e Financas - Novos Escaloes IRS 2024 (versao agosto 2024)",
+          "constants.json 2025 cross-statement (Lei 55-A/2025)"
+        ],
+        "rows": [
+          {
+            "n": 1,
+            "lower_eur": 0.0,
+            "upper_eur": 7703.0,
+            "taxa_normal": 0.13,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 2,
+            "lower_eur": 7703.0,
+            "upper_eur": 11623.0,
+            "taxa_normal": 0.165,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 3,
+            "lower_eur": 11623.0,
+            "upper_eur": 16472.0,
+            "taxa_normal": 0.22,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 4,
+            "lower_eur": 16472.0,
+            "upper_eur": 21321.0,
+            "taxa_normal": 0.25,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 5,
+            "lower_eur": 21321.0,
+            "upper_eur": 27146.0,
+            "taxa_normal": 0.32,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 6,
+            "lower_eur": 27146.0,
+            "upper_eur": 39791.0,
+            "taxa_normal": 0.355,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 7,
+            "lower_eur": 39791.0,
+            "upper_eur": 43000.0,
+            "taxa_normal": 0.435,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 8,
+            "lower_eur": 43000.0,
+            "upper_eur": 80000.0,
+            "taxa_normal": 0.45,
+            "status": "CONFIRMED"
+          },
+          {
+            "n": 9,
+            "lower_eur": 80000.0,
+            "upper_eur": null,
+            "taxa_normal": 0.48,
+            "status": "CONFIRMED"
+          }
+        ]
+      },
+      "global_cap": {
+        "first_ceiling_eur": 7703.0,
+        "last_ceiling_eur": 80000.0,
+        "slope_eur": 1500.0,
+        "clamp_low_eur": 1000.0,
+        "clamp_high_eur": 2500.0,
+        "formula": "limit = 1000 + 1500 * (80000 - RC) / (80000 - 7703.0), clamped [1000, 2500]; uncapped for RC <= 7703.0; flat 1000 for RC > 80000.",
+        "applies_to": "health + education + rent_habitacao + ppr.",
+        "source": "Art. 78 n.7 CIRS (endpoints track the 2024 Art. 68 ceilings; the 80000 upper endpoint is confirmed in the published 2024 global-cap formula).",
+        "last_ceiling_previous_value": 80000.0,
+        "last_ceiling_note": "Artigo 78.º n.º 7 c) fixes this endpoint as 'o valor mínimo do primeiro escalão do n.º 1 do artigo 68.º-A' = 80 000 EUR, estável desde a Lei 82-B/2014 (ver assets/law/irs68a.md). Corrigido 2026-07-24: este campo seguia o teto do 8.º escalão do artigo 68.º (75 009 em 2022, 78 834 em 2023, 80 000 em 2024) — um número de OUTRO artigo, que só por coincidência acertou em 2024."
+      },
+      "deducoes_a_coleta": {
+        "dependent_fixed_eur": {
+          "value": 600.0,
+          "inside_global_cap": false,
+          "source": "CIRS art. 78-A (stable)."
+        },
+        "health": {
+          "rate": 0.15,
+          "cap_eur": 1000.0,
+          "inside_global_cap": true,
+          "source": "CIRS art. 78-C (stable)."
+        },
+        "education": {
+          "rate": 0.3,
+          "cap_eur": 800.0,
+          "inside_global_cap": true,
+          "note": "Base cap only.",
+          "source": "CIRS art. 78-D (stable)."
+        },
+        "rent_habitacao": {
+          "rate": 0.15,
+          "cap_eur": 600.0,
+          "inside_global_cap": true,
+          "note": "2024 base rent cap RAISED to 600 (OE2024).",
+          "source": "CIRS art. 78-E; Publico OE2024 'aumenta para 600 euros'."
+        },
+        "ppr": {
+          "rate": 0.2,
+          "cap_by_age_band_eur": {
+            "under_35": 400.0,
+            "from_35_to_50": 350.0,
+            "over_50": 300.0
+          },
+          "inside_global_cap": true,
+          "source": "EBF art. 21 (stable)."
+        },
+        "despesas_gerais_familiares": {
+          "rate": 0.35,
+          "cap_eur_per_taxpayer": 250.0,
+          "monoparental_rate": 0.45,
+          "monoparental_cap_eur": 335.0,
+          "inside_global_cap": false,
+          "source": "CIRS art. 78-B (stable)."
+        }
+      },
+      "categoria_b_simplified": {
+        "coefficient_services_151": 0.75,
+        "coefficient_other_services": 0.35,
+        "source": "CIRS art. 31 (stable)."
+      },
+      "irs_jovem": {
+        "regime_note": "OE2024 version (art. 12-B CIRS): still 5 years but percentages jumped to 100/75/50/50/25 with HIGH caps (40/30/20/20/10 x IAS). This is the last 5-year version before the 2025 reform (10 years, 100/75x3/50x3/25x3, flat 55xIAS, no study requirement, age 18-35). Study cycle >= nivel 4 QNQ still required in 2024; age 18-26 (30 doutoramento), max 35 during.",
+        "max_year": 5,
+        "age_window_inclusive": [
+          18,
+          26
+        ],
+        "age_window_doctorate_inclusive": [
+          18,
+          30
+        ],
+        "age_max_during": 35,
+        "study_requirement": "Completed cycle >= nivel 4 QNQ.",
+        "applies_to_categories": [
+          "A",
+          "B"
+        ],
+        "schedule": [
+          {
+            "year": 1,
+            "exempt_pct": 1.0,
+            "cap_eur": 20370.4,
+            "cap_basis": "40 x IAS"
+          },
+          {
+            "year": 2,
+            "exempt_pct": 0.75,
+            "cap_eur": 15277.8,
+            "cap_basis": "30 x IAS"
+          },
+          {
+            "year": 3,
+            "exempt_pct": 0.5,
+            "cap_eur": 10185.2,
+            "cap_basis": "20 x IAS"
+          },
+          {
+            "year": 4,
+            "exempt_pct": 0.5,
+            "cap_eur": 10185.2,
+            "cap_basis": "20 x IAS"
+          },
+          {
+            "year": 5,
+            "exempt_pct": 0.25,
+            "cap_eur": 5092.6,
+            "cap_basis": "10 x IAS"
+          }
+        ],
+        "exempt_semantics": "exempt = min(exempt_pct * qualifying_income, cap_eur).",
+        "source": "AT official folheto 'IRS Jovem 2024' (marco 2024), verbatim."
+      },
+      "taxa_adicional_solidariedade": {
+        "bands": [
+          {
+            "lower_eur": 80000.0,
+            "upper_eur": 250000.0,
+            "rate": 0.025
+          },
+          {
+            "lower_eur": 250000.0,
+            "upper_eur": null,
+            "rate": 0.05
+          }
+        ],
+        "source": "Artigo 68.º-A CIRS (assets/law/irs68a.md); bands unchanged since Lei 82-B/2014.",
+        "note": "Added 2026-07-24; previously not modelled for this year, which understated tax above 80 000 EUR."
+      }
+    }
+  }
+}

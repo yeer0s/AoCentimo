@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 260" width="1000" height="260" role="img" aria-label="Ao Cêntimo">
+  <rect width="1000" height="260" fill="none"/>
+  <g font-family="ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+    <text x="500" y="118" text-anchor="middle" font-size="92" font-weight="700" fill="#f2f7f5" letter-spacing="-2">Ao C<tspan fill="#3fd9b0">ê</tspan>ntimo</text>
+    <text x="500" y="170" text-anchor="middle" font-size="27" font-weight="500" fill="#9aada7" letter-spacing="5.5">IRS DE PORTUGAL · OFFLINE</text>
+    <g stroke="#3fd9b0" stroke-width="3" stroke-linecap="round">
+      <line x1="238" y1="205" x2="418" y2="205"/><line x1="582" y1="205" x2="762" y2="205"/>
+    </g>
+    <text x="500" y="214" text-anchor="middle" font-size="25" font-weight="600" fill="#3fd9b0" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace">0,00 €</text>
+  </g>
+</svg>

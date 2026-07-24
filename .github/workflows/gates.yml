@@ -1,0 +1,96 @@
+name: gates
+
+# Every claim in the README is checked here, on every push, on four Python
+# versions and three operating systems. A reader does not have to take the
+# "cent-exact" or "zero network calls" claims on trust — they can watch them run.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Monthly. Fiscal constants rot: an Orcamento do Estado can supersede a rate
+    # without a single line of this repo changing. The staleness check in
+    # sweep.py is what turns that silent decay into a visible red build.
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: ${{ matrix.os }} · py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: No dependencies to install
+        run: |
+          python -c "import sys; print(sys.version)"
+          echo "This project is Python standard library only. There is no requirements.txt by design."
+
+      - name: Golden + retro corpus, and the UNKNOWN-refusal guard
+        run: python scripts/estimator.py --selftest
+
+      - name: Dual-engine cross-check (1782 profiles, 30 boundary probes, cent-exact)
+        run: python scripts/oracle.py --crosscheck
+
+      - name: Mutation test — prove the guards can actually fail
+        run: python scripts/oracle.py --mutation-test
+
+      - name: Deductions corpus
+        run: python scripts/deductions.py --selftest
+
+      - name: Dossier / field-code corpus
+        run: python scripts/organizer.py --selftest
+
+      - name: Unified sweep (law digests, constants, disclaimer, licence)
+        run: python scripts/sweep.py
+
+  no-network:
+    name: proof · zero network calls
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Static proof — AST audit of every shipped Python file
+        run: |
+          python scripts/offline_audit.py --selftest   # the audit can fail
+          python scripts/offline_audit.py              # and it doesn't
+
+      - name: Dynamic proof — run every gate with sockets disabled at runtime
+        run: |
+          cat > sitecustomize.py <<'PY'
+          # Hard-disable the socket layer for this interpreter. If any code path in
+          # this project tried to reach the network, every gate below would crash
+          # instead of quietly succeeding. This is the "runs fully offline" claim,
+          # enforced rather than asserted.
+          import socket
+          class _Blocked(socket.socket):
+              def __init__(self, *a, **k):
+                  raise OSError("network access is disabled: this project must run fully offline")
+          socket.socket = _Blocked
+          socket.create_connection = lambda *a, **k: (_ for _ in ()).throw(
+              OSError("network access is disabled"))
+          PY
+          echo "--- sockets disabled; running the full gate ---"
+          PYTHONPATH=. python scripts/estimator.py --selftest
+          PYTHONPATH=. python scripts/oracle.py --crosscheck
+          PYTHONPATH=. python scripts/oracle.py --mutation-test
+          PYTHONPATH=. python scripts/deductions.py --selftest
+          PYTHONPATH=. python scripts/organizer.py --selftest
+          PYTHONPATH=. python scripts/sweep.py
+          echo "All gates passed with the network layer disabled."

@@ -1,0 +1,533 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Cited machine-readable CIRS art. 78 deducoes a coleta matrix. Each row is one distinct rate/cap/uplift combination. Every factual cell is either backed by the row-level citation URL or set to the literal string UNKNOWN (an honest UNKNOWN outranks a guessed value). Figures are for income year 2025 (filed 2026) unless the income_year field says otherwise. Not tax advice; verify against portaldasfinancas.gov.pt before filing.",
+  "as_of_corpus": "2026-07-10",
+  "rows": [
+    {
+      "id": "gerais-standard",
+      "doutrina": [
+        "1871/2019"
+      ],
+      "category": "Despesas gerais familiares",
+      "legal_basis": "CIRS art. 78-B",
+      "rate": "35%",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-taxpayer"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Despesas Gerais Familiares",
+      "boundary_conditions": "Counts: everyday household invoices where no more specific category applies, provided the NIF was given at purchase. Common rejection: an invoice that actually belongs to a specific category (health, education) landing here after a wrong sector code on a manually entered receipt.",
+      "manual_registration_needed": false,
+      "citation": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78.aspx",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "gerais-monoparental",
+      "category": "Despesas gerais familiares (familia monoparental)",
+      "legal_basis": "CIRS art. 78-B",
+      "rate": "45%",
+      "cap": {
+        "value": 335,
+        "unit": "EUR/year",
+        "scope": "per-taxpayer"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Despesas Gerais Familiares",
+      "boundary_conditions": "Single-parent (familia monoparental) uplift over the standard 35%/250 row. Same eligibility rules; the higher rate and cap apply only where the household qualifies as monoparental for the tax year.",
+      "manual_registration_needed": false,
+      "citation": "https://www.comparaja.pt/financas-pessoais/artigos/deducoes-irs",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "saude-standard",
+      "doutrina": [
+        "28223",
+        "1871/2019",
+        "28654",
+        "25509",
+        "24202"
+      ],
+      "category": "Saude",
+      "legal_basis": "CIRS art. 78-C",
+      "rate": "15%",
+      "cap": {
+        "value": 1000,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Saude",
+      "boundary_conditions": "Counts: consultations, exams, medication, health-insurance premium share, dental, optical. 23%-IVA health items need a receita medica associated to the invoice in e-Fatura or they do not auto-qualify; an unassociated prescription-required invoice is swept into Despesas Gerais Familiares after the mid-Feb internal cutoff, downgrading 15%/1000 to 35%/250.",
+      "manual_registration_needed": true,
+      "citation": "https://www.montepio.org/ei/pessoal/impostos/deducoes-a-coleta-saiba-quanto-pode-descontar-no-irs/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "saude-pet-vet-medication",
+      "doutrina": [
+        "11511"
+      ],
+      "category": "Saude - medicamentos veterinarios prescritos (sub-regra)",
+      "legal_basis": "CIRS art. 78-C",
+      "rate": "35%",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Saude",
+      "boundary_conditions": "Prescribed veterinary medication sub-rule. Frequently and silently absorbed into Despesas Gerais Familiares when the sector code does not route it to health. Distinct from the veterinary-services IVA-exigencia-de-fatura row. Verify the exact rate/cap against current AT guidance, sources describe this sub-rule inconsistently.",
+      "manual_registration_needed": true,
+      "citation": "https://www.acp.pt/servicos/pets/o-que-deve-saber/deduzir-despesas-de-veterinario-no-irs",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "educacao-base",
+      "doutrina": [
+        "3447/17",
+        "1871/2019",
+        "26987",
+        "3916/2019",
+        "26309",
+        "I301 2007010",
+        "13559",
+        "24153",
+        "30151",
+        "Oficio-Circulado 20252/2023"
+      ],
+      "category": "Educacao e formacao",
+      "legal_basis": "CIRS art. 78-D",
+      "rate": "30%",
+      "cap": {
+        "value": 800,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Educacao",
+      "boundary_conditions": "Counts: tuition/propinas, creche/pre-school, school manuals, schooling-tied transport, private tutoring (explicacoes). Cap is per agregado familiar, not per member. Propinas a court has characterized as pensao de alimentos route to art. 83-A instead, do not double-claim.",
+      "manual_registration_needed": false,
+      "citation": "https://www.comparaja.pt/financas-pessoais/artigos/deducoes-irs",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "educacao-deslocado-uplift",
+      "doutrina": [
+        "26060",
+        "25466",
+        "2789/2018"
+      ],
+      "category": "Educacao - majoracao estudante deslocado",
+      "legal_basis": "CIRS art. 78-D",
+      "rate": "30%",
+      "cap": {
+        "value": 1100,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Educacao",
+      "boundary_conditions": "The 800 EUR education cap rises to 1100 EUR when the excess over 800 corresponds to a displaced student's housing (student under 26, recognized institution >50km from permanent residence). Distinct from the interior/Regioes Autonomas majoracao row.",
+      "manual_registration_needed": true,
+      "citation": "https://www.doutorfinancas.pt/impostos/irs/arrendamento-a-estudante-deslocado-irs-e-aspetos-praticos/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "educacao-deslocado-renda",
+      "doutrina": [
+        "26060",
+        "25466",
+        "2789/2018",
+        "3916/2019",
+        "Oficio-Circulado 20252/2023"
+      ],
+      "category": "Educacao - renda de estudante deslocado",
+      "legal_basis": "CIRS art. 78-D",
+      "rate": "30%",
+      "cap": {
+        "value": 400,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Educacao",
+      "boundary_conditions": "Displaced-student rent deductible at 30% up to 400 EUR/year on top of the education cap. Requires: (a) contract stating the displaced-student purpose, (b) electronic rent receipt, (c) displaced-student condition communicated to AT. The landlord must communicate the contract and issue electronic receipts FIRST, then the student registers against it; registering student-side first attaches to nothing and the deduction silently fails.",
+      "manual_registration_needed": true,
+      "citation": "https://www.montepio.org/ei/pessoal/impostos/estudante-deslocado-como-deduzir-o-valor-das-rendas-no-irs/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "educacao-interior-majoracao",
+      "category": "Educacao - majoracao interior / Regioes Autonomas",
+      "legal_basis": "CIRS art. 78-D",
+      "rate": "40% (+10 p.p. majoracao over the 30% base)",
+      "cap": {
+        "value": 1000,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Educacao",
+      "boundary_conditions": "Education expenses at establishments located in interior territories or the Regioes Autonomas benefit from a +10 p.p. majoracao (30% -> 40%) with a global limit of 1,000 EUR - a rule DISTINCT from (and not additive with) the 1,100 EUR displaced-student uplift. Confirmed against CIRS art. 78-D consolidated text and Santander/Doutor Financas 2026 guides; verify against current AT guidance each season.",
+      "manual_registration_needed": false,
+      "citation": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78d.aspx",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "habitacao-renda-2025",
+      "doutrina": [
+        "26319"
+      ],
+      "category": "Habitacao - renda de residencia permanente",
+      "legal_basis": "CIRS art. 78 (regime transitorio)",
+      "rate": "15%",
+      "cap": {
+        "value": 700,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Rendas (Anexo H, seccao 7)",
+      "boundary_conditions": "Rent on the permanent residence. Rarely auto-populates: non-VAT landlords issue manual receipts, so this is one of the highest-value manual-registration checks before the deadline. Do NOT apply the OE2026 raised cap to an income-year-2025 return.",
+      "manual_registration_needed": true,
+      "citation": "https://www.santander.pt/salto/despesas-habitacao-irs",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "habitacao-renda-2026",
+      "category": "Habitacao - renda de residencia permanente (OE2026)",
+      "legal_basis": "CIRS art. 78 (regime transitorio, Lei n.o 73-A/2025)",
+      "rate": "15%",
+      "cap": {
+        "value": 900,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2026 (OE2026, filed 2027)",
+      "efatura_category": "Rendas (Anexo H, seccao 7)",
+      "boundary_conditions": "OE2026 raises the permanent-residence rent cap from 700 (income year 2025) to 900 for income year 2026, with a further step toward 1000 planned for income year 2027. Applies to the filing season AFTER the one currently open; never apply to a 2025-income return.",
+      "manual_registration_needed": true,
+      "citation": "https://buycasa.pt/blog/oe2026irs",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "habitacao-juros-pre2011",
+      "category": "Habitacao - juros de credito a habitacao (contratos ate 31-12-2011)",
+      "legal_basis": "CIRS art. 78 (regime transitorio)",
+      "rate": "15%",
+      "cap": {
+        "value": 296,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Juros (Anexo H, seccao 7)",
+      "boundary_conditions": "Only for loan contracts signed on or before 31-12-2011. Base cap 296 EUR/year, rising on a sliding scale up to 450 EUR/year for lower rendimento coletavel bands. A loan refinanced/transferred to a different bank after 2011 loses eligibility (AT treats a bank transfer as a new contract). Confirm with the taxpayer before assuming eligibility.",
+      "manual_registration_needed": false,
+      "citation": "https://conselhosdoconsultor.com/deduzir-juros-credito-habitacao-irs-regras/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "lares",
+      "doutrina": [
+        "25893"
+      ],
+      "category": "Lares e apoio domiciliario",
+      "legal_basis": "CIRS art. 84.º",
+      "rate": "25%",
+      "cap": {
+        "value": 403.75,
+        "unit": "EUR/year",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Lares",
+      "boundary_conditions": "Fees to certified nursing homes, assisted-living residences, day centres and certified home-care for the taxpayer, ascendants, or disabled dependents, where the beneficiary's own monthly income is below the IAS-linked threshold (~920 EUR, re-verify the exact multiple yearly). Uncertified/informal home-care does not qualify.",
+      "manual_registration_needed": false,
+      "citation": "https://www.laresonline.pt/pt/blog/irs-2026-como-deduzir-despesas-com-lares-e-apoio-domiciliario/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "pensao-alimentos",
+      "doutrina": [
+        "3447/17",
+        "27251",
+        "30151"
+      ],
+      "category": "Pensoes de alimentos",
+      "legal_basis": "CIRS art. 83-A",
+      "rate": "20%",
+      "cap": {
+        "value": "none",
+        "unit": "n/a",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Pensoes de alimentos (Anexo H)",
+      "boundary_conditions": "20% of amounts paid and not reimbursed, set by court sentence or homologated agreement. No cap on the deduction itself, but it still counts toward the global cap - pensoes de alimentos is alinea f) do n.o 1 do art. 78, e o n.o 7 abrange as alineas c) a h), k) e m), pelo que esta DENTRO do limite global (art. 78 n.o 7). A taxpayer claiming a dependent's education/health for the same child generally cannot also claim pensao de alimentos for that child in the same year, the two are mutually exclusive per dependent.",
+      "manual_registration_needed": true,
+      "citation": "https://www.doutorfinancas.pt/impostos/irs/pensao-de-alimentos-no-irs-englobar-ou-nao/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "iva-restauracao",
+      "category": "IVA por exigencia de fatura - restauracao/cafes/alojamento",
+      "legal_basis": "CIRS art. 78-F",
+      "rate": "15% of IVA",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-household (shared across all 78-F sectors)"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Restauracao e alojamento",
+      "boundary_conditions": "15% of the IVA borne on restaurants, cafes, hotels and alojamento local. Purely NIF-driven: e-Fatura auto-assigns the sector if the NIF was given; the common loss is simply forgetting to give the NIF at low-friction purchases. The 250 EUR cap is shared across ALL art. 78-F sectors, not per sector.",
+      "manual_registration_needed": false,
+      "citation": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78f.aspx",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "iva-cabeleireiros",
+      "category": "IVA por exigencia de fatura - cabeleireiros/institutos de beleza",
+      "legal_basis": "CIRS art. 78-F",
+      "rate": "15% of IVA",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-household (shared across all 78-F sectors)"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Cabeleireiros e institutos de beleza",
+      "boundary_conditions": "15% of IVA on hairdressers, barbershops and beauty institutes. NIF-driven auto-assignment. Shares the single 250 EUR/household art. 78-F cap with all other sectors.",
+      "manual_registration_needed": false,
+      "citation": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78f.aspx",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "iva-reparacao-veiculos",
+      "category": "IVA por exigencia de fatura - reparacao de veiculos e motociclos",
+      "legal_basis": "CIRS art. 78-F",
+      "rate": "15% of IVA",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-household (shared across all 78-F sectors)"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Reparacao de veiculos",
+      "boundary_conditions": "15% of IVA on vehicle and motorcycle repair (revisions, tyres, mechanics). NIF-driven. Shares the single 250 EUR/household art. 78-F cap.",
+      "manual_registration_needed": false,
+      "citation": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78f.aspx",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "iva-veterinarios",
+      "doutrina": [
+        "11511",
+        "15061"
+      ],
+      "category": "IVA por exigencia de fatura - servicos veterinarios",
+      "legal_basis": "CIRS art. 78-F",
+      "rate": "15% of IVA",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-household (shared across all 78-F sectors)"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Veterinarios",
+      "boundary_conditions": "15% of IVA on veterinary services (consultations, surgery, prescribed medication). Distinct from the art. 78-C prescribed-veterinary-medication health sub-rule. Shares the single 250 EUR/household art. 78-F cap.",
+      "manual_registration_needed": false,
+      "citation": "https://www.doutorfinancas.pt/vida-e-familia/irs-e-os-animais-as-despesas-que-podem-ser-incluidas-e-os-beneficios-fiscais/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "iva-ginasios",
+      "category": "IVA por exigencia de fatura - ginasios e atividades desportivas",
+      "legal_basis": "CIRS art. 78-F",
+      "rate": "30% of IVA",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-household (shared across all 78-F sectors)"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Ginasios e atividades desportivas",
+      "boundary_conditions": "30% of IVA (higher than the 15% sectors) on gyms, sports classes and mensalidades. NIF-driven. Shares the single 250 EUR/household art. 78-F cap with all other sectors, so a high gym total can crowd out other sectors' contribution to the same 250 ceiling.",
+      "manual_registration_needed": false,
+      "citation": "https://www.montepio.org/ei/pessoal/impostos/e-fatura-como-classificar-as-despesas-de-ginasio-e-ter-desconto-no-irs/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "iva-transportes-publicos",
+      "doutrina": [
+        "3587/2017"
+      ],
+      "category": "IVA por exigencia de fatura - passes de transportes publicos",
+      "legal_basis": "CIRS art. 78-F",
+      "rate": "UNKNOWN",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-household (shared across all 78-F sectors)"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Passes de transportes publicos",
+      "boundary_conditions": "Public transport passes are one of the sectors that has moved rates between years; the exact income-year-2025 percentage is not confirmed in the research corpus, so the rate is recorded as UNKNOWN rather than guessed. The 250 EUR/household art. 78-F shared cap still applies. Confirm the current rate on the AT page each season.",
+      "manual_registration_needed": false,
+      "citation": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78f.aspx",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "iva-cultural",
+      "category": "IVA por exigencia de fatura - despesas culturais",
+      "legal_basis": "CIRS art. 78-F",
+      "rate": "15% of IVA",
+      "cap": {
+        "value": 250,
+        "unit": "EUR/year",
+        "scope": "per-household (shared across all 78-F sectors)"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Cultura (museus, monumentos, espetaculos, livros)",
+      "boundary_conditions": "Recent addition covering museums, monuments, concerts, theatre and books at 15% of IVA. Confirm it is live for the exact income year in scope before promising it to the user. Shares the single 250 EUR/household art. 78-F cap.",
+      "manual_registration_needed": false,
+      "citation": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78f.aspx",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "ppr-under35",
+      "doutrina": [
+        "25098"
+      ],
+      "category": "PPR - contribuinte com menos de 35 anos",
+      "legal_basis": "EBF art. 21",
+      "rate": "20%",
+      "cap": {
+        "value": 400,
+        "unit": "EUR/year",
+        "scope": "per-member"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "PPR (Anexo H)",
+      "boundary_conditions": "20% of amounts invested; cap 400 EUR (implies up to 2000 EUR contributed). Age band is age on 1 January of the contribution year. Each member with their own PPR claims their own age-banded cap independently. Contributions made after retirement/starting to draw the PPR are not deductible.",
+      "manual_registration_needed": false,
+      "citation": "https://occ.pt/pt-pt/noticias/irs-ppr-e-deducao-coleta",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "ppr-35to50",
+      "doutrina": [
+        "25098"
+      ],
+      "category": "PPR - contribuinte entre 35 e 50 anos",
+      "legal_basis": "EBF art. 21",
+      "rate": "20%",
+      "cap": {
+        "value": 350,
+        "unit": "EUR/year",
+        "scope": "per-member"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "PPR (Anexo H)",
+      "boundary_conditions": "20% of amounts invested; cap 350 EUR (implies up to 1750 EUR contributed). Age band is age on 1 January of the contribution year.",
+      "manual_registration_needed": false,
+      "citation": "https://www.comparaja.pt/financas-pessoais/artigos/ppr-irs",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "ppr-over50",
+      "doutrina": [
+        "25098"
+      ],
+      "category": "PPR - contribuinte com mais de 50 anos",
+      "legal_basis": "EBF art. 21",
+      "rate": "20%",
+      "cap": {
+        "value": 300,
+        "unit": "EUR/year",
+        "scope": "per-member"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "PPR (Anexo H)",
+      "boundary_conditions": "20% of amounts invested; cap 300 EUR (implies up to 1500 EUR contributed). Age band is age on 1 January of the contribution year.",
+      "manual_registration_needed": false,
+      "citation": "https://www.comparaja.pt/financas-pessoais/artigos/ppr-irs",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "donativos",
+      "doutrina": [
+        "27323"
+      ],
+      "category": "Donativos",
+      "legal_basis": "EBF (Estatuto do Mecenato) / CIRS art. 78",
+      "rate": "25%",
+      "cap": {
+        "value": "15% of coleta",
+        "unit": "percent-of-coleta",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Donativos (Anexo H)",
+      "boundary_conditions": "25% of the donation value, generally capped at 15% of the coleta. Donations to the State, foundations and religious institutions can be deductible at 25% WITHOUT the 15%-of-coleta ceiling; confirm the specific recipient's status before assuming the uncapped rate. Do not conflate with consignacao.",
+      "manual_registration_needed": true,
+      "citation": "https://www.montepio.org/ei/pessoal/impostos/como-deduzir-donativos-no-irs/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "consignacao",
+      "category": "Consignacao de IRS (nao e deducao a coleta)",
+      "legal_basis": "Regime da consignacao / CIRS",
+      "rate": "0.5% of coleta assigned (zero out-of-pocket cost)",
+      "cap": {
+        "value": "n/a",
+        "unit": "n/a",
+        "scope": "per-taxpayer"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "Consignacao (declaracao Modelo 3)",
+      "boundary_conditions": "Separate mechanism, NOT a deducao a coleta: the taxpayer assigns a share of already-computed tax to an eligible IPSS/religious/cultural/public-utility entity from the AT annual list. Costs nothing beyond a checkbox and does not reduce other deduction caps. Always mention as a zero-cost add-on distinct from donativos.",
+      "manual_registration_needed": false,
+      "citation": "https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/IRS/Pages/IRS_entidades_beneficiarias_consignacao.aspx",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "global-cap-2025",
+      "category": "Limite global das deducoes a coleta",
+      "legal_basis": "CIRS art. 78 n.o 7",
+      "rate": "n/a (ceiling on total deductions)",
+      "cap": {
+        "value": "no cap below RC ~8059; sliding scale to ~83696; 1000 EUR floor above",
+        "unit": "EUR (interpolated)",
+        "scope": "per-household"
+      },
+      "income_year": "2025 (filed 2026)",
+      "efatura_category": "n/a (applied on the coleta)",
+      "boundary_conditions": "No overall cap for rendimento coletavel up to ~8059 EUR; a sliding-scale cap between that floor and ~83696 EUR; a 1000 EUR floor cap above. The exact interpolation multiplier is not something to compute from memory; verify against official AT guidance/simulator before quoting a precise figure. Cap increased 5% per dependent beyond the second.",
+      "manual_registration_needed": false,
+      "citation": "https://eco.sapo.pt/opiniao/entrega-do-irs-aproxima-se-saiba-o-limite-das-deducoes-a-coleta/",
+      "as_of": "2026-07-10"
+    },
+    {
+      "id": "global-cap-2026",
+      "category": "Limite global das deducoes a coleta (OE2026)",
+      "legal_basis": "CIRS art. 78 n.o 7 (Lei n.o 73-A/2025)",
+      "rate": "n/a (ceiling on total deductions)",
+      "cap": {
+        "value": "no cap below RC 8342; 1000 + 1500*(80000-RC)/(80000-8342) between 8342 and 80000; 1000 EUR flat above",
+        "unit": "EUR (interpolated)",
+        "scope": "per-household"
+      },
+      "income_year": "2026 (OE2026, filed 2027)",
+      "efatura_category": "n/a (applied on the coleta)",
+      "boundary_conditions": "OE2026 thresholds: no cap below RC 8342; interpolated cap between 8342 and 80000; 1000 EUR flat above. Cap increased 5% per dependent beyond the second. Applies to the filing season AFTER the currently open one; never apply to a 2025-income return.",
+      "manual_registration_needed": false,
+      "citation": "https://www.cgd.pt/Site/Saldo-Positivo/leis-e-impostos/Pages/novidades-IRS.aspx",
+      "as_of": "2026-07-10"
+    }
+  ]
+}

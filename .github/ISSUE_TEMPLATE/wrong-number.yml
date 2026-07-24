@@ -1,0 +1,48 @@
+name: "💰 A wrong number"
+description: "A rate, cap, threshold or coefficient that contradicts the law it cites. The single most valuable report."
+title: "[wrong number] "
+labels: ["wrong-number", "priority"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you — this is the most useful thing anyone can send this project.
+
+        A wrong constant costs real people real money, and the whole architecture
+        here exists because one sat undetected for a year. Please be as specific as
+        you can; a citation beats a description.
+  - type: input
+    id: constant
+    attributes:
+      label: Which constant
+      description: "Where it lives, e.g. assets/constants.json → deducoes_a_coleta.health.cap_eur"
+      placeholder: "assets/constants.json → ..."
+    validations: {required: true}
+  - type: input
+    id: shipped
+    attributes:
+      label: Value currently shipped
+    validations: {required: true}
+  - type: input
+    id: correct
+    attributes:
+      label: Value you believe is correct
+    validations: {required: true}
+  - type: textarea
+    id: authority
+    attributes:
+      label: The authority
+      description: "Article and diploma, ideally with a link. e.g. CIRS art. 78.º-C, redação da Lei n.º X/20XX"
+      placeholder: "CIRS art. ...  /  Lei n.º ...  /  https://info.portaldasfinancas.gov.pt/..."
+    validations: {required: true}
+  - type: input
+    id: income_year
+    attributes:
+      label: Which income year is affected
+      placeholder: "2025"
+    validations: {required: true}
+  - type: textarea
+    id: impact
+    attributes:
+      label: Euro impact, if you worked it out
+      description: "Optional, but it helps triage. A worked example is ideal."

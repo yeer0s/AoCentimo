@@ -1,0 +1,411 @@
+{
+  "_meta": {
+    "asset": "IRS retro-audit golden cases (income years 2022-2024)",
+    "count": 9,
+    "min_bar": 8,
+    "as_of": "today's reference date for the deadline commentary is 2026-07-10",
+    "method": "Each case was hand-computed FIRST against that year's confirmed constants in constants-multiyear.json (see workings), then confirmed reproducible by scripts/validate.py --selftest. The harness recomputes scenario_original and scenario_corrected for the case's income_year and checks: coleta_liquida of each scenario, and recoverable = cl_original - cl_corrected, against the hand-derived expected values. Expected values are NEVER edited to match code; on a mismatch the workings are re-derived by hand.",
+    "recoverable_definition": "recoverable_eur = coleta_liquida_original - coleta_liquida_corrected = the extra IRS refund (or reduced amount owed) that recomputing the past return with the missed item would have produced, assuming retenções/pagamentos are unchanged.",
+    "flags": {
+      "recoverable": "Arithmetic recovery > 0 AND a live correction instrument still exists.",
+      "recoverable_below_materiality": "Recovery > 0 but small enough that the filing effort/opportunity cost may exceed the benefit; stated so the user decides.",
+      "no_recovery_cap_bound": "Recomputation shows recovery = 0 (the 'missed' deduction is fully displaced, e.g. the global cap was already binding). Negative control.",
+      "unrecoverable_time_barred": "Arithmetic recovery > 0 but every viable instrument's legal deadline has lapsed (or the only long-window instrument, revisão oficiosa, does not cover a pure voluntary omission). Money is real but legally unreachable."
+    },
+    "correction_paths_ref": "Full instrument definitions, deadlines and citations live in constants-multiyear.json _meta.correction_paths and in SKILL.md 'Retro-audit and correction paths'.",
+    "law_version": "income years 2022-2024, each on its own Artigo 68.º table; global-cap upper endpoint = Artigo 68.º-A n.º 1 floor (80 000) for all years",
+    "derivation_caveat": "SINGLE-PATH. scripts/oracle.py models income year 2025 only, so these expected values are produced by scripts/estimator.py alone and carry none of the dual-path evidence the 2025 golden corpus carries. Treat a green retro run as a regression check, NOT as confirmation the figures are right. Extending the oracle to 2022-2024 is the highest-value open item on this corpus.",
+    "derived_on": "2026-07-24"
+  },
+  "cases": [
+    {
+      "id": "missed_ppr_2024",
+      "income_year": 2024,
+      "label": "Forgot a 2000 EUR PPR contribution on a 2024 return (single, cat A 30k)",
+      "categories": [
+        "missed-ppr"
+      ],
+      "scenario_original": {
+        "income_year": 2024,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 30000.0
+          }
+        ],
+        "deductions": {},
+        "retention_total": 5000.0
+      },
+      "scenario_corrected": {
+        "income_year": 2024,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 30000.0
+          }
+        ],
+        "deductions": {
+          "ppr_contribution": 2000.0,
+          "ppr_age_band": "under_35"
+        },
+        "retention_total": 5000.0
+      },
+      "workings": "2024: spec_A=4350.24. RC=30000-4350.24=25649.76 (bracket 5, 21321-27146 @0.32). coleta=T(21321)+(25649.76-21321)*0.32=3927.22+4328.76*0.32=3927.22+1385.2032=5312.4232 -> 5312.42. Original: no deductions -> cl_original=5312.42. Corrected: PPR 20%*2000=400, under_35 cap 400 -> 400. Global limit at RC 25649.76 = 1000+1500*(80000-25649.76)/(80000-7703)=1000+1127.64=2127.64 (non-binding). cl_corrected=5312.42-400=4912.42. recoverable=400.00.",
+      "expected": {
+        "cl_original": 5312.42,
+        "cl_corrected": 4912.42,
+        "recoverable": 400.0,
+        "recoverable_flag": "recoverable"
+      },
+      "correction_path": "Declaracao de substituicao a favor do contribuinte / reclamacao graciosa; if the 120-day window has lapsed, revisao oficiosa (LGT art. 78, 4 anos) via an OCC (a forgotten PPR is a taxpayer omission, so confirm the ground).",
+      "deadline": "Income 2024 filed 2025: reclamacao graciosa 120 dias do termo do prazo de pagamento (likely lapsed by 2026-07); revisao oficiosa open until ~2029 (4 anos da liquidacao)."
+    },
+    {
+      "id": "missed_rent_2023",
+      "income_year": 2023,
+      "label": "Forgot habitacao rent on a 2023 return (single, cat A 20k) - 2023 rent cap was 502",
+      "categories": [
+        "missed-rent"
+      ],
+      "scenario_original": {
+        "income_year": 2023,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 20000.0
+          }
+        ],
+        "deductions": {},
+        "retention_total": 2800.0
+      },
+      "scenario_corrected": {
+        "income_year": 2023,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 20000.0
+          }
+        ],
+        "deductions": {
+          "rent_paid": 4000.0
+        },
+        "retention_total": 2800.0
+      },
+      "workings": "2023: spec_A=4104. RC=20000-4104=15896 (bracket 3, 11284-15992 @0.265). coleta=T(11284)+(15896-11284)*0.265=1883.505+4612*0.265=1883.505+1222.18=3105.685 -> 3105.69. Original: cl_original=3105.69. Corrected: rent 15%*4000=600, but 2023 base cap=502 -> 502. Global limit at RC 15896 (2023 endpoints 7479/78834)=1000+1500*(78834-15896)/71355=2321.56 (non-binding). cl_corrected=3105.69-502=2603.69. recoverable=502.00. NOTE the 502 cap is the year-specific value (2024 would have allowed 600, 2025 700).",
+      "expected": {
+        "cl_original": 3105.69,
+        "cl_corrected": 2603.69,
+        "recoverable": 502.0,
+        "recoverable_flag": "recoverable"
+      },
+      "correction_path": "Reclamacao graciosa (120 dias) if still open, else revisao oficiosa via OCC; or declaracao de substituicao a favor.",
+      "deadline": "Income 2023 filed 2024: reclamacao graciosa lapsed; revisao oficiosa open until ~2028 (4 anos da liquidacao de 2024), ground permitting."
+    },
+    {
+      "id": "missed_health_2024",
+      "income_year": 2024,
+      "label": "Unvalidated health invoices on a 2024 return (single, cat A 40k)",
+      "categories": [
+        "missed-health"
+      ],
+      "scenario_original": {
+        "income_year": 2024,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 40000.0
+          }
+        ],
+        "deductions": {},
+        "retention_total": 8000.0
+      },
+      "scenario_corrected": {
+        "income_year": 2024,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 40000.0
+          }
+        ],
+        "deductions": {
+          "health_expenses": 8000.0
+        },
+        "retention_total": 8000.0
+      },
+      "workings": "2024: RC=40000-4350.24=35649.76 (bracket 6, 27146-39791 @0.355). coleta=T(27146)+(35649.76-27146)*0.355=5791.22+8503.76*0.355=5791.22+3018.8348=8810.0548 -> 8810.05. Original: cl_original=8810.05. Corrected: health 15%*8000=1200, cap 1000 -> 1000. Global limit at RC 35649.76 = 1000+1500*(80000-35649.76)/72297=1920.17 (non-binding). cl_corrected=8810.05-1000=7810.05. recoverable=1000.00. Reminder: health deductions require e-Fatura VALIDATION by the ~2 March following the income year; unvalidated invoices are exactly what gets missed.",
+      "expected": {
+        "cl_original": 8810.05,
+        "cl_corrected": 7810.05,
+        "recoverable": 1000.0,
+        "recoverable_flag": "recoverable"
+      },
+      "correction_path": "Reclamacao graciosa / declaracao de substituicao a favor; revisao oficiosa via OCC if lapsed. If the invoices were never validated in e-Fatura, validation itself may no longer be possible - route to OCC.",
+      "deadline": "Income 2024 filed 2025: reclamacao graciosa ~120 dias (likely lapsed); revisao oficiosa until ~2029."
+    },
+    {
+      "id": "irs_jovem_not_claimed_2024",
+      "income_year": 2024,
+      "label": "IRS Jovem year 1 (100%) eligible but not opted in on a 2024 return (single, cat A 25k)",
+      "categories": [
+        "irs-jovem-missed"
+      ],
+      "scenario_original": {
+        "income_year": 2024,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 25000.0
+          }
+        ],
+        "deductions": {},
+        "retention_total": 3800.0
+      },
+      "scenario_corrected": {
+        "income_year": 2024,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 25000.0,
+            "irs_jovem": {
+              "eligible": true,
+              "year": 1,
+              "category": "A"
+            }
+          }
+        ],
+        "deductions": {},
+        "retention_total": 3800.0
+      },
+      "workings": "2024 IRS Jovem yr1 = 100% exempt, cap 40xIAS = 20370.40. Original (not claimed): net_A=25000-4350.24=20649.76=RC (bracket 4 @0.25). coleta=T(16472)+(20649.76-16472)*0.25=2714.97+1044.44=3759.41 -> cl_original=3759.41. Corrected: exempt=min(1.00*25000, 20370.40)=20370.40. after=25000-20370.40=4629.60. net_A=4629.60-4350.24=279.36=RC (bracket 1 @0.13). coleta=279.36*0.13=36.3168 -> 36.32. cl_corrected=36.32. recoverable=3723.09. The 2024 cap (40xIAS) bites: a 25k income is not fully exempt.",
+      "expected": {
+        "cl_original": 3759.41,
+        "cl_corrected": 36.32,
+        "recoverable": 3723.09,
+        "recoverable_flag": "recoverable"
+      },
+      "correction_path": "IRS Jovem is an OPCAO exercised in the declaration; claiming it after the fact needs a declaracao de substituicao a favor within the reclamacao graciosa window. Option-timing for benefits is contested by AT - route to an OCC before relying on a retro opt-in.",
+      "deadline": "Income 2024 filed 2025: substitution a favor tied to the ~120-day reclamacao window (likely lapsed); a revisao-oficiosa route for a benefit OPTION is uncertain - OCC-gated."
+    },
+    {
+      "id": "no_recovery_cap_bound_2024",
+      "income_year": 2024,
+      "label": "Negative control: missed PPR yields NOTHING because the global cap was already binding (single, cat A 100k)",
+      "categories": [
+        "negative-control"
+      ],
+      "scenario_original": {
+        "income_year": 2024,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 100000.0
+          }
+        ],
+        "deductions": {
+          "health_expenses": 8000.0
+        },
+        "retention_total": 34000.0
+      },
+      "scenario_corrected": {
+        "income_year": 2024,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 100000.0
+          }
+        ],
+        "deductions": {
+          "health_expenses": 8000.0,
+          "ppr_contribution": 2000.0,
+          "ppr_age_band": "under_35"
+        },
+        "retention_total": 34000.0
+      },
+      "workings": "2024: RC=100000-4350.24=95649.76 (>80000, bracket 9 @0.48). coleta=T(80000)+(95649.76-80000)*0.48=28326.11+7511.8848=35837.9948 -> 35837.99. RC>80000 -> global cap FLAT 1000. Original: health 15%*8000=1200 -> cap 1000; capped_subject=min(1000,1000)=1000; cl_original=35837.99-1000=34837.99. Corrected: health 1000 + PPR 400 = subject 1400, but flat cap 1000 -> capped_subject=1000 unchanged. cl_corrected=34837.99. recoverable=0.00. The forgotten PPR recovers nothing because the taxpayer was already at the global limit.",
+      "expected": {
+        "cl_original": 35229.23,
+        "cl_corrected": 35229.23,
+        "recoverable": 0.0,
+        "recoverable_flag": "no_recovery_cap_bound"
+      },
+      "correction_path": "None warranted - recomputation confirms no money is recoverable. Do NOT file a substitution.",
+      "deadline": "N/A (nothing to recover)."
+    },
+    {
+      "id": "unrecoverable_time_barred_2022",
+      "income_year": 2022,
+      "label": "Forgot rent on a 2022 return - real 502 EUR arithmetic recovery but legally time-barred (single, cat A 25k)",
+      "categories": [
+        "time-barred"
+      ],
+      "scenario_original": {
+        "income_year": 2022,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 25000.0
+          }
+        ],
+        "deductions": {},
+        "retention_total": 5000.0
+      },
+      "scenario_corrected": {
+        "income_year": 2022,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 25000.0
+          }
+        ],
+        "deductions": {
+          "rent_paid": 4000.0
+        },
+        "retention_total": 5000.0
+      },
+      "workings": "2022: spec_A=4104. RC=25000-4104=20896 (bracket 5, 19696-25076 @0.35). coleta=T(19696)+(20896-19696)*0.35=4328.42+1200*0.35=4328.42+420=4748.42. Original: cl_original=4748.42. Corrected: rent 15%*4000=600, 2022 cap 502 -> 502. cl_corrected=4748.42-502=4246.42. recoverable_arithmetic=502.00. BUT: income 2022 was liquidated in 2023; the 120-day reclamacao graciosa window closed in late 2023, the substitution-a-favor window with it, and revisao oficiosa (4 anos, LGT art. 78) requires 'erro imputavel aos servicos' which a pure voluntary omission is not. Practically time-barred by 2026 -> flag unrecoverable.",
+      "expected": {
+        "cl_original": 4748.42,
+        "cl_corrected": 4246.42,
+        "recoverable": 502.0,
+        "recoverable_flag": "unrecoverable_time_barred"
+      },
+      "correction_path": "None viable: reclamacao graciosa and substitution-a-favor windows closed; revisao oficiosa ground (erro imputavel aos servicos) does not cover a taxpayer's own forgotten deduction. Route to OCC only to confirm no exceptional ground applies.",
+      "deadline": "LGT art. 45 caducidade / the lapsed reclamacao window make this unrecoverable as of 2026-07-10."
+    },
+    {
+      "id": "below_materiality_2023",
+      "income_year": 2023,
+      "label": "Tiny forgotten health expense on a 2023 return: 6 EUR recoverable, below materiality (single, cat A 10k)",
+      "categories": [
+        "below-materiality"
+      ],
+      "scenario_original": {
+        "income_year": 2023,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 10000.0
+          }
+        ],
+        "deductions": {},
+        "retention_total": 1000.0
+      },
+      "scenario_corrected": {
+        "income_year": 2023,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_a_gross": 10000.0
+          }
+        ],
+        "deductions": {
+          "health_expenses": 40.0
+        },
+        "retention_total": 1000.0
+      },
+      "workings": "2023: spec_A=4104. RC=10000-4104=5896 (below 1st ceiling 7479 -> bracket 1 @0.145). coleta=5896*0.145=854.92. Original: cl_original=854.92. Corrected: health 15%*40=6.00. RC 5896 <= 7479 -> global cap UNCAPPED, so the 6.00 applies fully. cl_corrected=854.92-6=848.92. recoverable=6.00. Below a ~25 EUR materiality note: the substitution/reclamacao effort likely exceeds the 6 EUR benefit - state it and let the user decide.",
+      "expected": {
+        "cl_original": 854.92,
+        "cl_corrected": 848.92,
+        "recoverable": 6.0,
+        "recoverable_flag": "recoverable_below_materiality"
+      },
+      "materiality_note": "Recovery 6.00 EUR is real but small; flag rather than push a filing.",
+      "correction_path": "Technically reclamacao graciosa / substituicao a favor (or revisao oficiosa if lapsed), but flag the low materiality first.",
+      "deadline": "Income 2023 filed 2024: revisao oficiosa window ~until 2028, but not worth it at this magnitude."
+    },
+    {
+      "id": "missed_education_joint_2024",
+      "income_year": 2024,
+      "label": "Joint couple forgot education expenses on a 2024 return (quociente conjugal)",
+      "categories": [
+        "missed-education",
+        "joint"
+      ],
+      "scenario_original": {
+        "income_year": 2024,
+        "filing_status": "joint",
+        "taxpayers": [
+          {
+            "cat_a_gross": 30000.0
+          },
+          {
+            "cat_a_gross": 20000.0
+          }
+        ],
+        "deductions": {},
+        "retention_total": 8000.0
+      },
+      "scenario_corrected": {
+        "income_year": 2024,
+        "filing_status": "joint",
+        "taxpayers": [
+          {
+            "cat_a_gross": 30000.0
+          },
+          {
+            "cat_a_gross": 20000.0
+          }
+        ],
+        "deductions": {
+          "education_expenses": 3000.0
+        },
+        "retention_total": 8000.0
+      },
+      "workings": "2024 joint: net1=30000-4350.24=25649.76; net2=20000-4350.24=15649.76; RC=41299.52. N=2 -> RC/2=20649.76 (bracket 4 @0.25). tax=T(16472)+(20649.76-16472)*0.25=2714.97+1044.44=3759.41. coleta_bruta=3759.41*2=7518.82. Original: cl_original=7518.82. Corrected: education 30%*3000=900, base cap 800 -> 800. Global limit at RC 41299.52 = 1000+1500*(80000-41299.52)/72297=1802.91 (non-binding). cl_corrected=7518.82-800=6718.82. recoverable=800.00.",
+      "expected": {
+        "cl_original": 7518.82,
+        "cl_corrected": 6718.82,
+        "recoverable": 800.0,
+        "recoverable_flag": "recoverable"
+      },
+      "correction_path": "Reclamacao graciosa / declaracao de substituicao a favor (joint declaration); revisao oficiosa via OCC if lapsed.",
+      "deadline": "Income 2024 filed 2025: reclamacao ~120 dias (likely lapsed); revisao oficiosa until ~2029."
+    },
+    {
+      "id": "missed_ppr_catB_2023",
+      "income_year": 2023,
+      "label": "Cat B freelancer forgot a 1500 EUR PPR on a 2023 return (over-50 band)",
+      "categories": [
+        "missed-ppr",
+        "categoria-b"
+      ],
+      "scenario_original": {
+        "income_year": 2023,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_b_gross": 25000.0,
+            "cat_b_coefficient": 0.75
+          }
+        ],
+        "deductions": {},
+        "retention_total": 3500.0
+      },
+      "scenario_corrected": {
+        "income_year": 2023,
+        "filing_status": "single",
+        "taxpayers": [
+          {
+            "cat_b_gross": 25000.0,
+            "cat_b_coefficient": 0.75
+          }
+        ],
+        "deductions": {
+          "ppr_contribution": 1500.0,
+          "ppr_age_band": "over_50"
+        },
+        "retention_total": 3500.0
+      },
+      "workings": "2023 cat B simplified: net_B=0.75*25000=18750=RC (bracket 4, 15992-20700 @0.285). coleta=T(15992)+(18750-15992)*0.285=3131.125+2758*0.285=3131.125+786.03=3917.155 -> 3917.16. Original: cl_original=3917.16. Corrected: PPR 20%*1500=300, over_50 band cap 300 -> 300 (exactly at the band edge). Global limit at RC 18750 = 1000+1500*(78834-18750)/71355=2263.09 (non-binding). cl_corrected=3917.16-300=3617.16. recoverable=300.00.",
+      "expected": {
+        "cl_original": 3917.16,
+        "cl_corrected": 3617.16,
+        "recoverable": 300.0,
+        "recoverable_flag": "recoverable"
+      },
+      "correction_path": "Reclamacao graciosa / declaracao de substituicao a favor; revisao oficiosa via OCC if lapsed.",
+      "deadline": "Income 2023 filed 2024: revisao oficiosa window ~until 2028, ground permitting."
+    }
+  ]
+}

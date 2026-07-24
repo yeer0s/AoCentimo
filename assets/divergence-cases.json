@@ -1,0 +1,236 @@
+{
+  "_schema": {
+    "version": "1.0.0",
+    "income_year": 2025,
+    "filed_year": 2026,
+    "purpose": "Post-filing divergencias defense corpus. Each case is a fictional AT 'Divergencia na declaracao Mod. 3' scenario with the correct response path, the cited deadline basis, the documents that actually rebut the flag, the trap a naive response falls into, and a severity. Used by scripts/validate.py --selftest for schema + integrity gating. Figures/rules dated to income year 2025 (filed 2026); re-verify against info.portaldasfinancas.gov.pt before a live filing.",
+    "flag_type_vocabulary": [
+      "informational_only",
+      "deduction_mismatch",
+      "efatura_vs_declared",
+      "rendas_sem_recibo",
+      "foreign_income_omitted",
+      "mais_valias_imoveis",
+      "valores_mobiliarios",
+      "cae_cadastro_coerencia",
+      "retencao_fonte",
+      "cross_border_residency"
+    ],
+    "severity_vocabulary": ["informational", "low", "medium", "high", "critical"],
+    "response_path_vocabulary": [
+      "no_action",
+      "justificar",
+      "substituir_declaracao",
+      "justificar_or_substituir",
+      "escalate_occ",
+      "reclamacao_graciosa"
+    ],
+    "key_deadlines": {
+      "notification_response_window": "15 days from the divergencia notification date to justify or substitute; extendable to 25 days where documented difficulty in obtaining evidence exists (AT divergencia notification practice — Doutor Financas / CGD Saldo Positivo, 2026).",
+      "substituicao_no_coima_window": "A corrected substitute declaration filed inside the normal Modelo 3 filing window (1 April - 30 June) carries NO coima; after that date it may imply a coima depending on the correction's effect (AT folheto 'Divergencias na declaracao Mod. 3', maio 2026, PENALIDADES).",
+      "reclamacao_graciosa": "120 days to lodge a reclamacao graciosa against a liquidacao act (CPPT art. 70.o, counted from the CPPT art. 102.o events).",
+      "juros_compensatorios_rate": "4%/year legal interest (Portaria 291/2003; LGT art. 35.o n.o 10 referencing Codigo Civil art. 559.o), accrued day-by-day: imposto x 0.04 x dias / 365 (LGT art. 35.o).",
+      "rgit_art30_reduction": "Coima reduced to 12.5% of the legal minimum if payment is requested before any auto de noticia / participacao / inspection begins; to 50% of the legal minimum up to the audicao previa deadline within a tax inspection — conditioned on paying within 30 days of the reduced-coima notification and regularising (RGIT art. 30.o, Lei 7/2021 in force from 2022).",
+      "rgit_art29_dispensa": "No coima where, cumulatively, the agent had no conviction/benefit in the prior 5 years, the infraction caused no prejuizo efetivo to tax revenue, and the fault is regularised (RGIT art. 29.o).",
+      "rgit_art31_minimum": "Where the coima varies with the tax due, the minimum is 10% (individuals) or 20% (companies) of the tax owed (RGIT art. 31.o)."
+    }
+  },
+  "cases": [
+    {
+      "id": "D01",
+      "title": "Portal alert that the declaration was liquidated with no divergencia",
+      "situation": "After submitting inside the window, the household sees a Portal das Financas status message that the declaration was received and liquidada 'certa' (no divergencia flag raised), plus the routine pre-filing e-Fatura 'faturas pendentes de validacao' reminder from earlier in the cycle still sitting in their inbox.",
+      "flag_type": "informational_only",
+      "correct_response_path": "no_action",
+      "deadline_basis": "None — this is not a divergencia notification. A liquidacao 'certa'/'sem divergencias' status and the pre-filing e-Fatura validation reminder are informational only; no response window runs (AT folheto 'Divergencias na declaracao Mod. 3', maio 2026 — only a 'Divergencia' designation opens a response duty).",
+      "documents_needed": [],
+      "trap": "Treating a routine liquidacao-status message or a stale pre-filing e-Fatura reminder as a divergencia and filing an unnecessary substitute declaration — which after 30 June can itself trigger a coima. Read the exact alert designation before acting.",
+      "severity": "informational",
+      "escalate_to_occ": false,
+      "is_negative_control": true
+    },
+    {
+      "id": "D02",
+      "title": "Health deduction declared exceeds e-Fatura Saude total",
+      "situation": "The household manually entered a higher saude deduction in Anexo H than the total the AT holds in the e-Fatura 'Saude' category; the AT raises a divergencia asking them to justify the excess.",
+      "flag_type": "deduction_mismatch",
+      "correct_response_path": "justificar_or_substituir",
+      "deadline_basis": "15 days from the divergencia notification to justify or substitute (extendable to 25 with documented difficulty) — Doutor Financas / CGD Saldo Positivo, 2026.",
+      "documents_needed": [
+        "itemized recibos/faturas de saude that support the declared amount (VAT-exempt or 6% health invoices)",
+        "prescription proof for any 23%-VAT health expense claimed as deductible",
+        "e-Fatura Saude category export showing which invoices are already counted"
+      ],
+      "trap": "Assuming the higher self-entered figure is automatically accepted. Only e-Fatura-registered saude plus manually-justifiable health expenses count; a declared excess with no invoice behind it must be justified with documents or the declaration substituted down — not defended by assertion.",
+      "severity": "medium",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D03",
+      "title": "Foreign dividends omitted — Anexo J missing",
+      "situation": "A resident received dividends from a foreign brokerage; the AT cross-matched CRS/bank data and raised a divergencia because no Anexo J was filed. The household thought the small foreign amount did not need declaring.",
+      "flag_type": "foreign_income_omitted",
+      "correct_response_path": "substituir_declaracao",
+      "deadline_basis": "Substitute declaration adding Anexo J; if filed inside 1 April - 30 June no coima applies, after that a coima may apply depending on effect (AT folheto maio 2026). Anexo J is mandatory for foreign-source income regardless of amount.",
+      "documents_needed": [
+        "foreign brokerage annual tax statement (dividends gross, foreign withholding tax)",
+        "proof of foreign tax paid for the credito de imposto por dupla tributacao internacional"
+      ],
+      "trap": "Believing a low foreign amount is exempt from declaration. Foreign-source income requires Anexo J regardless of size; the fix is a full substitute declaration including every previously-correct annex, not a text justification that the amount was trivial.",
+      "severity": "high",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D04",
+      "title": "Rent deduction claimed without recibo eletronico de renda",
+      "situation": "A tenant claimed a housing-rent deduction, but the AT has no matching recibo eletronico de renda from the landlord on file, so a divergencia is raised on the arrendamento deduction.",
+      "flag_type": "rendas_sem_recibo",
+      "correct_response_path": "justificar",
+      "deadline_basis": "15 days from notification to justify with supporting evidence (extendable to 25) — Doutor Financas / CGD Saldo Positivo, 2026.",
+      "documents_needed": [
+        "contrato de arrendamento registered with the AT",
+        "recibos de renda eletronicos, or proof of rent paid (bank transfers) plus the landlord's declaration",
+        "proof the property is the permanent residence (domicilio fiscal)"
+      ],
+      "trap": "Claiming the rent deduction when the landlord never issued recibos eletronicos de renda — the deduction is AT-cross-referenced against the landlord's Categoria F declaration. Justify with a registered contract and payment proof, or the deduction is disallowed; do not just re-assert the figure.",
+      "severity": "medium",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D05",
+      "title": "Property sale — valorization expenses challenged (mais-valias imobiliarias)",
+      "situation": "The household sold a property and declared valorization works and acquisition/sale costs in the 'Despesas e encargos' column of Anexo G; the AT raises a divergencia asking them to prove those expenses.",
+      "flag_type": "mais_valias_imoveis",
+      "correct_response_path": "justificar",
+      "deadline_basis": "15 days from notification to justify with comprovativos (extendable to 25) — Doutor Financas / CGD Saldo Positivo, 2026. Deductible expenses are limited to valorization works comprovadamente realizados in the last 12 years plus necessary acquisition/sale costs (CIRS art. 51.o).",
+      "documents_needed": [
+        "escritura/IMT and Imposto do Selo on acquisition and sale",
+        "notary and predial registration charges",
+        "invoices for valorization works within the last 12 years (CIRS art. 51.o)",
+        "energy certification and real-estate mediation commission invoices"
+      ],
+      "trap": "Declaring valorization expenses without invoices, or works older than the 12-year window of CIRS art. 51.o. Only comprovadamente-realizados costs inside the statutory window reduce the mais-valia; undocumented or out-of-window expenses are struck out.",
+      "severity": "high",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D06",
+      "title": "Sold shares at a loss, forgot Anexo G",
+      "situation": "The household sold listed securities during the year at a net loss and did not file Anexo G, assuming a loss needs no declaration. The AT raises a divergencia on the omitted alienacao onerosa de valores mobiliarios.",
+      "flag_type": "valores_mobiliarios",
+      "correct_response_path": "substituir_declaracao",
+      "deadline_basis": "Substitute declaration adding Anexo G; Anexo G (and Anexo J for foreign-held securities) is mandatory whether the apurado result is positive OR negative (AT folheto maio 2026). No coima if inside 1 April - 30 June.",
+      "documents_needed": [
+        "broker statement with acquisition and disposal dates and values",
+        "record of any incurred expenses on the transactions"
+      ],
+      "trap": "Assuming a capital loss need not be declared. Declaring the loss is mandatory and also preserves the right to carry it forward against future gains; skipping Anexo G forfeits that and triggers the divergencia.",
+      "severity": "medium",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D07",
+      "title": "Categoria B income inconsistent with CAE / cadastro",
+      "situation": "A freelancer declared Categoria B professional income in Anexo B under a field that does not match the activity code (CAE) they are registered for in the AT cadastro; the AT raises a 'coerencia de CAE, cadastro e rendimentos declarados' divergencia.",
+      "flag_type": "cae_cadastro_coerencia",
+      "correct_response_path": "justificar_or_substituir",
+      "deadline_basis": "15 days from notification to justify or substitute (extendable to 25) — Doutor Financas / CGD Saldo Positivo, 2026. The income type declared in Anexo B must be compatible with the declared/cadastro activity codes (AT folheto maio 2026).",
+      "documents_needed": [
+        "recibos verdes / faturas showing the true nature of the income",
+        "current cadastro extract with the registered CAE / activity codes"
+      ],
+      "trap": "Declaring service income under the wrong Anexo B field relative to the registered CAE. If the cadastro is wrong, the activity registration must be corrected too — a one-off justification that ignores a genuinely mis-registered activity leaves the same divergencia recurring next year.",
+      "severity": "medium",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D08",
+      "title": "Withholding-tax figure differs from employer DMR data",
+      "situation": "The retencao na fonte the household typed into Anexo A does not match the withholding the employer reported to the AT via the DMR; a divergencia is raised on the retencao value.",
+      "flag_type": "retencao_fonte",
+      "correct_response_path": "justificar_or_substituir",
+      "deadline_basis": "15 days from notification to justify or substitute (extendable to 25) — Doutor Financas / CGD Saldo Positivo, 2026.",
+      "documents_needed": [
+        "recibos de vencimento for the year showing gross income and withholding per month",
+        "the employer's declaracao anual de rendimentos / DMR summary if available"
+      ],
+      "trap": "Defending the self-typed withholding number against the employer's reported figure. The AT holds the employer's DMR as the reference; if the payslips confirm the employer figure, substitute to match it — a mismatch that favours the taxpayer without payslip proof will be corrected against them.",
+      "severity": "low",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D09",
+      "title": "Divergencia entangled with mid-year residency change and IFICI",
+      "situation": "A newly-arrived resident with a part-year residency period, an IFICI (ex-NHR) election in progress, and foreign employment income receives a divergencia mixing residency-period income splitting with the Anexo L regime. The household asks the skill to draft the justification.",
+      "flag_type": "cross_border_residency",
+      "correct_response_path": "escalate_occ",
+      "deadline_basis": "The 15-day response window still runs (Doutor Financas / CGD, 2026) — but request the extension to 25 days for documented difficulty and hand the substance to an OCC. Residency-period splitting and IFICI eligibility are specialist determinations, not self-service justifications.",
+      "documents_needed": [
+        "certificate of tax residency / arrival date evidence",
+        "IFICI eligibility documentation and Anexo L registration status",
+        "foreign employer income and foreign tax statements"
+      ],
+      "trap": "Self-drafting a justification that asserts a residency split or IFICI treatment. This skill flags and routes to an OCC; getting the residency period or the Anexo L qualifying-activity classification wrong in a justification can lock in an incorrect liquidacao. Escalate immediately, do not resolve.",
+      "severity": "critical",
+      "escalate_to_occ": true,
+      "is_negative_control": false
+    },
+    {
+      "id": "D10",
+      "title": "Divergencia ignored — correcao oficiosa and juros compensatorios",
+      "situation": "The household ignored a divergencia notification past the 15-day window. The AT issued a correcao oficiosa / liquidacao adicional with more tax due plus juros compensatorios, and the household now wants to contest it.",
+      "flag_type": "deduction_mismatch",
+      "correct_response_path": "reclamacao_graciosa",
+      "deadline_basis": "120 days to lodge a reclamacao graciosa against the liquidacao (CPPT art. 70.o). Juros compensatorios accrue at 4%/year day-by-day: imposto x 0.04 x dias / 365 (LGT art. 35.o; Portaria 291/2003 / Codigo Civil art. 559.o).",
+      "documents_needed": [
+        "the liquidacao adicional / correcao oficiosa notice with the juros compensatorios breakdown",
+        "the supporting documents that would have rebutted the original divergencia",
+        "computation of the juros using imposto x 0.04 x dias / 365 to check the AT figure"
+      ],
+      "trap": "Believing an ignored divergencia simply disappears. It converts into a correcao oficiosa with additional tax AND juros compensatorios at 4%/year; the only remaining route is a reclamacao graciosa within 120 days (CPPT art. 70.o), a slower and heavier path than answering the original 15-day notice.",
+      "severity": "high",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D11",
+      "title": "Genuine omission found after 30 June — coima reduction path",
+      "situation": "In August the household discovers a genuinely omitted income item (a second-job Categoria A slip) after the 1 April - 30 June window has closed. They want to regularise with the lowest possible penalty before the AT opens any procedure.",
+      "flag_type": "efatura_vs_declared",
+      "correct_response_path": "substituir_declaracao",
+      "deadline_basis": "A substitute after 30 June may carry a coima (AT folheto maio 2026). Voluntary early regularisation qualifies for RGIT art. 30.o reduction to 12.5% of the legal minimum when requested before any auto de noticia / participacao / inspection, paid within 30 days of the reduced-coima notification and regularised. Where the coima varies with tax due, the minimum is 10% of the tax for individuals (RGIT art. 31.o); art. 29.o dispensa may even apply if no prejuizo efetivo and a clean 5-year record.",
+      "documents_needed": [
+        "the omitted income document (second-job recibo / slip)",
+        "a full substitute declaration including all previously-correct annexes",
+        "the pedido de pagamento de coima reduzida, if a coima is assessed"
+      ],
+      "trap": "Either doing nothing (letting the AT find it, which forfeits the art. 30.o reduction and risks the full coima plus juros) or overpaying by not requesting the 12.5% reduction. Voluntary pre-procedure regularisation is the cheapest lawful path — but it must be an early request, not a defence after an inspection starts.",
+      "severity": "medium",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    },
+    {
+      "id": "D12",
+      "title": "e-Fatura invoice miscategorized and already excluded by the AT",
+      "situation": "A private-school payment was sitting under 'Outros' instead of 'Educacao' in e-Fatura, so the AT's pre-filled deduction excluded it; the divergencia (or the smaller-than-expected deduction) stems from the category, not a missing invoice.",
+      "flag_type": "efatura_vs_declared",
+      "correct_response_path": "justificar_or_substituir",
+      "deadline_basis": "15 days from notification to justify or substitute (extendable to 25) — Doutor Financas / CGD Saldo Positivo, 2026. The underlying fix is the manual e-Fatura recategorization the taxpayer performs themselves (select invoice -> 'Alterar' -> correct category).",
+      "documents_needed": [
+        "the school/education invoice and its e-Fatura entry showing the wrong category",
+        "screenshot of the corrected category after the 'Alterar' step"
+      ],
+      "trap": "Confusing a miscategorized-but-present invoice with a missing one. The invoice exists; the deduction was lost to the category, not to absence. Recategorize in e-Fatura and justify/substitute — a 'the receipt is missing' response misdiagnoses the flag and leaves the deduction lost.",
+      "severity": "low",
+      "escalate_to_occ": false,
+      "is_negative_control": false
+    }
+  ]
+}

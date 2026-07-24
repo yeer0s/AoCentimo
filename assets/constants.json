@@ -1,0 +1,355 @@
+{
+  "_meta": {
+    "asset": "IRS-2025 estimator constants",
+    "income_year": 2025,
+    "declared_year": 2026,
+    "legal_basis": "Lei n.º 55-A/2025, de 22 de julho, amending Artigo 68.º do Código do IRS (CIRS)",
+    "as_of": "2026-07-10",
+    "provenance": "Distilled from operating experience with production Portuguese fiscal-calculation engines. Structural knowledge of public tax law only; contains zero proprietary code and reproduces no vendor's implementation. Every numeric constant below is traceable to a public authoritative source cited inline.",
+    "verify_before_relying": "Bracket boundaries, rates, deduction caps, the IAS and PPR limits are set annually by the Orçamento do Estado and can change mid-cycle by separate law. Re-verify at Portal das Finanças (Artigo 68.º CIRS) before quoting to a user filing more than a few months after the as_of date."
+  },
+  "ias_2025_eur": {
+    "value": 522.5,
+    "note": "Indexante dos Apoios Sociais 2025 = 522.50 EUR/month. Drives the IRS Jovem annual ceiling (55 x IAS).",
+    "source": "IAS 2025 value as fixed for the 2025 social-support indexing year; used here only to derive the IRS Jovem 55xIAS ceiling."
+  },
+  "categoria_a_specific_deduction_eur": {
+    "value": 4462.15,
+    "income_year": 2025,
+    "note": "Dedução específica categoria A (Artigo 25.º CIRS), flat per taxpayer with category A income; equals 8.54 x IAS 2025 rounded to the statutory figure.",
+    "source": "Portal das Finanças / CIRS Artigo 25.º; PwC Guia Fiscal (IRS) 2025."
+  },
+  "brackets_2025": {
+    "method": "Artigo 68.º CIRS. coleta = tax computed cumulatively on marginal rates; equivalently the taxa-média split (lower-bracket ceiling at its average rate + excess at the next marginal rate). taxa_media columns below are the effective average rate at each bracket ceiling and are provided for cross-checking against the published Art. 68.º table.",
+    "confirmation": "All 9 rows CONFIRMED against public 2025-income-year tables. Cross-corroborated: the 1st-bracket ceiling (8059) and 8th-bracket ceiling (83696) also appear as the global-cap formula endpoints fixed independently in the deducoes global cap. taxa_media values reproduce the published Art. 68.º 2025 averages.",
+    "sources": [
+      "FiscalPT — Escalões de IRS 2025, Tabela Completa (fiscalpt.com/guia/escaloes-irs-2025)",
+      "PwC Portugal — Guia Fiscal 2025, IRS (pwc.pt/pt/pwcinforfisco/guia-fiscal/2025/irs.html)",
+      "Executive Digest — Escalões IRS 2025",
+      "Coverflex — Novos escalões de IRS 2025"
+    ],
+    "rows": [
+      {
+        "n": 1,
+        "lower_eur": 0.0,
+        "upper_eur": 8059.0,
+        "taxa_normal": 0.125,
+        "taxa_media_at_ceiling": 0.125,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      },
+      {
+        "n": 2,
+        "lower_eur": 8059.0,
+        "upper_eur": 12160.0,
+        "taxa_normal": 0.16,
+        "taxa_media_at_ceiling": 0.136804,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      },
+      {
+        "n": 3,
+        "lower_eur": 12160.0,
+        "upper_eur": 17233.0,
+        "taxa_normal": 0.215,
+        "taxa_media_at_ceiling": 0.159823,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      },
+      {
+        "n": 4,
+        "lower_eur": 17233.0,
+        "upper_eur": 22306.0,
+        "taxa_normal": 0.244,
+        "taxa_media_at_ceiling": 0.178967,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      },
+      {
+        "n": 5,
+        "lower_eur": 22306.0,
+        "upper_eur": 28400.0,
+        "taxa_normal": 0.314,
+        "taxa_media_at_ceiling": 0.207942,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      },
+      {
+        "n": 6,
+        "lower_eur": 28400.0,
+        "upper_eur": 41629.0,
+        "taxa_normal": 0.349,
+        "taxa_media_at_ceiling": 0.252768,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      },
+      {
+        "n": 7,
+        "lower_eur": 41629.0,
+        "upper_eur": 44987.0,
+        "taxa_normal": 0.431,
+        "taxa_media_at_ceiling": 0.266072,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      },
+      {
+        "n": 8,
+        "lower_eur": 44987.0,
+        "upper_eur": 83696.0,
+        "taxa_normal": 0.446,
+        "taxa_media_at_ceiling": 0.349288,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      },
+      {
+        "n": 9,
+        "lower_eur": 83696.0,
+        "upper_eur": null,
+        "taxa_normal": 0.48,
+        "taxa_media_at_ceiling": null,
+        "status": "CONFIRMED",
+        "source": "Lei 55-A/2025; APCMC tabela Art.68; Economia e Financas 2025 (atualizado)"
+      }
+    ]
+  },
+  "taxa_adicional_solidariedade": {
+    "bands": [
+      {
+        "lower_eur": 80000.0,
+        "upper_eur": 250000.0,
+        "rate": 0.025
+      },
+      {
+        "lower_eur": 250000.0,
+        "upper_eur": null,
+        "rate": 0.05
+      }
+    ],
+    "joint_divisor_applies": true,
+    "note": "Artigo 68.º-A CIRS. Incide sobre o rendimento coletável acima de 80 000 EUR. Em tributação conjunta aplica-se após o divisor do Artigo 69.º (mesmo tratamento do Artigo 68.º).",
+    "source": "Artigo 68.º-A CIRS (taxa adicional de solidariedade); endpoints stable since Lei 82-B/2014."
+  },
+  "minimo_existencia": {
+    "valor_referencia_eur": 12880.0,
+    "valor_referencia_rule": "max(12880, 1.5 x 14 x IAS) — Artigo 70.º n.º 1, redação da Lei n.º 73-A/2024, de 30 de dezembro. Para 2025: 1.5 x 14 x 522.50 = 10972.50 < 12880, logo o valor de referência é 12880.",
+    "exclusao_n4_multiplo_ias": 2.2,
+    "exclusao_n4_rule": "Artigo 70.º n.º 4 a): o abatimento não se aplica a nenhum titular quando a soma dos rendimentos brutos de todos os titulares excede 2,2 x 14 x IAS x n.º de sujeitos passivos. Para 2025: 2.2 x 14 x 522.50 = 16093.00 por sujeito passivo.",
+    "taper_L_formula": "UNKNOWN",
+    "taper_L_note": "Artigo 70.º n.º 3 define L = valor de referência - (Limite despesas gerais/Taxa 1.º escalão x 3,60) + (Limite 1.º escalão / 3,60). A captura offline do artigo (assets/law/irs70.md) está com a formatação das fórmulas degradada pela remoção de tags, e a reconstrução literal produz L < valor de referência, o que tornaria a alínea b) um conjunto vazio e criaria um penhasco de ~800 EUR a 1 EUR de rendimento — resultado absurdo, logo a leitura está errada. O n.º 6 do mesmo artigo manda a AT publicar anualmente as fórmulas simplificadas: é essa a fonte a usar. Até lá o taper fica UNKNOWN e o motor NÃO o modela (ver documented_approximations).",
+    "modelled_branch": "Artigo 70.º n.º 2 a) apenas — titulares com rendimentos brutos <= valor de referência. Abatimento = valor de referência - (deduções específicas + Limite despesas gerais / Taxa 1.º escalão), truncado a [0, brutos - deduções específicas] por força da alínea d).",
+    "source": "Artigo 70.º CIRS (assets/law/irs70.md, sha256/16 12c915665ba74091); Lei n.º 73-A/2024."
+  },
+  "quociente": {
+    "single_divisor": 1,
+    "joint_divisor": 2,
+    "note": "Tributação conjunta (married / união de facto): rendimento coletável / 2 -> apply brackets -> coleta x 2 (Artigo 69.º CIRS quociente conjugal). Dependents no longer enter the divisor (post-2015 model); each dependent is a fixed dedução à coleta instead.",
+    "source": "Artigo 69.º CIRS; Doutor Finanças — Quociente familiar ou conjugal."
+  },
+  "deducoes_a_coleta": {
+    "dependent_fixed_eur": {
+      "value": 600.0,
+      "note": "Artigo 78.º-A n.º 1 a): montante fixo por dependente. Fora do limite global (alínea a) do n.º 1 do Artigo 78.º não consta do n.º 7).",
+      "source": "Artigo 78.º-A CIRS."
+    },
+    "dependentes_ascendentes": {
+      "dependent_fixed_eur": 600.0,
+      "dependent_shared_residence_eur": 300.0,
+      "ascendant_fixed_eur": 525.0,
+      "ascendant_single_uplift_eur": 110.0,
+      "maj_n2_dependent_under3_eur": 126.0,
+      "maj_n2_shared_under3_eur": 63.0,
+      "maj_n3_second_plus_under6_eur": 300.0,
+      "maj_n3_shared_second_plus_under6_eur": 150.0,
+      "maj_cumulative": false,
+      "note": "Artigo 78.º-A CIRS integral. n.º 1 a) 600 por dependente; b) 300 a cada sujeito passivo em residência alternada (responsabilidades parentais conjuntas); c) 525 por ascendente em comunhão de habitação. n.º 2 a) +126 (ou +63 em residência alternada) por dependente com idade <= 3 anos a 31 de dezembro; b) +110 quando exista apenas UM ascendente. n.º 3 +300 (ou +150) para o SEGUNDO dependente e seguintes com idade <= 6 anos, independentemente da idade do primeiro. n.º 4: as majorações dos n.os 2 e 3 NÃO são cumuláveis — aplica-se a maior. Ordem dos dependentes = ordem em que são declarados (o 'primeiro' é o de índice 0).",
+      "source": "Artigo 78.º-A CIRS (assets/law/irs78a.md, sha256/16 df53b0efb6e426f3)."
+    },
+    "reducao_dependente_em_duas_declaracoes": {
+      "factor": 0.5,
+      "note": "Artigo 78.º n.º 9: quando o mesmo dependente ou ascendente conste de mais do que uma declaração, o valor das deduções à coleta que lhe respeitam é reduzido para metade por sujeito passivo. Modelado por dependente através da flag 'in_two_declarations'.",
+      "source": "Artigo 78.º n.º 9 CIRS (assets/law/irs78.md)."
+    },
+    "health": {
+      "rate": 0.15,
+      "cap_eur": 1000.0,
+      "inside_global_cap": true,
+      "source": "Artigo 78.º-C CIRS; Portal das Finanças IRS deduções 2025 (PDF)."
+    },
+    "education": {
+      "rate": 0.3,
+      "cap_eur": 800.0,
+      "inside_global_cap": true,
+      "note": "Base cap; can rise to 1100 with displaced-student rent or 1000 with the interior/regiões-autónomas maj. This estimator applies the 800 base cap only (see approximations).",
+      "source": "Artigo 78.º-D CIRS."
+    },
+    "rent_habitacao": {
+      "rate": 0.15,
+      "cap_eur": 700.0,
+      "inside_global_cap": true,
+      "note": "Rendas de habitação própria permanente. Upper-income taper (8059-30000+) not modeled; flat 700 cap applied (see approximations).",
+      "source": "Artigo 78.º-E CIRS; Economia e Finanças — deduções à coleta 2025."
+    },
+    "ppr": {
+      "rate": 0.2,
+      "cap_by_age_band_eur": {
+        "under_35": 400.0,
+        "from_35_to_50": 350.0,
+        "over_50": 300.0
+      },
+      "inside_global_cap": true,
+      "note": "20% of the annual PPR contribution, capped by the taxpayer's age band (under 35 / 35-50 / over 50, up to age 70).",
+      "source": "Estatuto dos Benefícios Fiscais art. 21.º; Doutor Finanças / Portal das Finanças."
+    },
+    "despesas_gerais_familiares": {
+      "rate": 0.35,
+      "cap_eur_per_taxpayer": 250.0,
+      "monoparental_rate": 0.45,
+      "monoparental_cap_eur": 335.0,
+      "inside_global_cap": false,
+      "note": "35% up to 250/taxpayer (45% up to 335 monoparental). Has its own cap and sits OUTSIDE the global limit.",
+      "source": "Artigo 78.º-B CIRS."
+    }
+  },
+  "global_cap_2025": {
+    "formula": "limit = 1000 + 1500 * (80000 - RC) / (80000 - 8059), clamped to [1000, 2500]",
+    "rc_used": "AFTER_ARTIGO_69_DIVISOR",
+    "rc_used_note": "Artigo 78.º n.º 7, corpo: a soma das deduções não pode exceder, por agregado familiar, «e, no caso de tributação conjunta, após aplicação do divisor previsto no artigo 69.º», os limites das alíneas seguintes. O rendimento coletável que escolhe a banda é portanto o RC JÁ DIVIDIDO (RC/2 em tributação conjunta), não o RC agregado. Em tributação separada cada sujeito passivo é avaliado isoladamente com divisor 1, pelo que a banda é a do seu próprio RC.",
+    "applies_to": "Sum of the deduções à coleta flagged inside_global_cap = health + education + rent_habitacao + ppr. Corresponde às alíneas c) a h), k) e m) do n.º 1 do Artigo 78.º — das quais este motor modela saúde (c), educação (d), encargos com imóveis/rendas (e) e benefícios fiscais/PPR (k).",
+    "excluded_from_cap": "despesas_gerais_familiares (alínea b), own 250/SP cap) and the dependentes/ascendentes deductions (alínea a)) are OUTSIDE the global limit — neither alínea a) nor b) consta do n.º 7.",
+    "majoracao_dependentes": {
+      "min_dependentes": 3,
+      "pct_por_dependente": 0.05,
+      "note": "Artigo 78.º n.º 8: «Nos agregados com três ou mais dependentes a seu cargo, os limites previstos no número anterior são majorados em 5 % por cada dependente». A majoração é de 5% POR DEPENDENTE (todos eles), condicionada a o agregado ter 3 ou mais — um agregado com 3 dependentes tem limite x 1.15, não x 1.05.",
+      "source": "Artigo 78.º n.º 8 CIRS (assets/law/irs78.md, sha256/16 9dc661ffbcb1d7c7)."
+    },
+    "regimes": {
+      "rc_le_first_bracket": "Sem limite global para RC (após divisor) <= 8 059 (art. 78.º n.º 7 a)).",
+      "rc_between": "8 059 < RC <= 80 000: fórmula com rampa, entre [1000, 2500].",
+      "rc_gt_80000": "RC > 80 000: 1 000 EUR fixos (art. 78.º n.º 7 c))."
+    },
+    "endpoints_note": "Em RC=8 059 a fórmula dá 2 500; em RC=80 000 dá 1 000 — contínua com os regimes de cada lado.",
+    "source": "Artigo 78.º n.os 7 e 8 CIRS; Economia e Finanças — As deduções à coleta de 2025 (income-year-2025 taper endpoints).",
+    "endpoints_source": "Artigo 78.º n.º 7: a alínea a)/b) usa 'o valor do 1.º escalão do n.º 1 artigo 68.º' (8 059 em 2025); as alíneas b)/c) usam 'o valor mínimo do primeiro escalão do n.º 1 do artigo 68.º-A' (80 000). São artigos DIFERENTES. Corrigido 2026-07-24: o endpoint superior estava fixado em 83 696, o teto do 8.º escalão do artigo 68.º — coincidiu com o valor certo em 2024 e divergiu em 2025, permitindo até 73.30 EUR de dedução acima do que a lei consente para RC entre 80 000 e 83 696 e alargando indevidamente toda a rampa. Ambos os motores derivam agora os endpoints em vez de os fixarem."
+  },
+  "irs_jovem_current_law": {
+    "age_window_inclusive": [
+      18,
+      35
+    ],
+    "tested_on": "31 December of the tax year",
+    "academic_requirement": "None (secondary-education requirement removed from the 2025 reform onward).",
+    "applies_to_categories": [
+      "A",
+      "B"
+    ],
+    "ten_year_schedule_exempt_pct": {
+      "year_1": 1.0,
+      "years_2_to_4": 0.75,
+      "years_5_to_7": 0.5,
+      "years_8_to_10": 0.25
+    },
+    "annual_ceiling": {
+      "multiplier_of_ias": 55,
+      "ias_2025_eur": 522.5,
+      "ceiling_2025_eur": 28737.5,
+      "note": "55 x IAS 2025 (522.50) = 28737.50 EUR exempt-income ceiling for the 2025 income year. Recompute if the IAS changes."
+    },
+    "source": "IRS Jovem 2025-reform current-law shape — DECO PROteste, Coverflex, CalculaPT; ceiling = 55 x IAS per CIRS Artigo 2.º-B."
+  },
+  "categoria_b_simplified": {
+    "coefficient_services_151": 0.75,
+    "coefficient_other_services": 0.35,
+    "note": "This estimator implements the 0.75 services coefficient path (Artigo 31.º CIRS simplified regime). Rendimento líquido cat B = coefficient x gross; no categoria A specific deduction applies. The 15%-justified-expenses reduction of the presumed-expense allowance is NOT modeled (see approximations).",
+    "source": "Artigo 31.º CIRS; Portal das Finanças regime simplificado."
+  },
+  "rounding": {
+    "mode": "ROUND_HALF_UP to 2 decimal places",
+    "points": "coleta_bruta (after quociente multiply-back), each dedução à coleta, the global-cap limit, coleta_liquida, and the final apuramento are each quantized to cents.",
+    "note": "The official AT engine's internal arredondamento may differ by a cent in edge cases (see approximations)."
+  },
+  "documented_approximations": {
+    "_intro": "What this estimator deliberately does NOT model, each with the DIRECTION of error on the final coleta/apuramento. A refund is overstated when coleta is understated, and vice-versa. Entries marked NOW MODELLED record a gap that was closed on 2026-07-24 and are kept rather than deleted, so the history of what this engine once got wrong stays readable.",
+    "items": [
+      {
+        "item": "Adicional de solidariedade (Artigo 68.º-A) on rendimento coletável above 80000 EUR",
+        "modeled": true,
+        "direction": "NOW MODELLED (2026-07-24): 2.5% on the 80k-250k band and 5% above 250k, applied after the Artigo 69.º divisor and multiplied back, exactly as Artigo 68.º applies. Previously omitted, which UNDERSTATED tax for high earners. Income years 2022-2024 still do not carry the bands and emit the flag adicional_solidariedade_nao_modelado_neste_ano."
+      },
+      {
+        "item": "IRS Jovem englobamento para determinação da taxa (isenção com progressividade)",
+        "modeled": false,
+        "direction": "UNDERSTATES tax (overstates refund) modestly for IRS Jovem cases: the taxed remainder is taxed at a lower average rate than the official method, which uses the pre-exemption income to set the rate."
+      },
+      {
+        "item": "Category B 15%-justified-expenses reduction of the presumed-expense allowance",
+        "modeled": false,
+        "direction": "May OVERSTATE the specific deduction (understate tax / overstate refund) for cat-B filers above ~29748 EUR gross who lack the required e-Fatura invoices; below that threshold the flat allowance already covers it, so no error."
+      },
+      {
+        "item": "Education cap uplift (1100 with displaced-student rent; 1000 interior/regiões-autónomas maj.) and rent taper (700 scaled down above 30000 RC)",
+        "modeled": "base caps only",
+        "direction": "Education: may UNDERSTATE the deduction (overstate tax) for eligible displaced-student households. Rent: may OVERSTATE the deduction (understate tax) for higher-RC households whose 700 cap is tapered down."
+      },
+      {
+        "item": "Withholding-table simulation (monthly retenção na fonte)",
+        "modeled": false,
+        "direction": "NEUTRAL on coleta: retentions are a user-supplied input, not simulated. The estimate is only as good as the retention figure entered."
+      },
+      {
+        "item": "Capital-income englobamento options (categoria E/G/F elections), pensões de alimentos, encargos com lares, dedução por exigência de fatura (setores)",
+        "modeled": false,
+        "direction": "Omitting deductions UNDERSTATES the deduction total (overstates tax / understates refund) where they would apply; omitting englob-able capital income UNDERSTATES tax. Net direction case-dependent — route such cases to an OCC."
+      },
+      {
+        "item": "Municipal IRS participation-rate variation",
+        "modeled": false,
+        "direction": "Not part of the personal-IRS liquidation the taxpayer pays; NEUTRAL for this estimate."
+      },
+      {
+        "item": "Official-engine arredondamento",
+        "modeled": "ROUND_HALF_UP at each stated point",
+        "direction": "Sub-cent; the final figure may differ from Portal das Finanças by at most a few cents on edge cases. Direction indeterminate."
+      },
+      {
+        "item": "Tributação separada — household-deduction attribution",
+        "modeled": "each taxpayer's own 'deductions' object is used verbatim; a case-level household 'deductions' bundle is split 50/50 across the two spouses (each splittable expense halved before its own rate/cap is applied)",
+        "direction": "The 50/50 split is the CIRS default for shared dependents'/family expenses. It FORGOES the optimised allocation a couple may elect on the Modelo 3 (assigning the whole of a deduction to the spouse whose coleta/global-cap absorbs it best), so relative to that optimum it can UNDERSTATE the usable deduction (OVERSTATE combined tax); it is neither systematically high nor low against a naive even split. Provide per-taxpayer 'deductions' to model a specific allocation exactly."
+      },
+      {
+        "item": "Tributação separada — retention attribution",
+        "modeled": "each taxpayer's own 'retention' field is used verbatim; if only a case-level 'retention_total' is given it is split PRO-RATA to each spouse's gross income",
+        "direction": "NEUTRAL on the SUMMED household apuramento (the total credited is retention_total either way). The pro-rata split only affects the per-taxpayer breakdown: a spouse whose actual withholding was heavier than their income share is under-credited in the breakdown, the other over-credited. Provide per-taxpayer 'retention' to make the breakdown exact."
+      },
+      {
+        "item": "Mínimo de existência (Artigo 70.º) — abatimento ao rendimento coletável",
+        "modeled": "Artigo 70.º n.º 2 a) and the n.º 4 a) household exclusion only",
+        "direction": "PARTIALLY MODELLED (2026-07-24). Previously absent AND undeclared, which OVERSTATED tax for every low-income filer — a taxpayer on the 2025 minimum wage was assessed 1003.32 EUR of coleta where the article gives 162.50 EUR. Now: titulares whose rendimentos brutos do not exceed the valor de referência (12880 EUR) receive the full n.º 2 a) abatimento. The n.º 2 b)/c) TAPER IS NOT MODELLED because the n.º 3 variable L could not be reconstructed from the offline capture without producing an absurd result — see minimo_existencia.taper_L_note. Direction where the taper would apply: OVERSTATES tax (understates refund). The engine emits minimo_existencia_taper_nao_modelado_brutos_acima_da_referencia so the affected case is never silently wrong, and the resulting discontinuity at the valor de referência is a KNOWN ARTEFACT of the partial implementation, not a feature of the law."
+      },
+      {
+        "item": "Dedução específica categoria A when social-security contributions exceed the flat limit (Artigo 25.º n.º 2)",
+        "modeled": "when the case supplies ss_contributions per taxpayer",
+        "direction": "NOW MODELLED (2026-07-24) as max(flat, contribuições obrigatórias). Previously the flat 4462.15 EUR always applied, which OVERSTATED tax for anyone whose 11% contributions exceed it — about 962 EUR too much on a 60k salary, 1952 EUR on 80k. If a case omits ss_contributions the flat figure still applies, so the old error persists for cases that do not supply the field: SUPPLY IT for any gross above ~40600 EUR. NOTE: Artigo 25.º is NOT in the offline law snapshot; this rule is cited but not locally verifiable."
+      },
+      {
+        "item": "Majorações por dependentes e ascendentes (Artigo 78.º-A n.os 1 a 4) and the Artigo 78.º n.º 9 halving",
+        "modeled": "only when the case supplies dependents_detail (age, shared_residence, in_two_declarations) instead of a bare count",
+        "direction": "A bare 'dependents': N still computes N x 600 with no majorações and raises the flag dependentes_sem_detalhe_majoracoes_78a_nao_aplicadas. That path UNDERSTATES the deduction (OVERSTATES tax) for any household with a dependent under 3, a second-or-later dependent under 6, an ascendente in comunhão de habitação, or residência alternada. Ascendentes are only ever counted when 'ascendants' is supplied."
+      },
+      {
+        "item": "Global-cap majoração for large households (Artigo 78.º n.º 8)",
+        "modeled": true,
+        "direction": "NOW MODELLED (2026-07-24): limit x (1 + 0.05 x n_dependentes) from three dependents up. Previously absent, which UNDERSTATED the usable deduction ceiling (OVERSTATED tax) for every household with 3+ dependents. Only reachable when the dependent COUNT is known to the engine."
+      },
+      {
+        "item": "Artigo 78.º n.º 14 — tributação separada: que limites são reduzidos para metade",
+        "modeled": "saúde, educação, encargos com imóveis e o limite global do n.º 7",
+        "direction": "NOW MODELLED (2026-07-24). Antes, cada cônjuge em separada recebia o limite INTEIRO, o que SOBRESTIMAVA as deduções (subestimava o imposto) e enviesava sistematicamente a recomendação conjunta-vs-separada a favor da separada — um defeito que mudava a DECISÃO, não apenas o número. AMBIGUIDADE ASSUMIDA: o n.º 14 abrange os limites 'determinados por referência ao agregado familiar'; despesas gerais familiares (art. 78.º-B, 'por sujeito passivo') e PPR (por titular, por escalão etário) são tratados como NÃO abrangidos. Esta leitura não é resolúvel só com as capturas offline — confirmar com um OCC. O n.º 14 b) (percentagens sobre as despesas próprias mais 50% das dos dependentes) NÃO é modelado: o formato de caso não distingue de quem é cada despesa, mantendo-se a convenção 50/50."
+      },
+      {
+        "item": "Artigo 70.º n.º 4 b) — segunda condição de exclusão do mínimo de existência",
+        "modeled": false,
+        "direction": "Não modelada: a exclusão quando a soma dos rendimentos não englobados e tributados a taxas liberatórias excede 14 x IAS por sujeito passivo. O motor não recebe rendimentos a taxas liberatórias, pelo que concede o abatimento a agregados que a alínea b) excluiria — SUBESTIMA o imposto nesses casos. Sinalizado por revisão adversarial cross-lineage em 2026-07-24."
+      }
+    ]
+  }
+}

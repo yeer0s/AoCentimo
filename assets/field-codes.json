@@ -1,0 +1,626 @@
+{
+  "_schema": {
+    "version": "1.0.0",
+    "income_year": 2025,
+    "filed_year": 2026,
+    "as_of": "2025 income campaign",
+    "purpose": "Modelo 3 field-code lexicon: which quadro and which campo/code each income or deduction item is declared under, so Execute mode can emit quadro+code per row rather than only the annex letter. Each entry names the AT filling-instruction element (quadro identifier or numeric campo/benefit code) plus the single most common household miscoding for it. Codes are dated to the 2025 income campaign (filed 2026) and were confirmed against filling-instruction reproductions fetched 2026-07-10 (see per-entry citation). Codes the builder could not confirm this run were left OUT rather than guessed. Re-verify against info.portaldasfinancas.gov.pt before a live filing — the AT renumbers campos across campaigns.",
+    "code_kinds": {
+      "campo": "a numeric field code inside a quadro (e.g. Anexo A campo 401)",
+      "benefit_code": "a 'codigo do beneficio' in Anexo H quadro 6B (e.g. 601 PPR)",
+      "quadro": "a quadro-level element where the AT groups an income/deduction class without a single 3-digit campo (e.g. Anexo J Quadro 4D)"
+    },
+    "annex_scope": ["A", "B", "E", "F", "G", "H", "J"],
+    "note_on_country_codes": "Anexo J requires a 'Pais da Fonte' country code from Tabela X at the end of the Anexo J filling instructions for every foreign-income row; the code identifies the source country, not the paying entity. See entry J-PAIS.",
+    "disclaimer": "Not tax advice. Not affiliated with the Autoridade Tributaria e Aduaneira (AT). A code lexicon organizes where an item is declared; it never certifies the amount. Confirm every code and figure with an OCC or the AT before submitting."
+  },
+  "planted_miscodings": [
+    {
+      "id": "M1",
+      "name": "pension income under the employment code",
+      "wrong": {"annex": "A", "code": "401"},
+      "correct": {"annex": "A", "code": "403"},
+      "why": "A household treats a reforma/aposentacao pension (Categoria H) as if it were salary and enters it under trabalho dependente (campo 401) instead of pensoes (campo 403) — same annex, wrong campo, wrong deducao especifica basis."
+    },
+    {
+      "id": "M2",
+      "name": "alimony pension received under the generic pension code",
+      "wrong": {"annex": "A", "code": "403"},
+      "correct": {"annex": "A", "code": "405"},
+      "why": "Pensao de alimentos received is a distinct campo (405), not the general pension campo (403); mixing them misstates the taxable base and the applicable rate treatment."
+    },
+    {
+      "id": "M3",
+      "name": "freelance professional service income under the goods-sales code",
+      "wrong": {"annex": "B", "code": "401"},
+      "correct": {"annex": "B", "code": "403"},
+      "why": "A recibos-verdes professional puts service fees under 'vendas de mercadorias e produtos' (401) instead of 'prestacoes de servicos profissionais' (403), which changes the regime-simplificado coefficient applied (0.75 vs a sales coefficient)."
+    },
+    {
+      "id": "M4",
+      "name": "alojamento local income under the generic professional-services code",
+      "wrong": {"annex": "B", "code": "403"},
+      "correct": {"annex": "B", "code": "417"},
+      "why": "Local-accommodation (moradia/apartamento) income belongs in campo 417 (coefficient 0.35), not the professional-services campo 403 (coefficient 0.75); miscoding it inflates the taxable share."
+    },
+    {
+      "id": "M5",
+      "name": "foreign dividends omitted from Anexo J (declared only in the domestic capital annex)",
+      "wrong": {"annex": "E", "code": "Q4B"},
+      "correct": {"annex": "J", "code": "Q4D"},
+      "why": "Foreign-source dividends must be declared in Anexo J Quadro 4D (rendimentos de capitais obtidos no estrangeiro), not folded into the domestic Anexo E capital quadro; the AT cross-matches CRS/bank data and raises a divergencia when Anexo J is missing."
+    },
+    {
+      "id": "M6",
+      "name": "foreign employment income under the domestic employment annex",
+      "wrong": {"annex": "A", "code": "401"},
+      "correct": {"annex": "J", "code": "Q4A"},
+      "why": "Salary paid by a foreign employer to a Portuguese resident goes in Anexo J Quadro 4A (with the source-country code), not Anexo A campo 401; putting it in Anexo A hides it from the foreign-tax-credit and Anexo J cross-check."
+    },
+    {
+      "id": "M7",
+      "name": "PPR contribution entered as a donation benefit code",
+      "wrong": {"annex": "H", "code": "608"},
+      "correct": {"annex": "H", "code": "601"},
+      "why": "A PPR contribution is benefit code 601 in Anexo H Quadro 6B, not the donativos-a-igrejas code 608; the two have different caps and deduction rates, so the miscoding silently loses the PPR deduction."
+    },
+    {
+      "id": "M8",
+      "name": "property capital gain under the securities quadro",
+      "wrong": {"annex": "G", "code": "Q9"},
+      "correct": {"annex": "G", "code": "Q4"},
+      "why": "The onerous sale of a real property (direitos reais sobre imoveis) is declared in Anexo G Quadro 4, not Quadro 9 which is for partes sociais e outros valores mobiliarios; miscoding skips the VPT rule and the reinvestment/exclusion logic."
+    }
+  ],
+  "codes": [
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "401",
+      "meaning": "Rendimentos brutos de trabalho dependente (Categoria A) obtidos em territorio portugues.",
+      "common_error": "Entering a pension here instead of under 403, or entering the net (post-withholding) amount instead of the gross.",
+      "citation": "Montepio 'Modelo 3 IRS - como preencher o Anexo A' + Doutor Financas 'Anexo A do IRS' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "402",
+      "meaning": "Gratificacoes nao atribuidas pela entidade patronal (art. 2.o n.o 3 al. g) do CIRS) — tips/gratuities received by reason of the work.",
+      "common_error": "Leaving employer-external tips undeclared, or lumping them into 401 with regular salary.",
+      "citation": "AT Anexo A Quadro 4 instruction reproduction via web search (lexpoint/Montepio, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "403",
+      "meaning": "Pensoes de reforma, aposentacao por velhice ou invalidez e outras de natureza identica (Categoria H), exceto pensoes de sobrevivencia e de alimentos.",
+      "common_error": "Treating a pension as employment income under 401, which applies the wrong deducao especifica.",
+      "citation": "Montepio 'Anexo A' + Doutor Financas 'Anexo A do IRS' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "404",
+      "meaning": "Pensoes de sobrevivencia (Categoria H).",
+      "common_error": "Merging survivor pensions into the general pension code 403 instead of the distinct 404 campo.",
+      "citation": "Montepio 'Anexo A' + Doutor Financas 'Anexo A do IRS' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "405",
+      "meaning": "Pensoes de alimentos recebidas (Categoria H).",
+      "common_error": "Declaring alimony received under the general pension code 403, or forgetting it is taxable income at all.",
+      "citation": "Montepio 'Anexo A' + Doutor Financas 'Anexo A do IRS' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "406",
+      "meaning": "Rendimentos de rendas temporarias e vitalicias (annuities), Categoria H.",
+      "common_error": "Confusing a life-annuity payout with a capital withdrawal and omitting it, or misfiling it as capital income in Anexo E.",
+      "citation": "Doutor Financas 'Anexo A do IRS' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "407",
+      "meaning": "Rendimentos em situacao de pre-reforma referentes a contratos assinados antes de 31 de dezembro de 2000 (transitional pre-retirement regime).",
+      "common_error": "Assuming any pre-reforma income uses 407 — only pre-2001 contracts do; later contracts follow the general employment/pension codes.",
+      "citation": "Doutor Financas 'Anexo A do IRS' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "409",
+      "meaning": "Rendimentos de trabalho dependente em especie (in-kind: employer housing use, low-interest employer loans, company-car personal use, stock options).",
+      "common_error": "Omitting in-kind benefits entirely because no cash changed hands, though they are taxable Categoria A income.",
+      "citation": "Montepio 'Anexo A' (in-kind income list, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "410",
+      "meaning": "Rendimentos abrangidos pelo regime fiscal aplicavel a ex-residentes (Programa Regressar) — 50% partial exemption for qualifying returning residents.",
+      "common_error": "A returning emigrant declares full salary under 401 and forfeits the ex-residentes exemption by not using the dedicated code.",
+      "citation": "Doutor Financas 'Anexo A do IRS' (ex-residentes codes, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "417",
+      "meaning": "Rendimentos de trabalho dependente abrangidos pela isencao do regime IRS Jovem.",
+      "common_error": "Putting IRS Jovem-eligible salary under the plain 401 code, which taxes income the young-worker regime would have exempted for that year's tier.",
+      "citation": "Montepio 'Anexo A' + Doutor Financas 'Anexo A do IRS' (IRS Jovem code, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4",
+      "code": "418",
+      "meaning": "Rendimentos de estudantes dependentes em estabelecimentos de ensino reconhecidos (specific student-income regime).",
+      "common_error": "Failing to use the student code for a dependent's part-time earnings, losing the associated exemption treatment.",
+      "citation": "Montepio 'Anexo A' + Doutor Financas 'Anexo A do IRS' (student-income code, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4A",
+      "code": "Q4A-CONTRIB",
+      "meaning": "Contribuicoes obrigatorias para regimes de protecao social e subsistemas legais de saude, efetivamente descontadas dos rendimentos de 401/403 (feeds the deducao especifica).",
+      "common_error": "Entering employee social-security contributions that are already reflected in the employer's declaration a second time, or omitting them where the deducao especifica floor is not otherwise met.",
+      "citation": "AT Anexo A Quadro 4A instruction reproduction via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "4A",
+      "code": "Q4A-QUOT",
+      "meaning": "Quotizacoes sindicais efetivamente despendidas (union dues), added to the Categoria A/H specific deduction with the legal majoracao.",
+      "common_error": "Forgetting union dues entirely, or entering a value above what the union receipt supports.",
+      "citation": "AT Anexo A Quadro 4A instruction reproduction via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "A",
+      "quadro": "5",
+      "code": "Q5-RRAA",
+      "meaning": "Rendimentos de anos anteriores (RRAA) — back-pay/arrears attributable to prior years, declarable up to 5 years back for split taxation.",
+      "common_error": "Declaring a lump-sum of arrears wholly in the current year (bunching it into a higher bracket) instead of using the anos-anteriores split.",
+      "citation": "Montepio + Doutor Financas 'Anexo A' (Quadro 5 anos anteriores, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "4A",
+      "code": "401",
+      "meaning": "Vendas de mercadorias e produtos (Categoria B, regime simplificado).",
+      "common_error": "Putting professional-service fees here instead of in 403 — the sales coefficient differs from the 0.75 services coefficient.",
+      "citation": "AT Anexo B Quadro 4 instruction reproduction via web search + Doutor Financas 'Anexo B' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "4A",
+      "code": "402",
+      "meaning": "Prestacoes de servicos de atividades hoteleiras e similares, restauracao e bebidas (Categoria B).",
+      "common_error": "Confusing restauracao/hotelaria service income with generic professional services (403), which carry a different coefficient.",
+      "citation": "AT Anexo B Quadro 4 instruction reproduction via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "4A",
+      "code": "403",
+      "meaning": "Prestacoes de servicos de atividades profissionais (cientifico, artistico ou tecnico) — the common recibos-verdes case, coefficient 0.75.",
+      "common_error": "Recording gross service fees under 401 (vendas) or under alojamento local (417), changing the coefficient applied.",
+      "citation": "AT Anexo B Quadro 4 instruction reproduction via web search + Doutor Financas 'Anexo B' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "4A",
+      "code": "408",
+      "meaning": "Rendimentos da propriedade intelectual/industrial (Categoria B) — the non-exempt portion.",
+      "common_error": "Failing to split the exempt half of literary/artistic copyright (handled in Anexo H Q5) from the taxable Categoria B portion declared here.",
+      "citation": "AT Anexo B Quadro 4 instruction reproduction via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "4A",
+      "code": "417",
+      "meaning": "Rendimentos de exploracao de estabelecimentos de alojamento local na modalidade de moradia ou apartamento (coefficient 0.35 from 2017 onward).",
+      "common_error": "Declaring local-accommodation income under the professional-services code 403 (coefficient 0.75), overstating the taxable share.",
+      "citation": "AT Anexo B Quadro 4 instruction reproduction via web search (alojamento local campo 417, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "3",
+      "code": "Q3-CAE",
+      "meaning": "Identificacao: NIF do titular, residencia fiscal e confirmacao do CAE/codigo de atividade correto do sujeito passivo.",
+      "common_error": "Declaring income under a CAE that is incompatible with the actual activity — a top divergencia trigger (coerencia de CAE, cadastro e rendimentos).",
+      "citation": "CRN-Contabilidade 'Anexo B IRS' (Quadro 3, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "4A",
+      "code": "Q4A-COEF",
+      "meaning": "Coefficient application: the system applies 0.75 to art. 151.o professional services and 0.35 to other unlisted services automatically over the gross entered in Quadro 4A.",
+      "common_error": "Assuming the coefficient replaces the 15% expense-justification duty — above ~29,748 EUR gross the taxpayer must still justify professional expenses of at least 15% of gross via e-Fatura.",
+      "citation": "CRN-Contabilidade + Doutor Financas 'IRS categoria A e B' (coefficient 0.75/0.35, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "5",
+      "code": "Q5-ISENTOS",
+      "meaning": "Rendimentos isentos (Categoria B) sujeitos a englobamento para determinacao da taxa.",
+      "common_error": "Omitting exempt income entirely, forgetting it can still raise the marginal rate on the rest via englobamento.",
+      "citation": "CRN-Contabilidade 'Anexo B IRS' (Quadro 5, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "B",
+      "quadro": "6",
+      "code": "Q6-RETENCOES",
+      "meaning": "Retencoes na fonte suportadas sobre os rendimentos da Categoria B declarados.",
+      "common_error": "Typing a withholding figure that differs from the payer's DMR record held by the AT — triggers a retencao-na-fonte divergencia.",
+      "citation": "CRN-Contabilidade 'Anexo B IRS' (Quadro 6, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "E",
+      "quadro": "4A",
+      "code": "Q4A",
+      "meaning": "Rendimentos de capitais (Categoria E) sujeitos a englobamento obrigatorio.",
+      "common_error": "Assuming all capital income is optional to declare — Quadro 4A income is mandatory englobamento, unlike the liberatory-rate income in 4B.",
+      "citation": "Factorial 'Guia completo do Anexo E' + AT Anexo E instruction reproduction (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "E",
+      "quadro": "4B",
+      "code": "Q4B",
+      "meaning": "Rendimentos de capitais sujeitos a taxas liberatorias com opcao pelo englobamento (interest, dividends already taxed at source that the taxpayer elects to aggregate).",
+      "common_error": "Opting for englobamento on liberatory-rate income without checking it raises the effective rate — the option is all-or-nothing for the category.",
+      "citation": "AT Anexo E Quadro 4B instruction reproduction via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "E",
+      "quadro": "5",
+      "code": "Q5-RET",
+      "meaning": "Retencoes na fonte e identificacao das entidades sobre os rendimentos de capitais declarados.",
+      "common_error": "Omitting the withholding already suffered, so the credit for tax paid at source is lost.",
+      "citation": "Factorial 'Guia completo do Anexo E' (withholding section, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "3",
+      "code": "Q3-SP",
+      "meaning": "Identificacao dos sujeitos passivos (Sujeito Passivo A e B) do Anexo F, em correspondencia com o Rosto da declaracao.",
+      "common_error": "Mismatching the titular positions between the Rosto and Anexo F, which misattributes rental income to the wrong spouse.",
+      "citation": "Doutor Financas 'Anexo F' (Quadro 3 identificacao, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "4.2A",
+      "code": "Q4.2A",
+      "meaning": "Comunicacao e datas dos contratos de arrendamento de longa duracao (contract communication deadlines and renewal dates) que sustentam as taxas reduzidas do Quadro 4.2.",
+      "common_error": "Claiming the reduced rate in Quadro 4.2 without the matching contract communication recorded in Quadro 4.2A.",
+      "citation": "Doutor Financas 'Anexo F' (Quadro 4.2A comunicacao de contratos, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "4",
+      "code": "Q4-RENDAS",
+      "meaning": "Rendas de predios (rendimentos prediais, art. 8.o CIRS) — gross rent received, with parish code (codigo de freguesia) and U/R property type per row.",
+      "common_error": "Declaring rent net of expenses instead of gross, or omitting the tenant NIF and property matricula the AT cross-checks.",
+      "citation": "Doutor Financas 'Rendimentos prediais - Anexo F' (Quadro 4, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "4",
+      "code": "Q4-DESPESAS",
+      "meaning": "Gastos suportados e pagos no periodo de arrendamento: conservacao e manutencao, condominio, seguro, IMI e taxas municipais (deductible against Categoria F).",
+      "common_error": "Deducting capital improvements or pre-tenancy costs, or expenses without invoices in the taxpayer's name — only documented, in-period conservation-type costs qualify.",
+      "citation": "Doutor Financas 'Anexo F' (despesas dedutiveis, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "4.2",
+      "code": "Q4.2",
+      "meaning": "Contratos de arrendamento habitacional de longa duracao (desde 2019) elegiveis para as taxas reduzidas (special reduced-rate benefit).",
+      "common_error": "Claiming the reduced rate without the contract communication in Quadro 4.2A, or on a contract too short to qualify.",
+      "citation": "Doutor Financas 'Anexo F' (Quadro 4.2 / taxas reduzidas, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "4.2B",
+      "code": "Q4.2B",
+      "meaning": "Novos contratos cuja renda e >=5% inferior a da renda anterior (extra rate reduction for below-prior-rent lettings).",
+      "common_error": "Claiming the extra reduction without evidence that the new rent is at least 5% below the previous contract.",
+      "citation": "Doutor Financas 'Anexo F' (Quadro 4.2B, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "4.3",
+      "code": "Q4.3",
+      "meaning": "Rendimentos do direito real de habitacao duradoura (DRHD): monthly payments, annual caucao and penalty deductions.",
+      "common_error": "Treating DRHD income as ordinary rent in Quadro 4 instead of its dedicated Quadro 4.3.",
+      "citation": "Doutor Financas 'Anexo F' (Quadro 4.3 DRHD, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "5",
+      "code": "Q5-SUB",
+      "meaning": "Subarrendamento: declara a diferenca entre a renda recebida do subarrendatario e a paga ao senhorio, com os NIF de ambos.",
+      "common_error": "Declaring the full sublease rent as income instead of only the positive difference over the head-lease rent.",
+      "citation": "Doutor Financas 'Anexo F' (Quadro 5 subarrendamento, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "6",
+      "code": "Q6-REGIMES",
+      "meaning": "Regimes especiais: areas de reabilitacao urbana, imoveis historicos, exploracao florestal, apoios PAA/PMA e conversao de alojamento local em arrendamento permanente.",
+      "common_error": "Applying a special-regime benefit without the qualifying certificate/registration the regime requires.",
+      "citation": "Doutor Financas 'Anexo F' (Quadros 6-6F regimes especiais, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "6G",
+      "code": "Q6G",
+      "meaning": "Opcao pelo englobamento dos rendimentos prediais: campo 06 = englobar (general rates) / campo 07 = tributacao autonoma a 28%.",
+      "common_error": "Electing englobamento (campo 06) when the 28% autonomous rate would have been lower, or vice versa, without comparing.",
+      "citation": "Doutor Financas 'Anexo F' (Quadro 6G englobamento campo 06/07, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "F",
+      "quadro": "7",
+      "code": "Q7-FII",
+      "meaning": "Rendimentos distribuidos por fundos e sociedades de investimento imobiliario (declared only if the Quadro 6G englobamento option is taken).",
+      "common_error": "Declaring FII distributions here when englobamento was not elected, or omitting them when it was.",
+      "citation": "Doutor Financas 'Anexo F' (Quadro 7, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "G",
+      "quadro": "4",
+      "code": "Q4",
+      "meaning": "Alienacao onerosa de direitos reais sobre bens imoveis (Categoria G) — property sale: realizacao and aquisicao values, expenses, and improvement works.",
+      "common_error": "Declaring works outside the 12-year window (CIRS art. 51.o) or expenses without proof — a top mais-valias divergencia.",
+      "citation": "Doutor Financas 'Anexo G' (Quadro 4 imoveis, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "G",
+      "quadro": "4",
+      "code": "Q4-VPT",
+      "meaning": "Valor de realizacao rule: for a property sale the realizacao value is the greater of the actual sale price and the VPT (valor patrimonial tributario) definitivo.",
+      "common_error": "Entering only the deed sale price when the VPT is higher, understating the gain the AT will recompute.",
+      "citation": "Doutor Financas 'Anexo G' + AT Anexo B VPT rule reproduction (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "G",
+      "quadro": "9",
+      "code": "Q9",
+      "meaning": "Alienacao onerosa de partes sociais e outros valores mobiliarios (Categoria G) — shares, quotas and securities: realizacao and aquisicao values.",
+      "common_error": "Not declaring a sale because the result was negative — securities disposals are mandatory whether the result is positive or negative.",
+      "citation": "Doutor Financas 'Anexo G' + AT Anexo G Quadro 9 reproduction (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6A",
+      "code": "Q6A-ALIM",
+      "meaning": "Pensoes de alimentos pagas (deduction) — requires a court sentence or homologated agreement; 20% deductible.",
+      "common_error": "Claiming both a pensao-de-alimentos deduction and an education deduction for the same dependent — they are mutually exclusive per dependent.",
+      "citation": "Doutor Financas 'Anexo H' + AT Anexo H Quadro 6A reproduction (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6B",
+      "code": "601",
+      "meaning": "Codigo do beneficio 601 — Planos Individuais de Poupanca-Reforma (PPR) contributions (excludes amounts applied after retirement).",
+      "common_error": "Entering PPR under a donations code (e.g. 608), or claiming PPR paid after passing to retirement, which is excluded.",
+      "citation": "AT Anexo H Quadro 6B instruction reproduction via web search (codigo 601 PPR, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6B",
+      "code": "602",
+      "meaning": "Codigo do beneficio 602 — regimes complementares de seguranca social (complementary social-security schemes); titularity restricted to the sujeitos passivos.",
+      "common_error": "Attributing a 602 contribution to a dependent — codes 601-603 only admit the taxpayers themselves as holders.",
+      "citation": "AT Anexo H Quadro 6B instruction reproduction via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6B",
+      "code": "603",
+      "meaning": "Codigo do beneficio 603 — Regime Publico de Capitalizacao (state capitalization / certificados de reforma).",
+      "common_error": "Confusing the Regime Publico de Capitalizacao (603) with a private PPR (601) — different scheme, different code.",
+      "citation": "AT Anexo H Quadro 6B instruction reproduction via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6B",
+      "code": "608",
+      "meaning": "Codigo do beneficio 608 — donativos a igrejas e instituicoes religiosas, devidamente comprovados.",
+      "common_error": "Using 608 for a secular donation (which has its own code), or claiming a donation without the entity's receipt and NIF.",
+      "citation": "AT Anexo H Quadro 6B instruction reproduction via web search (codigo 608 donativos, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6B",
+      "code": "Q6B",
+      "meaning": "Quadro 6B — importancias dedutiveis a coleta previstas no CIRS, no EBF e demais legislacao; first column is the 'Codigo do Beneficio', with value and the payee entity NIF.",
+      "common_error": "Picking the wrong benefit code from the table so the deduction is applied at the wrong rate/cap, or omitting the entity NIF.",
+      "citation": "AT Anexo H Quadro 6B instruction reproduction via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6C",
+      "code": "Q6C",
+      "meaning": "Opcao pela declaracao dos valores de despesas de saude, formacao e educacao, encargos com imoveis de habitacao permanente e encargos com lares (campo 01 = Sim / campo 02 = Nao).",
+      "common_error": "Opting to override the AT e-Fatura values (campo 01) but then entering a total higher than the invoices support — a deduction-mismatch divergencia.",
+      "citation": "Doutor Financas + Sage 'Anexo H Quadro 6C' (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6C1",
+      "code": "Q6C1",
+      "meaning": "Quadro 6C1 — despesas gerais do agregado familiar (saude, educacao, imoveis, lares) declared under the opt-in override.",
+      "common_error": "Entering a household expense here that a dependent in shared custody should split, double-counting the deduction.",
+      "citation": "Sage 'Anexo H Quadro 6C' (6C1 household expenses, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "6C2",
+      "code": "Q6C2",
+      "meaning": "Quadro 6C2 — despesas de dependentes em guarda conjunta (shared-custody dependents), apportioned between the two households.",
+      "common_error": "Both parents claiming 100% of a shared-custody dependent's expenses instead of the agreed split — a wrong-NIF/duplication trap.",
+      "citation": "Sage 'Anexo H Quadro 6C' (6C2 guarda conjunta, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "4",
+      "code": "Q4-ISENTOS",
+      "meaning": "Quadro 4 — rendimentos totalmente isentos sujeitos a englobamento (exempt income aggregated only to set the rate on the rest).",
+      "common_error": "Omitting exempt income here, understating the marginal rate the non-exempt income should bear.",
+      "citation": "Doutor Financas 'Anexo H' (Quadro 4 rendimentos isentos, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "5",
+      "code": "Q5-PI",
+      "meaning": "Quadro 5 — rendimentos da propriedade intelectual com isencao parcial: up to 50% of literary/scientific/artistic copyright income, capped at 10,000 EUR per holder.",
+      "common_error": "Applying the 50% exemption above the 10,000 EUR per-holder ceiling, or to income that is not the author's own original work.",
+      "citation": "Doutor Financas 'Anexo H' (Quadro 5, 50% / 10,000 EUR, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "7",
+      "code": "Q7-HAB",
+      "meaning": "Quadro 7 — encargos com habitacao permanente e obras de reabilitacao que nao transitam automaticamente do e-Fatura (declared with codes such as 607, 654-663).",
+      "common_error": "Expecting rehabilitation/housing charges to pre-fill from e-Fatura; those in Quadro 7 must be entered manually or they are lost.",
+      "citation": "Doutor Financas 'Anexo H' + AT reproduction (Quadro 7, codes 607/654-663, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "H",
+      "quadro": "8",
+      "code": "Q8-ACRES",
+      "meaning": "Quadro 8 — acrescimos a coleta por incumprimento de requisitos de beneficios anteriormente deduzidos; the wrongly-deducted value is majorado em 10% por cada ano ou fracao decorrido.",
+      "common_error": "Forgetting to add back a benefit (e.g. an early PPR redemption) when its holding condition was broken, which the AT will later assess with the 10%/year uplift.",
+      "citation": "Doutor Financas 'Anexo H' (Quadro 8 acrescimos, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "J",
+      "quadro": "4A",
+      "code": "Q4A",
+      "meaning": "Rendimentos do trabalho dependente (Categoria A) obtidos no estrangeiro, com codigo de rendimento (Tabela I) e codigo do pais da fonte (Tabela X).",
+      "common_error": "Declaring foreign salary in Anexo A instead of Anexo J, hiding it from the foreign-tax-credit and the CRS cross-match.",
+      "citation": "CRN-Contabilidade 'Anexo J' + AT Anexo J instruction (Quadro 4A, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "J",
+      "quadro": "4B",
+      "code": "Q4B",
+      "meaning": "Pensoes (Categoria H) obtidas no estrangeiro — foreign pensions, with source-country code.",
+      "common_error": "Assuming a foreign pension taxed abroad need not be declared in Portugal — it must appear in Anexo J regardless.",
+      "citation": "CRN-Contabilidade 'Anexo J' (Quadro 4B pensoes, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "J",
+      "quadro": "4C",
+      "code": "Q4C",
+      "meaning": "Rendimentos empresariais e profissionais (Categoria B) obtidos no estrangeiro.",
+      "common_error": "Splitting foreign freelance income into the domestic Anexo B instead of Anexo J Quadro 4C.",
+      "citation": "CRN-Contabilidade 'Anexo J' (Quadro 4C, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "J",
+      "quadro": "4D",
+      "code": "Q4D",
+      "meaning": "Rendimentos de capitais (Categoria E) obtidos no estrangeiro — foreign interest and dividends, with source-country code and foreign tax paid.",
+      "common_error": "Omitting foreign dividends because 'they barely earned anything' — Anexo J is mandatory regardless of amount and the AT cross-matches CRS/bank data.",
+      "citation": "CRN-Contabilidade 'Anexo J' + AT Anexo J instruction (Quadro 4D capitais, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "J",
+      "quadro": "4D",
+      "code": "420",
+      "meaning": "Campo 420 — dividendos/lucros de fonte estrangeira nao sujeitos a retencao em Portugal (a specific field within the foreign-capital quadro).",
+      "common_error": "Assuming no Portuguese withholding means nothing to declare — the income still belongs in this field of Anexo J.",
+      "citation": "AT Anexo J instruction reproduction via web search (dividendos campo 420, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "J",
+      "quadro": "4E",
+      "code": "Q4E",
+      "meaning": "Rendimentos prediais (Categoria F) obtidos no estrangeiro — foreign rental income.",
+      "common_error": "Declaring a foreign rental in the domestic Anexo F instead of Anexo J Quadro 4E.",
+      "citation": "CRN-Contabilidade 'Anexo J' (Quadro 4E prediais, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "J",
+      "quadro": "4F",
+      "code": "Q4F",
+      "meaning": "Mais-valias e outros incrementos patrimoniais (Categoria G) obtidos no estrangeiro — foreign capital gains.",
+      "common_error": "Reporting a foreign share sale only in domestic Anexo G, omitting the Anexo J Quadro 4F entry the AT expects.",
+      "citation": "CRN-Contabilidade 'Anexo J' (Quadro 4F mais-valias, fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    },
+    {
+      "annex": "J",
+      "quadro": "4",
+      "code": "J-PAIS",
+      "meaning": "Country-code convention: every foreign-income row carries a 'Pais da Fonte' code from Tabela X at the end of the Anexo J instructions — the country where the income arose, not the paying entity's country.",
+      "common_error": "Entering the paying bank/employer's country of headquarters instead of the source country, or leaving the country code blank.",
+      "citation": "AT Anexo J instruction (Tabela X / pais da fonte convention) via web search (fetched 2026-07-10)",
+      "as_of": "2025 income campaign"
+    }
+  ]
+}
