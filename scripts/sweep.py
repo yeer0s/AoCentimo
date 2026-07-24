@@ -248,7 +248,8 @@ def disclaimer_check():
 def pii_check():
     # The needle list lives in this file, so this file is excluded — otherwise the
     # check reports itself and the real signal is buried in a guaranteed red.
-    needles = ("@gmail.", "@hotmail.", "NIF: 2", "IBAN PT50")
+    needles = ("@gmail.", "@hotmail.", "@outlook.", "@yahoo.", "@icloud.", "@sapo.pt",
+               "NIF: 2", "IBAN PT50", "PT50 ", "+351 9", "@googlemail.")
     bad = []
     for root, _dirs, files in os.walk(ROOT):
         for f in files:
@@ -276,6 +277,21 @@ approximations_check()
 offline_check()
 disclaimer_check()
 pii_check()
+# The READMEs tell readers to run this file and quote its check count. A stale
+# number there is a self-inflicted credibility wound on a project whose pitch is
+# "verify every claim yourself" — so the count checks ITSELF against the docs.
+_docs = [d for d in ("README.md", "README.pt.md", "SKILL.md")
+         if os.path.exists(os.path.join(ROOT, d))]
+_total = len(results) + len(_docs)   # this loop adds one check per doc
+for _doc in _docs:
+    _t = open(os.path.join(ROOT, _doc), encoding="utf-8").read()
+    _claimed = set(re.findall(r"(\d+)\s+(?:structural \+ numeric )?(?:checks|verifica)", _t))
+    check("doc-check-count:" + _doc, all(int(c) == _total for c in _claimed),
+          "documents %d checks, which is what this run has"
+          % _total if all(int(c) == _total for c in _claimed)
+          else "claims %s but this run has %d — update the doc"
+               % (sorted(_claimed), _total))
+
 fails = [r for r in results if not r[1]]
 print("-" * 66)
 print("SWEEP " + ("PASS" if not fails else "FAIL") + ": " +

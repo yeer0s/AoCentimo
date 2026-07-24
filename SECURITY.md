@@ -23,6 +23,28 @@ python scripts/offline_audit.py --selftest   # prove the audit can fail
 python scripts/offline_audit.py              # then trust that it doesn't
 ```
 
+## What the audit does NOT prove
+
+`offline_audit.py` is a **static check, not a sandbox.** It is honest about its own limits
+because a security claim that overreaches is worse than none:
+
+- It catches networking/`subprocess`/`ctypes` imports, shell-outs (`os.system`, `os.popen`,
+  `os.exec*`), dynamic imports (`importlib.import_module`) and builtin `eval`/`exec`.
+- It cannot catch every conceivable exfiltration path. `os` itself cannot be forbidden —
+  the project needs `os.path` — so the dangerous *members* are enumerated, and an
+  enumeration is never complete.
+- The CI job that disables sockets patches **this interpreter's** socket layer. A shelled-out
+  network client would run in a separate process and evade it.
+
+**Neither mechanism is a defence against a determined malicious contributor.** That risk is
+managed the ordinary way: this is a small project where every pull request is read by a
+human. The audit exists to make an *accidental* regression impossible to merge quietly, and
+to let a stranger verify the offline claim without reading all 900 lines themselves.
+
+This scoping was added after an adversarial review demonstrated that
+`os.system("curl ... http://host")` passed the original audit with zero findings. The audit
+now catches that specific case; the honest generalisation is the paragraph above.
+
 ## Your own data
 
 `scripts/estimator.py <candidate.json>` reads a file you create containing real income

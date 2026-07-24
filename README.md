@@ -59,8 +59,11 @@ ages, your rent, your health expenses — and it ships all of it to somebody els
   SHA-256 the suite re-verifies. Pull the ethernet cable; it still computes.
 - **Runs on a local model.** Ollama, llama.cpp, LM Studio, an air-gapped box. Your NIF,
   your salary and your medical spending never leave the machine.
-- **Structural, not promised.** A privacy policy is a company's intention. This is an
-  architecture. It cannot leak what it cannot transmit.
+- **Structural, not promised.** A privacy policy is a company's intention; this is an
+  architecture with no import- or call-level path to a network. Stated precisely: the
+  audit is a *static check, not a sandbox* — it catches the accidental and the obvious,
+  and it is not a defence against a determined malicious contributor. That risk is
+  managed by reading every PR, not by the AST. See [SECURITY.md](SECURITY.md).
 
 ## Install
 
@@ -79,7 +82,7 @@ python scripts/estimator.py --selftest       # 19 golden + 9 retro + refusal gua
 python scripts/oracle.py --crosscheck        # two engines, cent-exact, 1782 profiles
 python scripts/oracle.py --mutation-test     # prove the guards can fail
 python scripts/offline_audit.py --selftest   # prove the privacy audit can fail
-python scripts/sweep.py                      # 38 checks
+python scripts/sweep.py                      # 43 checks
 ```
 
 All exit `0`. Try it with your Wi-Fi off.
