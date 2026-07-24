@@ -61,8 +61,11 @@ isso para o servidor de outra pessoa.
   SHA-256 que a bateria reverifica. Desligue o cabo de rede; continua a calcular.
 - **Corre num modelo local.** Ollama, llama.cpp, LM Studio, uma máquina isolada. O seu
   NIF, o seu salário e as suas despesas médicas nunca saem da máquina.
-- **Estrutural, não prometida.** Uma política de privacidade é a intenção de uma empresa.
-  Isto é uma arquitetura. Não pode divulgar o que não consegue transmitir.
+- **Estrutural, não prometida.** Uma política de privacidade é a intenção de uma empresa;
+  isto é uma arquitetura sem qualquer caminho de import ou de chamada para a rede. Com
+  precisão: a auditoria é uma *verificação estática, não uma sandbox* — apanha o
+  acidental e o óbvio, e não é defesa contra um contribuidor malicioso determinado. Esse
+  risco é gerido lendo cada PR, não pela AST. Ver [SECURITY.md](SECURITY.md).
 
 ## Instalação
 
@@ -81,7 +84,7 @@ python scripts/estimator.py --selftest       # 19 golden + 9 retro + guarda de r
 python scripts/oracle.py --crosscheck        # dois motores, ao cêntimo, 1782 perfis
 python scripts/oracle.py --mutation-test     # provar que os guardas conseguem falhar
 python scripts/offline_audit.py --selftest   # provar que a auditoria de privacidade falha
-python scripts/sweep.py                      # 38 verificações
+python scripts/sweep.py                      # 43 verificações
 ```
 
 Todos saem com `0`. Experimente com o Wi-Fi desligado.

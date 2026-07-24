@@ -73,7 +73,7 @@ Nothing ships from this skill until all of these pass. They are offline and stdl
 ```bash
 python scripts/estimator.py --selftest    # 19 golden + 9 retro cases + UNKNOWN-refusal guard
 python scripts/oracle.py --crosscheck     # two independent implementations, cent-exact
-python scripts/sweep.py                   # 27 structural + numeric checks
+python scripts/sweep.py                   # 43 structural + numeric checks
 ```
 
 Plus the sub-corpora: `python scripts/deductions.py --selftest` and

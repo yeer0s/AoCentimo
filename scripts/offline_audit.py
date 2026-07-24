@@ -6,6 +6,13 @@ executes no dynamic code. That is the main reason to trust it with a tax return,
 so it is checked rather than asserted — and checked here, in the repo, so a
 reader can run it themselves instead of taking a CI badge on faith.
 
+WHAT THIS DOES NOT PROVE. It is a static audit, not a sandbox. It catches the
+accidental and the obvious: a networking import, a shell-out, a dynamic import,
+a builtin eval. It is NOT a defence against a determined malicious contributor,
+who has many ways to reach a network that no import-level check can see. The
+real control there is that this is a small project where every PR is read. Say
+that plainly rather than implying the audit is a security boundary.
+
 Deliberately AST-based, not grep-based. A regex for `eval\\(` matches
 `re.compile(`-style attribute calls and misses aliased imports; the parser knows
 the difference between the builtin `eval(...)` and a method named `.eval(...)`.
@@ -39,6 +46,21 @@ FORBIDDEN_MODULES = {
 # a data-exfiltration risk without eval/exec beside it.
 FORBIDDEN_CALLS = {"eval", "exec", "__import__"}
 
+# Attribute calls that shell out or import by name. `os` cannot go in
+# FORBIDDEN_MODULES (the project legitimately needs os.path), so the dangerous
+# MEMBERS are named instead. Added 2026-07-24 after an adversarial review showed
+# os.system("curl ... http://host") passed the audit with zero findings — and
+# would ALSO evade the CI socket-blocking job, because it spawns a separate
+# process rather than opening a socket in this interpreter.
+FORBIDDEN_ATTRS = {
+    ("os", "system"), ("os", "popen"), ("os", "spawnl"), ("os", "spawnv"),
+    ("os", "spawnve"), ("os", "execl"), ("os", "execv"), ("os", "execve"),
+    ("os", "fork"), ("os", "posix_spawn"), ("os", "startfile"),
+    ("importlib", "import_module"), ("subprocess", "run"), ("subprocess", "Popen"),
+    ("shutil", "which"), ("platform", "popen"),
+}
+FORBIDDEN_MODULES_ATTR_ONLY = {"importlib"}
+
 
 class Auditor(ast.NodeVisitor):
     def __init__(self, path):
@@ -51,6 +73,8 @@ class Auditor(ast.NodeVisitor):
     def visit_Import(self, node):
         for alias in node.names:
             root = alias.name.split(".")[0]
+            if root in FORBIDDEN_MODULES_ATTR_ONLY:
+                self._flag(node, "imports '%s' (dynamic import surface)" % alias.name)
             if root in FORBIDDEN_MODULES:
                 self._flag(node, "imports '%s'" % alias.name)
         self.generic_visit(node)
@@ -62,9 +86,15 @@ class Auditor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Call(self, node):
-        # Only a BARE name counts: obj.eval() is somebody else's method.
+        # A BARE name: eval(...). obj.eval() is somebody else's method.
         if isinstance(node.func, ast.Name) and node.func.id in FORBIDDEN_CALLS:
             self._flag(node, "calls builtin %s()" % node.func.id)
+        # A dotted call: os.system(...), importlib.import_module(...).
+        if isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
+            pair = (node.func.value.id, node.func.attr)
+            if pair in FORBIDDEN_ATTRS:
+                self._flag(node, "calls %s.%s() — shells out or imports by name"
+                           % pair)
         self.generic_visit(node)
 
 
@@ -95,11 +125,17 @@ def selftest():
         ("import socket as s", "aliased import"),
         ("x = eval('1+1')", "builtin eval"),
         ("y = exec('pass')", "builtin exec"),
+        ("import os\nos.system('curl http://x')", "os.system shell-out"),
+        ("import os\nos.popen('nc h 443')", "os.popen shell-out"),
+        ("import importlib\nimportlib.import_module('socket')", "importlib by name"),
+        ("import os\nos.execv('/bin/sh', [])", "os.execv"),
     ]
     benign = [
         ("import re\nR = re.compile('x')", "re.compile must NOT trip it"),
         ("class Q:\n    def eval(self): pass\nQ().eval()", "obj.eval() must NOT trip it"),
         ("import json, hashlib, decimal", "stdlib offline modules are fine"),
+        ("import os\np = os.path.join('a','b')", "os.path must NOT trip it"),
+        ("import os\nos.walk('.')", "os.walk must NOT trip it"),
     ]
     failures = 0
     tmp = tempfile.mkdtemp()
@@ -143,7 +179,8 @@ def main(argv=None):
     print("  %d Python files, 0 networking/subprocess/ctypes imports, "
           "0 builtin eval/exec/__import__ calls" % n)
     print("=" * 60)
-    print("OFFLINE AUDIT: PASS — nothing here can transmit your data.")
+    print("OFFLINE AUDIT: PASS — no import- or call-level path to the network.")
+    print("            (a static audit, not a sandbox — see the module docstring)")
     return 0
 
 
