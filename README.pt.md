@@ -157,12 +157,11 @@ numa tarifa qualquer.
 </p>
 
 <p align="center">
-  <a href="https://mowei.pt"><b>🇵🇹 mowei.pt — ferramentas gratuitas</b></a>
-
-  <!-- TODO: paste your Buy Me a Coffee / Ko-fi URL over BUYMEACOFFEE_URL and
-       delete these comment markers to switch the donation badge on.
-&nbsp;·&nbsp;
-  <a href="BUYMEACOFFEE_URL"><img src="https://img.shields.io/badge/☕-Paga--me%20um%20caf%C3%A9-FFDD00?style=for-the-badge" alt="Paga-me um café"></a>
+  <a href="https://mowei.pt"><b>&#127477;&#127481; mowei.pt &mdash; ferramentas gratuitas</b></a>
+  <!-- TODO badge de donativo: substituir BUYMEACOFFEE_URL abaixo pelo URL do Buy Me a
+       Coffee ou Ko-fi, e apagar este abre-coment&aacute;rio e o respetivo fecho.
+  &nbsp;&middot;&nbsp;
+  <a href="BUYMEACOFFEE_URL"><img src="https://img.shields.io/badge/%E2%98%95-Paga--me%20um%20caf%C3%A9-FFDD00?style=for-the-badge" alt="Paga-me um caf&eacute;"></a>
   -->
 </p>
 

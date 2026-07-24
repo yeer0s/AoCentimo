@@ -154,12 +154,11 @@ money on your IRS, the same household is usually overpaying on a tariff somewher
 </p>
 
 <p align="center">
-  <a href="https://mowei.pt"><b>🇵🇹 mowei.pt — ferramentas gratuitas</b></a>
-
-  <!-- TODO: paste your Buy Me a Coffee / Ko-fi URL over BUYMEACOFFEE_URL and
-       delete these comment markers to switch the donation badge on.
-&nbsp;·&nbsp;
-  <a href="BUYMEACOFFEE_URL"><img src="https://img.shields.io/badge/☕-Buy%20me%20a%20coffee-FFDD00?style=for-the-badge" alt="Buy me a coffee"></a>
+  <a href="https://mowei.pt"><b>&#127477;&#127481; mowei.pt &mdash; ferramentas gratuitas</b></a>
+  <!-- TODO donation badge: replace BUYMEACOFFEE_URL below with your Buy Me a Coffee
+       or Ko-fi URL, then delete this comment opener and its closer to switch it on.
+  &nbsp;&middot;&nbsp;
+  <a href="BUYMEACOFFEE_URL"><img src="https://img.shields.io/badge/%E2%98%95-Buy%20me%20a%20coffee-FFDD00?style=for-the-badge" alt="Buy me a coffee"></a>
   -->
 </p>
 
