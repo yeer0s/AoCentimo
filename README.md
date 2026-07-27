@@ -83,7 +83,7 @@ python scripts/estimator.py --selftest       # 19 golden + 9 retro + refusal gua
 python scripts/oracle.py --crosscheck        # two engines, cent-exact, 1782 profiles
 python scripts/oracle.py --mutation-test     # prove the guards can fail
 python scripts/offline_audit.py --selftest   # prove the privacy audit can fail
-python scripts/sweep.py                      # 43 checks
+python scripts/sweep.py                      # 45 checks
 ```
 
 All exit `0`. Try it with your Wi-Fi off.

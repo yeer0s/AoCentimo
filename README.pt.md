@@ -85,7 +85,7 @@ python scripts/estimator.py --selftest       # 19 golden + 9 retro + guarda de r
 python scripts/oracle.py --crosscheck        # dois motores, ao cêntimo, 1782 perfis
 python scripts/oracle.py --mutation-test     # provar que os guardas conseguem falhar
 python scripts/offline_audit.py --selftest   # provar que a auditoria de privacidade falha
-python scripts/sweep.py                      # 43 verificações
+python scripts/sweep.py                      # 45 verificações
 ```
 
 Todos saem com `0`. Experimente com o Wi-Fi desligado.
