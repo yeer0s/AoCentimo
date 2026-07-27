@@ -154,6 +154,36 @@ def corpus_checks():
     check("golden-dual-path-provenance",
           "DUAL-PATH" in g["_meta"].get("method", "").upper(),
           "corpus provenance is dual-path, not self-derived")
+
+    # A provenance STRING is not a derivation. On 2026-07-24 the expected values were
+    # regenerated after the Lei 55-A/2025 rate fix while the hand-written `workings`
+    # prose was not, leaving 16 of 19 cases showing superseded arithmetic beside a
+    # correct answer — and the string check above stayed green throughout. These two
+    # checks compare the stated derivation to the values themselves, so prose can no
+    # longer drift away from the numbers in silence.
+    drift = [c["id"] for c in g["cases"]
+             if c.get("derivation_check", {}).get("coleta_liquida") is None
+             or abs(c["derivation_check"]["coleta_liquida"]
+                    - float(c["expected"]["coleta_liquida"])) > 0.005
+             or abs(c["derivation_check"]["apuramento"]
+                    - float(c["expected"]["apuramento"])) > 0.005]
+    check("golden-derivation-matches-expected", not drift,
+          "every case's stated derivation equals its expected values"
+          if not drift else "DRIFTED: %s" % drift[:4])
+
+    # Any surviving `workings` prose must actually contain its own expected figure.
+    # Prose that cannot state its own answer is stale by definition.
+    mute = []
+    for c in g["cases"]:
+        w = c.get("workings")
+        if not w:
+            continue
+        exp = float(c["expected"]["coleta_liquida"])
+        if not any(abs(float(n) - exp) < 0.005 for n in re.findall(r"(\d+\.\d{2})", w)):
+            mute.append(c["id"])
+    check("golden-workings-not-stale", not mute,
+          "live workings prose states its own expected value"
+          if not mute else "STALE PROSE: %s" % mute[:4])
     r = _load("retro-cases.json")
     check("retro-bar", len(r["cases"]) >= r["_meta"]["min_bar"],
           "%d retro cases (bar %d)" % (len(r["cases"]), r["_meta"]["min_bar"]))
