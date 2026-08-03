@@ -73,7 +73,7 @@ Nothing ships from this skill until all of these pass. They are offline and stdl
 ```bash
 python scripts/estimator.py --selftest    # 19 golden + 9 retro cases + UNKNOWN-refusal guard
 python scripts/oracle.py --crosscheck     # two independent implementations, cent-exact
-python scripts/sweep.py                   # 46 structural + numeric checks
+python scripts/sweep.py                   # 47 structural + numeric checks
 ```
 
 Plus the sub-corpora: `python scripts/deductions.py --selftest` and
@@ -243,7 +243,12 @@ Never hand-edit an expected value to turn a test green.
     the command with the changelog's historical "43 → 45 checks". It now reads
     only lines that invoke `sweep.py`. The changelog is a record and stays as
     written.
-  - 45 → 46 checks.
+  - `docs/images/IMAGE-SPECS.md` told whoever records the demo GIF to end on
+    `43/43 checks green` — two releases stale, and unguarded because the count
+    check only ever looked at the three top-level docs. Corrected, and the file
+    is now under `doc-check-count` itself. The GIF has not been recorded yet, so
+    nothing public was showing a wrong number.
+  - 45 → 47 checks.
 
 - **v1.0.1 (2026-07-24)** — **the rate fix left stale arithmetic in the corpus, and
   nothing caught it.**
