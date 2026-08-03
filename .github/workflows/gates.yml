@@ -57,6 +57,13 @@ jobs:
       - name: Unified sweep (law digests, constants, disclaimer, licence)
         run: python scripts/sweep.py
 
+      # Drives the gate a year forward and demands constants-declared-year goes
+      # red, then demands green again. Without this job the year-boundary guard
+      # would only ever be exercised on 1 January — by which point a silent
+      # failure has already shipped.
+      - name: Sweep self-test — prove the gate can go red on the year boundary
+        run: python scripts/sweep.py --self-test
+
   no-network:
     name: proof · zero network calls
     runs-on: ubuntu-latest
