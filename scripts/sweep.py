@@ -19,6 +19,7 @@ Replaces the three separate sweeps that shipped with 56-organizer, 57-estimator 
 Offline, stdlib-only, no network, no subprocess.
 """
 
+import argparse
 import contextlib
 import hashlib
 import io
@@ -31,6 +32,10 @@ from datetime import date
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 ASSETS = os.path.join(ROOT, "assets")
+# Every file that quotes this gate's own check count back at the reader. Each one
+# costs a check, so the total is self-referential by design: add a file here and
+# the number every file must state goes up by one.
+DOC_COUNT_FILES = ("README.md", "README.pt.md", "SKILL.md")
 results = []
 
 
@@ -42,6 +47,15 @@ def check(name, ok, detail=""):
 def _load(name):
     with open(os.path.join(ASSETS, name), encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def _int(v):
+    """None rather than a raise — a missing or malformed year must FAIL the check
+    that reads it, not crash the sweep before the other 45 checks have run."""
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return None
 
 
 def law_checks():
@@ -83,7 +97,8 @@ def law_checks():
           "68/70/78/78-A/78-E/84 all captured" if not missing else "MISSING %s" % missing)
 
 
-def constants_checks():
+def constants_checks(today=None):
+    today = today or date.today()
     c = _load("constants.json")
     rows = c["brackets_2025"]["rows"]
     check("bracket-rows", len(rows) == 9, "%d Artigo 68.º rows" % len(rows))
@@ -115,11 +130,28 @@ def constants_checks():
           maj["min_dependentes"] == 3 and abs(maj["pct_por_dependente"] - 0.05) < 1e-9,
           "n.º 8: 5% per dependent from 3 dependents up")
     as_of = date.fromisoformat(c["_meta"]["as_of"])
-    age = (date.today() - as_of).days
+    age = (today - as_of).days
     check("constants-staleness", age < 400, "%d days since as_of (%s)" % (age, as_of))
     if age > 180:
         print("      NOTE: constants older than 6 months — an Orçamento do Estado has "
               "probably intervened. Re-read Artigo 68.º before quoting a figure.")
+    # A ROLLING AGE CANNOT SEE THE YEAR BOUNDARY, WHICH IS THE ONLY DATE THE
+    # BRACKETS ACTUALLY MOVE ON. With as_of 2026-07-10 the check above is still
+    # 175 days old on 1 January 2027 — it passes, and passes SILENTLY, because the
+    # 6-month NOTE does not fire until the 7th. The first red would be 14 August
+    # 2027, months after the filing season in which someone quoted last year's
+    # brackets. This is exactly how the superseded income-year-2025 rates survived
+    # a year behind a green gate (see the module docstring). The Orçamento do
+    # Estado lands on 1 January, so the guard has to be keyed to the year, not to
+    # elapsed days. Both checks stay: this one catches the calendar, the other
+    # catches an asset that is simply rotting.
+    declared = _int(c["_meta"].get("declared_year"))
+    check("constants-declared-year", declared is not None and declared >= today.year,
+          "declared_year %s, filing year %d" % (declared, today.year)
+          if declared is not None and declared >= today.year
+          else "declared_year %s is behind the calendar year %d — an Orçamento do "
+               "Estado has intervened; re-read Artigo 68.º and restamp constants.json"
+               % (declared, today.year))
 
 
 def oracle_checks():
@@ -296,35 +328,107 @@ def pii_check():
           if not bad else "FOUND %s" % bad)
 
 
-print("=" * 66)
-print("UNIFIED CORRECTNESS SWEEP — portugal-irs")
-print("=" * 66)
-law_checks()
-constants_checks()
-oracle_checks()
-corpus_checks()
-approximations_check()
-offline_check()
-disclaimer_check()
-pii_check()
-# The READMEs tell readers to run this file and quote its check count. A stale
-# number there is a self-inflicted credibility wound on a project whose pitch is
-# "verify every claim yourself" — so the count checks ITSELF against the docs.
-_docs = [d for d in ("README.md", "README.pt.md", "SKILL.md")
-         if os.path.exists(os.path.join(ROOT, d))]
-_total = len(results) + len(_docs)   # this loop adds one check per doc
-for _doc in _docs:
-    _t = open(os.path.join(ROOT, _doc), encoding="utf-8").read()
-    _claimed = set(re.findall(r"(\d+)\s+(?:structural \+ numeric )?(?:checks|verifica)", _t))
-    check("doc-check-count:" + _doc, all(int(c) == _total for c in _claimed),
-          "documents %d checks, which is what this run has"
-          % _total if all(int(c) == _total for c in _claimed)
-          else "claims %s but this run has %d — update the doc"
-               % (sorted(_claimed), _total))
+def run(today=None, quiet=False):
+    """One full pass. Returns the results list.
 
-fails = [r for r in results if not r[1]]
-print("-" * 66)
-print("SWEEP " + ("PASS" if not fails else "FAIL") + ": " +
-      "%d/%d checks green" % (len(results) - len(fails), len(results)) +
-      ("" if not fails else " — DO NOT DELIVER until resolved"))
-sys.exit(1 if fails else 0)
+    Was module-level straight-line code. It is a function so that --self-test can
+    run the gate a second time under a different date and demand that it goes red;
+    a guard nobody has ever seen fail is indistinguishable from one that cannot.
+    """
+    del results[:]
+    with contextlib.redirect_stdout(io.StringIO() if quiet else sys.stdout):
+        print("=" * 66)
+        print("UNIFIED CORRECTNESS SWEEP — portugal-irs")
+        print("=" * 66)
+        law_checks()
+        constants_checks(today)
+        oracle_checks()
+        corpus_checks()
+        approximations_check()
+        offline_check()
+        disclaimer_check()
+        pii_check()
+        # The READMEs tell readers to run this file and quote its check count. A
+        # stale number there is a self-inflicted credibility wound on a project
+        # whose pitch is "verify every claim yourself" — so the count checks
+        # ITSELF against the docs.
+        docs = [d for d in DOC_COUNT_FILES if os.path.exists(os.path.join(ROOT, d))]
+        total = len(results) + len(docs)   # this loop adds one check per doc
+        for doc in docs:
+            t = open(os.path.join(ROOT, doc), encoding="utf-8").read()
+            # Only lines that invoke the gate. A LIVE claim is the number printed
+            # beside the command the reader is told to run; the changelog's
+            # "43 -> 45 checks" is a historical record and must stay as written.
+            # Scanning the whole file conflated the two, and the only reason it
+            # ever passed is that the last release happened to end on the same
+            # number the changelog mentioned. Forcing history to track the current
+            # count would be editing the record to make a check green.
+            lines = [ln for ln in t.splitlines() if "sweep.py" in ln]
+            claimed = set(re.findall(
+                r"(\d+)\s*(?:/\s*\d+\s*)?(?:structural \+ numeric )?(?:checks|verifica)",
+                "\n".join(lines)))
+            check("doc-check-count:" + doc, all(int(c) == total for c in claimed),
+                  "documents %d checks, which is what this run has"
+                  % total if all(int(c) == total for c in claimed)
+                  else "claims %s but this run has %d — update the doc"
+                       % (sorted(claimed), total))
+    return list(results)
+
+
+def self_test():
+    """Prove the gate can go red, and can come back green.
+
+    Only the year-boundary check is exercised here. The numeric guards are
+    mutation-tested in oracle.py --mutation-test; duplicating that would be
+    ceremony. What was NOT covered anywhere until now is the calendar.
+    """
+    print("--- normal state ---")
+    base = run(quiet=True)
+    if any(not ok for _, ok, _ in base):
+        print("SELF-TEST ABORTED: the gate is already red")
+        return 1
+    print("%d/%d green" % (len(base), len(base)))
+
+    print("--- one year past the declared filing year ---")
+    future = date(date.today().year + 1, 1, 1)
+    failed = [n for n, ok, _ in run(today=future, quiet=True) if not ok]
+    if "constants-declared-year" not in failed:
+        print("SELF-TEST FAILED: constants a year stale did not raise the alarm — "
+              "on 1 January the brackets move and this gate stayed green")
+        return 1
+    print("the gate caught the year rolling over: %s" % ", ".join(failed))
+
+    print("--- restored ---")
+    if any(not ok for _, ok, _ in run(quiet=True)):
+        print("SELF-TEST FAILED: did not return to green")
+        return 1
+    print("green again")
+    print()
+    print("SELF-TEST OK — the gate knows how to fail and how to pass again")
+    return 0
+
+
+def main(argv):
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("-v", "--verbose", action="store_true",
+                    help="accepted for compatibility; every check already prints")
+    ap.add_argument("--self-test", action="store_true",
+                    help="prove the gate can go red, then come back green")
+    # argparse exits 2 on an unknown flag. That matters: this file used to ignore
+    # argv entirely, so `sweep.py --self-test` ran an ordinary sweep and exited 0
+    # — a self-test that never ran, reported as a pass. Found 2026-08-03 by the
+    # weekly staleness sweep, which had itself been recording that false green.
+    args = ap.parse_args(argv)
+    if args.self_test:
+        return self_test()
+    res = run()
+    fails = [r for r in res if not r[1]]
+    print("-" * 66)
+    print("SWEEP " + ("PASS" if not fails else "FAIL") + ": " +
+          "%d/%d checks green" % (len(res) - len(fails), len(res)) +
+          ("" if not fails else " — DO NOT DELIVER until resolved"))
+    return 1 if fails else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

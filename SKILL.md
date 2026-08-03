@@ -73,7 +73,7 @@ Nothing ships from this skill until all of these pass. They are offline and stdl
 ```bash
 python scripts/estimator.py --selftest    # 19 golden + 9 retro cases + UNKNOWN-refusal guard
 python scripts/oracle.py --crosscheck     # two independent implementations, cent-exact
-python scripts/sweep.py                   # 45 structural + numeric checks
+python scripts/sweep.py                   # 46 structural + numeric checks
 ```
 
 Plus the sub-corpora: `python scripts/deductions.py --selftest` and
@@ -201,6 +201,10 @@ engine broke" from "the law changed", because the corpus carried no law version.
 4. `oracle.py --derive` regenerates expected values **only where both engines agree**;
    a case they disagree on is reported, not published.
 5. Bump `_meta.law_version`.
+6. Restamp `_meta.declared_year` to the filing year the constants now describe, and
+   `_meta.as_of` to the date you verified them. `constants-declared-year` goes red on
+   1 January precisely so this step cannot be forgotten — it is the check telling you
+   the Orçamento do Estado has landed, not a fault in the engine.
 
 Never hand-edit an expected value to turn a test green.
 
@@ -220,6 +224,26 @@ Never hand-edit an expected value to turn a test green.
   reference; those years flag rather than compute them.
 
 ## Changelog
+
+- **v1.0.2 (2026-08-03)** — **the gate could not see the year boundary, and its
+  self-test was not running.** Both found by the weekly staleness sweep.
+  - `constants-staleness` measures elapsed days (`age < 400`). With `as_of`
+    2026-07-10 it is still only 175 days old on 1 January 2027 — it passes, and
+    passes silently, because the 6-month NOTE does not fire until the 7th. First
+    red would have been 14 August 2027, after the whole filing season. The
+    Orçamento do Estado lands on 1 January, so a rolling age is the wrong
+    instrument. New check `constants-declared-year` compares
+    `_meta.declared_year` against the calendar year. Both checks stay — one
+    catches the calendar, the other catches an asset that is simply rotting.
+  - `sweep.py` ignored `argv` entirely, so `sweep.py --self-test` ran an ordinary
+    sweep and exited 0 — a self-test that never ran, reported as a pass. The
+    sweep now has a real `--self-test` that drives the gate a year forward and
+    demands red, then demands green again; unknown flags exit 2.
+  - `doc-check-count` scanned whole files, which conflated the live claim beside
+    the command with the changelog's historical "43 → 45 checks". It now reads
+    only lines that invoke `sweep.py`. The changelog is a record and stays as
+    written.
+  - 45 → 46 checks.
 
 - **v1.0.1 (2026-07-24)** — **the rate fix left stale arithmetic in the corpus, and
   nothing caught it.**
