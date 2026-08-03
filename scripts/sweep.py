@@ -35,7 +35,17 @@ ASSETS = os.path.join(ROOT, "assets")
 # Every file that quotes this gate's own check count back at the reader. Each one
 # costs a check, so the total is self-referential by design: add a file here and
 # the number every file must state goes up by one.
-DOC_COUNT_FILES = ("README.md", "README.pt.md", "SKILL.md")
+DOC_COUNT_FILES = ("README.md", "README.pt.md", "SKILL.md",
+                   # The demo-GIF spec tells whoever records the asset which frame
+                   # to end on. It sat at 43/43 for two releases while the gate
+                   # produced 45 — nothing caught it, because the count check only
+                   # looked at the three files above. A recorded GIF is the most
+                   # public claim this repo makes and the hardest to re-check, so
+                   # it belongs under the same guard.
+                   # Forward slashes here and split on open, so the check NAME is
+                   # byte-identical on Windows and on CI. A check whose name shifts
+                   # with the platform cannot be grepped for across the two.
+                   "docs/images/IMAGE-SPECS.md")
 results = []
 
 
@@ -352,10 +362,11 @@ def run(today=None, quiet=False):
         # stale number there is a self-inflicted credibility wound on a project
         # whose pitch is "verify every claim yourself" — so the count checks
         # ITSELF against the docs.
-        docs = [d for d in DOC_COUNT_FILES if os.path.exists(os.path.join(ROOT, d))]
+        docs = [d for d in DOC_COUNT_FILES
+                if os.path.exists(os.path.join(ROOT, *d.split("/")))]
         total = len(results) + len(docs)   # this loop adds one check per doc
         for doc in docs:
-            t = open(os.path.join(ROOT, doc), encoding="utf-8").read()
+            t = open(os.path.join(ROOT, *doc.split("/")), encoding="utf-8").read()
             # Only lines that invoke the gate. A LIVE claim is the number printed
             # beside the command the reader is told to run; the changelog's
             # "43 -> 45 checks" is a historical record and must stay as written.

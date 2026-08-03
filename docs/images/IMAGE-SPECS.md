@@ -87,7 +87,7 @@ removed rather than ship a broken image; **paste the block back in once the file
 | **Size** | **1200 × 700 px** max, renders at 85% |
 | **Weight** | **under 5 MB** — GitHub will not autoplay a heavy GIF gracefully |
 | **Length** | 15-25 s, looping |
-| **Content** | `estimator.py --selftest` → `oracle.py --crosscheck` → `--mutation-test` → `sweep.py`, ending on `43/43 checks green` |
+| **Content** | `estimator.py --selftest` → `oracle.py --crosscheck` → `--mutation-test` → `sweep.py`, ending on `47/47 checks green` |
 | **How** | [asciinema](https://asciinema.org) + [agg](https://github.com/asciinema/agg), or [VHS](https://github.com/charmbracelet/vhs) (scriptable, reproducible) |
 
 ## 6. Social preview card — NOT A REPO FILE
