@@ -254,7 +254,7 @@
       "ceiling_2025_eur": 28737.5,
       "note": "55 x IAS 2025 (522.50) = 28737.50 EUR exempt-income ceiling for the 2025 income year. Recompute if the IAS changes."
     },
-    "source": "IRS Jovem 2025-reform current-law shape — DECO PROteste, Coverflex, CalculaPT; ceiling = 55 x IAS per CIRS Artigo 2.º-B."
+    "source": "CIRS Artigo 12.º-B n.º 5 (ceiling = 55 x IAS), na redação do Artigo 89.º da Lei n.º 45-A/2024, em vigor desde 2025-01-01; Diário da República consolidated text verified 2026-08-25; corroborated by DECO PROteste, Coverflex, CalculaPT. NOTE: Artigo 2.º-B was REVOKED 2022-06-28 by Artigo 329.º da Lei n.º 12/2022."
   },
   "categoria_b_simplified": {
     "coefficient_services_151": 0.75,
