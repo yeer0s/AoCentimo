@@ -225,6 +225,27 @@ Never hand-edit an expected value to turn a test green.
 
 ## Changelog
 
+- **v1.0.3 (2026-08-25)** — **the IRS Jovem ceiling was sourced to an article that
+  no longer exists.** Found by the weekly staleness sweep.
+  - `assets/constants.json` cited **CIRS Artigo 2.º-B** as the authority for the
+    55 × IAS exempt-income ceiling. That article was revoked on 2022-06-28 by
+    Artigo 329.º da Lei n.º 12/2022. The article that actually carries the ceiling
+    is **Artigo 12.º-B n.º 5**, in the wording given by Artigo 89.º da Lei
+    n.º 45-A/2024, in force from 2025-01-01. A reader who followed the citation to
+    check the number landed on `REVOGADO`.
+  - **No value was wrong.** The 55× multiplier, the IAS of 522,50, the derived
+    28 737,50 ceiling and the 100/75/50/25 schedule over years 1 / 2-4 / 5-7 / 8-10
+    all match 12.º-B verbatim, re-read against the Diário da República consolidated
+    text. Only the pointer was wrong — which, for a repo whose product is
+    verifiability, is the part that matters.
+  - Present since the initial release. The revoked article's own *Nota* redirects
+    readers onward to 12.º-B, which is how a wrong citation attached to right
+    numbers stayed plausible through three releases. It was also the one constant
+    here sourced to aggregators rather than to the DR; the primary instrument now
+    leads and the aggregators are kept as corroboration.
+  - No gate could have caught this. A citation is prose, and both engines agree on
+    a number the citation merely mislabels.
+
 - **v1.0.2 (2026-08-03)** — **the gate could not see the year boundary, and its
   self-test was not running.** Both found by the weekly staleness sweep.
   - `constants-staleness` measures elapsed days (`age < 400`). With `as_of`
