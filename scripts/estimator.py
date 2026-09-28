@@ -21,13 +21,13 @@ raises a clear error naming the year and field, rather than guessing.
 
 Modes
 -----
-  python scripts/validate.py --selftest
+  python scripts/estimator.py --selftest
       Recompute every bundled golden case (2025 corpus) AND every retro-audit case
       (2022-2024 corpus) from inputs, compare to the hand-derived expected values,
       and run the UNKNOWN-refusal guard test. Exit 0 ONLY if everything passes.
       This is the hard gate.
 
-  python scripts/validate.py <candidate.json>
+  python scripts/estimator.py <candidate.json>
       Score a user-produced output against the estimator (measurement mode).
       Exit 0 on successful scoring.
 """
@@ -558,6 +558,22 @@ class Estimator:
         health = self._cap(p["health"][0], p["health"][1] * limit_factor, ded.get("health_expenses", 0))
         education = self._cap(p["edu"][0], p["edu"][1] * limit_factor, ded.get("education_expenses", 0))
         rent = self._cap(p["rent"][0], p["rent"][1] * limit_factor, ded.get("rent_paid", 0))
+        # Artigo 78.º-E n.º 4: for rendimento coletável (after the art. 69.º divisor,
+        # same rc_divided the global-cap band below is chosen on) not exceeding
+        # 30 000 EUR, the n.º 1 a) rent limit is RAISED (up to 1100 EUR at the
+        # first-bracket ceiling, tapering down to the flat base above it; n.º 10 keeps
+        # this higher figure "quando o limite de dedução daí resultante seja
+        # superior"). The phase-in base (artigo 3.º da Lei n.º 36/2024) is not settled from
+        # primary text for every year, so the majorado limit is NOT computed here —
+        # only the flat cap above is applied, which UNDERSTATES the deduction (and so
+        # OVERSTATES tax) whenever 15 % of the rent paid would have exceeded that flat
+        # cap. Flagged per case rather than silently guessed (see constants.json /
+        # constants-2026.json documented_approximations).
+        rent_paid = D(ded.get("rent_paid", 0))
+        if rent_paid > 0 and rc_divided <= Decimal("30000"):
+            flat_rent_limit = p["rent"][1] * limit_factor
+            if p["rent"][0] * rent_paid > flat_rent_limit:
+                flags.append("renda_78e_n4_limite_majorado_nao_modelado")
 
         ppr = Decimal("0.00")
         if D(ded.get("ppr_contribution", 0)) > 0:
@@ -877,6 +893,44 @@ def run_unknown_guard_test(est):
     return 1 if fails else 0
 
 
+def run_rent_78e_n4_flag_test(est):
+    """Golden-free: Artigo 78.º-E n.º 4 is not modelled (see documented_approximations),
+    so a case where the majorado limit would bind must carry
+    renda_78e_n4_limite_majorado_nao_modelado, and a case where it plainly would not
+    must NOT carry it."""
+    print("\nrenda 78.o-E n.4 flag (low-RC rent majoracao, not modelled)")
+    print("-" * 66)
+    fails = 0
+    flag = "renda_78e_n4_limite_majorado_nao_modelado"
+
+    low_rc = est.compute({
+        "income_year": 2026,
+        "taxpayers": [{"cat_a_gross": 17000.0}],
+        "deductions": {"rent_paid": 8000.0},
+        "retention_total": 0,
+    })
+    if flag in low_rc["flags"]:
+        print("PASS  low RC (17000 gross, rent 8000) carries the flag")
+    else:
+        print("FAIL  low RC (17000 gross, rent 8000) is missing the flag; got %s"
+              % low_rc["flags"])
+        fails += 1
+
+    high_rc = est.compute({
+        "income_year": 2026,
+        "taxpayers": [{"cat_a_gross": 60000.0}],
+        "deductions": {"rent_paid": 8000.0},
+        "retention_total": 0,
+    })
+    if flag not in high_rc["flags"]:
+        print("PASS  high RC (60000 gross, rent 8000) does not carry the flag")
+    else:
+        print("FAIL  high RC (60000 gross, rent 8000) wrongly carries the flag")
+        fails += 1
+
+    return 1 if fails else 0
+
+
 def run_selftest():
     est = _build_estimator()
     print("IRS estimator self-test (multi-year %d-%d)" % (min(est.years), max(est.years)))
@@ -884,10 +938,13 @@ def run_selftest():
     gp, gf = run_golden_selftest(est)
     rp, rf = run_retro_selftest(est)
     guard = run_unknown_guard_test(est)
+    rent_flag = run_rent_78e_n4_flag_test(est)
     print("=" * 66)
-    total_fail = gf + rf + guard
+    total_fail = gf + rf + guard + rent_flag
     print("SUMMARY: golden %d passed/%d failed | retro %d passed/%d failed | "
-          "unknown-guard %s" % (gp, gf, rp, rf, "PASS" if guard == 0 else "FAIL"))
+          "unknown-guard %s | renda-78e-n4-flag %s"
+          % (gp, gf, rp, rf, "PASS" if guard == 0 else "FAIL",
+             "PASS" if rent_flag == 0 else "FAIL"))
     return 0 if total_fail == 0 else 1
 
 
