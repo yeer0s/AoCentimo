@@ -186,7 +186,7 @@
       "rate": 0.15,
       "cap_eur": 700.0,
       "inside_global_cap": true,
-      "note": "Rendas de habitação própria permanente. Upper-income taper (8059-30000+) not modeled; flat 700 cap applied (see approximations).",
+      "note": "Rendas de habitação própria permanente. Artigo 78.º-E n.º 4 low-income majoração (limit raised up to 1100 for RC <= 8059, tapering to this flat 700 base by RC 30000) not modeled; flat 700 cap applied and flagged per case (see approximations).",
       "source": "Artigo 78.º-E CIRS; Economia e Finanças — deduções à coleta 2025."
     },
     "ppr": {
@@ -286,9 +286,9 @@
         "direction": "May OVERSTATE the specific deduction (understate tax / overstate refund) for cat-B filers above ~29748 EUR gross who lack the required e-Fatura invoices; below that threshold the flat allowance already covers it, so no error."
       },
       {
-        "item": "Education cap uplift (1100 with displaced-student rent; 1000 interior/regiões-autónomas maj.) and rent taper (700 scaled down above 30000 RC)",
+        "item": "Education cap uplift (1100 with displaced-student rent; 1000 interior/regiões-autónomas maj.) and rent limit majoração (Artigo 78.º-E n.º 4, RC <= 30000 EUR)",
         "modeled": "base caps only",
-        "direction": "Education: may UNDERSTATE the deduction (overstate tax) for eligible displaced-student households. Rent: may OVERSTATE the deduction (understate tax) for higher-RC households whose 700 cap is tapered down."
+        "direction": "Education: may UNDERSTATE the deduction (overstate tax) for eligible displaced-student households. Rent: not modelled; UNDERSTATES the deduction (OVERSTATES tax) for households whose rendimento coletável (after the Artigo 69.º divisor) does not exceed 30 000 EUR where 15% of the rent paid exceeds the flat 700 EUR limit applied — there is no taper-down, n.º 4 only RAISES the limit at or below 30 000 EUR. Flagged per case (renda_78e_n4_limite_majorado_nao_modelado) rather than computed, because the Lei n.º 36/2024 phase-in base is not settled from primary text for every year."
       },
       {
         "item": "Withholding-table simulation (monthly retenção na fonte)",

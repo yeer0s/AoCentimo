@@ -245,6 +245,39 @@ Never hand-edit an expected value to turn a test green.
 
 ## Changelog
 
+- **v1.1.2 (2026-09-29)** — **four findings from a cross-model (Codex) review of
+  v1.1.0/v1.1.1.** No golden expected value changed; this release is warnings, docs
+  and a guard.
+  - **Artigo 78.º-E n.º 4 (rent-deduction majoração for low rendimento coletável) was
+    silently not modelled.** For RC (after the Artigo 69.º divisor) at or below
+    30 000 €, n.º 4 RAISES the flat rent-deduction limit of n.º 1 a) — up to 1100 €
+    (900 € for 2026) at the first-bracket ceiling, tapering down to the flat base by
+    30 000 € — and n.º 10 keeps whichever limit is higher. The engine only ever
+    applied the flat base, which UNDERSTATES the deduction (OVERSTATES tax) for
+    exactly these low-RC renters, with no warning. It is still not computed — the
+    Lei n.º 36/2024 phase-in base is not settled from primary text for every year —
+    but every case where it would bind now carries
+    `renda_78e_n4_limite_majorado_nao_modelado`, proven by a golden-free self-test
+    (a 2026 17 000 €/rent 8 000 € case carries it, a 2026 60 000 €/rent 8 000 € case
+    does not).
+  - `assets/constants.json`'s `documented_approximations` had the rent entry's
+    **direction backwards**: it read as an upper-RC taper that OVERSTATES the
+    deduction. There is no taper-down; corrected to say the gap UNDERSTATES the
+    deduction for RC ≤ 30 000 €, matching `assets/constants-2026.json`'s own (already
+    correct) n.º 4 entry, which its `_intro` claims to inherit unchanged.
+  - `scripts/oracle.py` treated any `filing_status` other than `"joint"` as pooled,
+    including `"separate"` — which it does not model. It now raises `ValueError` for
+    `filing_status == "separate"` instead of silently mis-assessing it; every current
+    caller already routes separate-filing cases around the oracle, so this is a
+    guard against a future caller, not a behaviour change today.
+  - `assets/golden-cases.json`'s `_meta.method` named `scripts/validate.py`, which
+    does not exist (renamed to `scripts/estimator.py` long ago) — same stale name
+    fixed in the `scripts/estimator.py` module docstring. The three tributação-
+    separada cases (`separate_symmetric_two_earner_15`,
+    `separate_asymmetric_two_earner_17`, `separate_per_taxpayer_attribution_19`) were
+    stamped "dual-path" although the oracle skips them by design; restamped
+    "estimator-only". `_meta.asset` now names both income years the corpus covers.
+
 - **v1.1.1 (2026-09-28)** — **the 2025 mínimo de existência used the 2026 reference value.**
   Found while deriving income year 2026 (v1.1.0).
   - `minimo_existencia.valor_referencia_eur` for 2025 was **12 880 €**. The wording of
