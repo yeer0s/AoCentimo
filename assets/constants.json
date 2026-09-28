@@ -328,7 +328,7 @@
       {
         "item": "Dedução específica categoria A when social-security contributions exceed the flat limit (Artigo 25.º n.º 2)",
         "modeled": "when the case supplies ss_contributions per taxpayer",
-        "direction": "NOW MODELLED (2026-07-24) as max(flat, contribuições obrigatórias). Previously the flat 4462.15 EUR always applied, which OVERSTATED tax for anyone whose 11% contributions exceed it — about 962 EUR too much on a 60k salary, 1952 EUR on 80k. If a case omits ss_contributions the flat figure still applies, so the old error persists for cases that do not supply the field: SUPPLY IT for any gross above ~40600 EUR. NOTE: Artigo 25.º is NOT in the offline law snapshot; this rule is cited but not locally verifiable."
+        "direction": "NOW MODELLED (2026-07-24) as max(flat, contribuições obrigatórias). Previously the flat 4462.15 EUR always applied, which OVERSTATED tax for anyone whose 11% contributions exceed it — about 962 EUR too much on a 60k salary, 1952 EUR on 80k. If a case omits ss_contributions the flat figure still applies, so the old error persists for cases that do not supply the field: SUPPLY IT for any gross above ~40600 EUR. Artigo 25.º is captured verbatim in assets/law/irs25.md (2026-09-28), so the rule is locally verifiable."
       },
       {
         "item": "Majorações por dependentes e ascendentes (Artigo 78.º-A n.os 1 a 4) and the Artigo 78.º n.º 9 halving",

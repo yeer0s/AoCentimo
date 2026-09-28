@@ -73,7 +73,7 @@ Nothing ships from this skill until all of these pass. They are offline and stdl
 ```bash
 python scripts/estimator.py --selftest    # 19 golden + 9 retro cases + UNKNOWN-refusal guard
 python scripts/oracle.py --crosscheck     # two independent implementations, cent-exact
-python scripts/sweep.py                   # 47 structural + numeric checks
+python scripts/sweep.py                   # 48 structural + numeric checks
 ```
 
 Plus the sub-corpora: `python scripts/deductions.py --selftest` and
@@ -172,7 +172,7 @@ Loaded on demand — do not read all three for one question.
 
 | File | What it is |
 |---|---|
-| `assets/law/` | Verbatim offline captures of CIRS arts. 68.º, 68.º-A, 70.º, 78.º, 78.º-A…78.º-F, 83.º-A, 84.º, each with a recorded sha256 the sweep re-verifies |
+| `assets/law/` | Verbatim offline captures of CIRS arts. 12.º-B, 25.º, 31.º, 68.º, 68.º-A, 69.º, 70.º, 78.º, 78.º-A…78.º-F, 83.º-A, 84.º, 151.º, each with a recorded sha256 the sweep re-verifies; `law-cited-articles-captured` fails if the engine cites a CIRS article that is not here |
 | `assets/constants.json` | Income year 2025 — every figure cited, with `documented_approximations` |
 | `assets/constants-multiyear.json` | Income years 2022-2024, each on its own law |
 | `assets/golden-cases.json` | 19 cases, dual-path derived, stamped with `law_version` |
@@ -182,10 +182,12 @@ Loaded on demand — do not read all three for one question.
 | `assets/field-codes.json` | 61 Modelo 3 field codes + 8 planted miscodings |
 | `assets/divergence-cases.json` | Post-filing divergências corpus |
 
-**Artigo 25.º is not in the snapshot.** The engine implements its n.º 2 rule
-(dedução específica = the greater of the flat limit and mandatory social-security
-contributions), so that rule is cited but not locally verifiable. Fetch it before
-relying on a high-salary estimate.
+**Every CIRS article the engine cites is in the snapshot.** Artigo 25.º (whose n.º 2
+rule — dedução específica = the greater of the flat limit and mandatory social-security
+contributions — used to be cited but not locally verifiable) was captured on 2026-09-28,
+with 31.º, 69.º, 12.º-B and 151.º. The captures are the AT's consolidated text *as of
+the retrieval date*: for an earlier income year, check the article's own
+"Redação da Lei n.º …" notes before trusting a wording that changed since.
 
 ## When the law changes
 
@@ -224,6 +226,26 @@ Never hand-edit an expected value to turn a test green.
   reference; those years flag rather than compute them.
 
 ## Changelog
+
+- **v1.0.4 (2026-09-28)** — **five articles the engine cites were not in the snapshot,
+  and no check could tell.** Found by the weekly staleness sweep.
+  - Artigos **25.º** (dedução específica and its n.º 2 floor), **31.º** (regime
+    simplificado coefficients), **69.º** (quociente familiar) and **12.º-B** (IRS Jovem)
+    were each cited as the authority for a number the engine returns, and none was in
+    `assets/law/`. **151.º**, which Artigo 31.º n.º 1 b) points to for the 0,75
+    coefficient, is captured alongside. 12 → 17 captures, each with its sha256.
+  - New check **`law-cited-articles-captured`** reads the citations out of the engine
+    files themselves and fails on any CIRS article without a capture. The old guard was
+    a file count (≥ 11) plus a hand-kept list: it said how many articles were stored,
+    never which ones the engine needed. Exclusions are by property — another law's
+    article ("da Lei"), another code's (EBF, RGIT), or an article cited only as
+    revoked — never by number. `--self-test` now plants an uncaptured citation and
+    requires this check to go red.
+  - `law-load-bearing-articles` now also requires 25.º and 69.º, both computed against.
+  - No value changed. Re-read against the fresh captures: 8,54 × IAS (25.º n.º 1 a)),
+    0,75 / 0,35 (31.º n.º 1 b)/c)), the ÷2 × 2 quociente (69.º n.os 1 and 3) and the
+    55 × IAS ceiling (12.º-B n.º 5) all match `assets/constants.json`.
+  - 47 → 48 checks.
 
 - **v1.0.3 (2026-08-25)** — **the IRS Jovem ceiling was sourced to an article that
   no longer exists.** Found by the weekly staleness sweep.

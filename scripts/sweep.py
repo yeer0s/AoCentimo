@@ -68,7 +68,7 @@ def _int(v):
         return None
 
 
-def law_checks():
+def law_checks(plant=None):
     law_dir = os.path.join(ASSETS, "law")
     files = sorted(f for f in os.listdir(law_dir) if f.endswith(".md") and f != "INDEX.md")
     check("law-snapshot-present", len(files) >= 11, "%d CIRS articles captured offline" % len(files))
@@ -101,10 +101,70 @@ def law_checks():
           "all %d captures match their recorded digest" % len(files)
           if not stale else "TAMPERED/STALE: %s" % stale)
     # The articles the engine actually computes against must all be present.
-    need = {"irs68.md", "irs70.md", "irs78.md", "irs78a.md", "irs78e.md", "irs84.md"}
+    need = {"irs25.md", "irs68.md", "irs69.md", "irs70.md", "irs78.md", "irs78a.md",
+            "irs78e.md", "irs84.md"}
     missing = sorted(need - set(files))
     check("law-load-bearing-articles", not missing,
-          "68/70/78/78-A/78-E/84 all captured" if not missing else "MISSING %s" % missing)
+          "25/68/69/70/78/78-A/78-E/84 all captured" if not missing else "MISSING %s" % missing)
+
+    # Every CIRS article the engine or its constants CITE must be captured too. The
+    # check above is a hand-kept list, and a hand-kept list only tracks itself: until
+    # 2026-09-28, Artigos 25.º, 31.º, 69.º and 12.º-B were cited as the authority for
+    # numbers the engine returns while none of them was in the snapshot, and a
+    # file-count check (>= 11) said nothing about which files. This one reads the
+    # citations out of the engine, so a new citation without a capture goes red.
+    uncaptured = uncaptured_citations(_engine_texts() + list(plant or ()), files)
+    cited = sorted(set(_cited_articles(_engine_texts())), key=_article_sort_key)
+    check("law-cited-articles-captured", not uncaptured,
+          "all %d CIRS articles the engine cites are captured" % len(cited)
+          if not uncaptured else "CITED BUT NOT CAPTURED: %s" % uncaptured)
+
+
+# Files whose citations are claims about the law the ENGINE applies. The playbooks
+# also cite other codes (RGIT, CPPT, LGT) and would need a parser for which code a
+# citation belongs to; these files cite the CIRS unless they say otherwise.
+ENGINE_FILES = ("assets/constants.json", "assets/constants-multiyear.json",
+                "scripts/estimator.py", "scripts/oracle.py", "scripts/deductions.py")
+CITE_RE = re.compile(r"(?:Artigo|art\.)\s*(\d+)\.?\s*º(?:-([A-Z]))?", re.IGNORECASE)
+
+
+def _engine_texts():
+    out = []
+    for rel in ENGINE_FILES:
+        p = os.path.join(ROOT, *rel.split("/"))
+        if os.path.exists(p):
+            out.append(open(p, encoding="utf-8").read())
+    return out
+
+
+def _cited_articles(texts):
+    """CIRS articles cited in `texts`, as '25', '12-B'. Excluded by PROPERTY, never by
+    number: a citation followed by "da Lei" is an article of that law (Artigo 89.º da
+    Lei n.º 45-A/2024), one preceded by another code's name belongs to that code
+    (Estatuto dos Benefícios Fiscais art. 21.º), and one cited only to say it was
+    revoked needs no capture — there is no text left to verify."""
+    for t in texts:
+        for m in CITE_RE.finditer(t):
+            before, after = t[max(0, m.start() - 40):m.start()], t[m.end():m.end() + 40]
+            if re.match(r"\s+da\s+Lei", after):
+                continue
+            if re.search(r"Benef[ií]cios Fiscais|EBF|RGIT|CPPT|LGT|CIVA", before):
+                continue
+            if re.search(r"was REVOKED|revogad", after, re.IGNORECASE):
+                continue
+            yield m.group(1) + ("-" + m.group(2).upper() if m.group(2) else "")
+
+
+def _article_sort_key(a):
+    num, _, suf = a.partition("-")
+    return (int(num), suf)
+
+
+def uncaptured_citations(texts, files):
+    captured = set(files)
+    return sorted({a for a in _cited_articles(texts)
+                   if "irs%s.md" % a.replace("-", "").lower() not in captured},
+                  key=_article_sort_key)
 
 
 def constants_checks(today=None):
@@ -338,7 +398,7 @@ def pii_check():
           if not bad else "FOUND %s" % bad)
 
 
-def run(today=None, quiet=False):
+def run(today=None, quiet=False, plant=None):
     """One full pass. Returns the results list.
 
     Was module-level straight-line code. It is a function so that --self-test can
@@ -350,7 +410,7 @@ def run(today=None, quiet=False):
         print("=" * 66)
         print("UNIFIED CORRECTNESS SWEEP — portugal-irs")
         print("=" * 66)
-        law_checks()
+        law_checks(plant)
         constants_checks(today)
         oracle_checks()
         corpus_checks()
@@ -389,9 +449,10 @@ def run(today=None, quiet=False):
 def self_test():
     """Prove the gate can go red, and can come back green.
 
-    Only the year-boundary check is exercised here. The numeric guards are
-    mutation-tested in oracle.py --mutation-test; duplicating that would be
-    ceremony. What was NOT covered anywhere until now is the calendar.
+    The year-boundary check and the citation-coverage check are exercised here. The
+    numeric guards are mutation-tested in oracle.py --mutation-test; duplicating
+    that would be ceremony. What was NOT covered anywhere else is the calendar and
+    the link between a citation and its captured text.
     """
     print("--- normal state ---")
     base = run(quiet=True)
@@ -408,6 +469,15 @@ def self_test():
               "on 1 January the brackets move and this gate stayed green")
         return 1
     print("the gate caught the year rolling over: %s" % ", ".join(failed))
+
+    print("--- a CIRS citation with no capture behind it ---")
+    failed = [n for n, ok, _ in run(quiet=True, plant=["source: CIRS Artigo 999.º-Z"])
+              if not ok]
+    if "law-cited-articles-captured" not in failed:
+        print("SELF-TEST FAILED: the engine cited an article the snapshot does not "
+              "hold and this gate stayed green")
+        return 1
+    print("the gate caught the uncaptured citation: %s" % ", ".join(failed))
 
     print("--- restored ---")
     if any(not ok for _, ok, _ in run(quiet=True)):
