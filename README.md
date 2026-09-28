@@ -10,7 +10,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT"></a>
   <img src="https://img.shields.io/badge/network-zero%20calls-00a8a8" alt="offline">
   <img src="https://img.shields.io/badge/deps-stdlib%20only-00a8a8" alt="no dependencies">
-  <img src="https://img.shields.io/badge/income%20years-2022--2025-orange" alt="income years">
+  <img src="https://img.shields.io/badge/income%20years-2022--2026-orange" alt="income years">
   <a href="https://mowei.pt"><img src="https://img.shields.io/badge/by-mowei.pt-111111" alt="mowei.pt"></a>
   <a href="https://buymeacoffee.com/letsmoweis"><img src="https://img.shields.io/badge/%E2%98%95-buy%20me%20a%20coffee-FFDD00" alt="Buy me a coffee"></a>
   <a href="https://ko-fi.com/letsmowei"><img src="https://img.shields.io/badge/ko--fi-support-FF5E5B" alt="Ko-fi"></a>
@@ -33,6 +33,7 @@
 
 :fire: ***News*** :fire:
 
+- **[Sep 2026]** Income year 2026 (filed in 2027): OE 2026 brackets, the IAS for 2026, the new €900 rent limit — every figure quoted from its instrument, both engines cross-checked, six new hand-derived cases
 - **[Jul 2026]** First public release — nine fiscal defects found and fixed, three of them by an adversarial model
 - **[Jul 2026]** Dual-engine architecture: `estimator.py` and `oracle.py` must agree **to the cent** across 1 782 income profiles
 - **[Jul 2026]** Mutation testing — every guard must be proven able to *fail* before its green is believed
@@ -79,11 +80,11 @@ No `pip install`. No `requirements.txt`. Python 3.10+ standard library and nothi
 
 ```bash
 cd AoCentimo
-python scripts/estimator.py --selftest       # 19 golden + 9 retro + refusal guard
-python scripts/oracle.py --crosscheck        # two engines, cent-exact, 1782 profiles
+python scripts/estimator.py --selftest       # 25 golden + 9 retro + refusal guards
+python scripts/oracle.py --crosscheck        # two engines, cent-exact, 1782 profiles per year
 python scripts/oracle.py --mutation-test     # prove the guards can fail
 python scripts/offline_audit.py --selftest   # prove the privacy audit can fail
-python scripts/sweep.py                      # 48 checks
+python scripts/sweep.py                      # 64 checks
 ```
 
 All exit `0`. Try it with your Wi-Fi off.
@@ -93,7 +94,7 @@ All exit `0`. Try it with your Wi-Fi off.
 
 | Task | What you get |
 |---|---|
-| **Estimate** | The full liquidação — rendimento coletável → coleta → deduções → apuramento — for income years 2022-2025, each on its own law |
+| **Estimate** | The full liquidação — rendimento coletável → coleta → deduções → apuramento — for income years 2022-2026, each on its own law (2026 is still open: see below) |
 | **Recover** | Recompute a filed return, quantify what you left behind, and get the correction instrument *and its deadline* — declaração de substituição, reclamação graciosa, the art. 140.º two-year window |
 | **Maximise** | [27 deduction rows](assets/deduction-matrix.json) with caps, e-Fatura mechanics, [25 AT rulings](assets/doutrina-index.json), and the boundary cases that decide the awkward ones |
 | **Organise** | [61 Modelo 3 field codes](assets/field-codes.json), 8 planted miscodings, the document checklist, and the [divergências](assets/divergence-cases.json) that follow from filing the wrong campo |
@@ -120,14 +121,20 @@ year too high.
 
 | Guarantee | How it is enforced |
 |---|---|
-| **Two engines, cent-exact** | `estimator.py` walks art. 68.º cumulatively on marginal rates; `oracle.py` uses the taxa-média split the article itself publishes. 1 782 profiles, 30 probes sitting ±1 cent on bracket boundaries |
+| **Two engines, cent-exact** | `estimator.py` walks art. 68.º cumulatively on marginal rates; `oracle.py` uses the taxa-média split the article itself publishes. 1 782 profiles and 30 probes sitting ±1 cent on bracket boundaries, for each of income years 2025 and 2026 |
 | **Guards proven able to fail** | `--mutation-test` injects each defect a guard claims to catch. Survivors must be **declared** in a blind-spot register — and a declared entry that later becomes catchable *also* fails the run, so the register can never rot into an alibi |
 | **Refuses rather than guesses** | Any unconfirmed constant is the literal string `UNKNOWN` and the engine **raises** instead of computing. Proven by a guard test, not asserted here |
-| **Every gap has a direction** | 16 approximations declared, each stating whether it over- or understates tax. The suite fails if any lacks one |
+| **Every gap has a direction** | 16 approximations declared, plus 3 specific to income year 2026, each stating whether it over- or understates tax. The suite fails if any lacks one |
 
-One blind spot is declared and real: the 9th escalão is open-ended, so art. 68.º publishes
-no average rate for it and nothing can cross-check the 48% top rate. It is written down in
-public rather than hidden.
+One blind spot is declared and real, in both years the oracle covers: the 9th escalão is
+open-ended, so art. 68.º publishes no average rate for it and the oracle cannot cross-check
+the 48% top rate. It is written down in public rather than hidden — and for 2026 the sweep
+closes it another way, by matching every stored row against the captured statute text.
+
+**Income year 2026 is still open.** Its constants are the law as in force on 2026-09-28.
+In 2025 a July law changed that year's rates retroactively; the same can happen to 2026
+until 31 December. The default income year stays 2025 — the one being filed in 2026 — and
+the gate goes red on 1 January 2027 until the default is moved to 2026 and its law re-read.
 
 ## ⚠️ Not financial, tax or legal advice
 

@@ -21,19 +21,30 @@ Agreement to the cent across a dense sweep of rendimento coletavel is therefore
 evidence about the IMPLEMENTATION (bracket walking, boundaries, the quociente
 multiply-back, deduction ordering, the caps) from two directions.
 
-HONEST LIMIT OF THIS ORACLE. The taxa_media column is derived from the same nine
-marginal rates, so this file does NOT independently verify the rate VALUES. Those
-are corroborated elsewhere and differently: the live consolidated Artigo 68.º
-(income year 2026, Lei 73-A/2025) carries 12.5 / 15.7 / 21.2 / 24.1 / 31.1 / 34.9 /
-43.1 / 44.6 / 48, in which rows 1, 6, 7, 8 and 9 are UNCHANGED from income year 2025
-and rows 2-5 are exactly the further 0.3 p.p. cut that OE2026 applied to the 2025
-values 16 / 21.5 / 24.4 / 31.4. Every 2025 rate is thus pinned by a table that is
-still live and checkable. Do not claim this file proves more than it proves.
+HONEST LIMIT OF THIS ORACLE. For income year 2025 the taxa_media column is derived
+from the same nine marginal rates, so for 2025 this file does NOT independently
+verify the rate VALUES. Those are corroborated elsewhere and differently: the
+consolidated Artigo 68.º for income year 2026 (Lei n.º 73-A/2025) carries 12.5 /
+15.7 / 21.2 / 24.1 / 31.1 / 34.9 / 43.1 / 44.6 / 48, in which rows 1, 6, 7, 8 and 9
+are UNCHANGED from income year 2025 and rows 2-5 are exactly the further 0.3 p.p.
+cut that OE2026 applied to the 2025 values 16 / 21.5 / 24.4 / 31.4.
+
+For income year 2026 the column is stronger: taxa_media_at_ceiling in
+constants-2026.json is the statute's OWN column B, transcribed from Lei n.º
+73-A/2025, not derived from column A. column_consistency() therefore compares two
+columns the law publishes, and a mistyped 2026 marginal rate disagrees with a
+number nobody computed from it. The open 9th row is still a blind spot in both
+years (see BLIND_SPOTS). Do not claim this file proves more than it proves.
+
+The oracle carries one instance per income year that has the current-law schema
+(2025, 2026). It has no 2022-2024 path: those years are single-path, and
+BLIND_SPOTS_YEARS says so.
 
 Usage
 -----
     python scripts/oracle.py --crosscheck        # dual-path agreement (the gate)
     python scripts/oracle.py --derive            # regenerate golden expected values
+    python scripts/oracle.py --mutation-test     # prove the column guard can fail
 """
 
 import argparse
@@ -51,15 +62,33 @@ CENT = Decimal("0.01")
 # Defects this oracle structurally CANNOT catch, declared rather than hidden.
 # The mutation test fails on any survivor that is not listed here, AND on any entry
 # here that has become catchable — so the register cannot quietly rot into an alibi.
+_OPEN_TOP_ROW = (
+    "The 9th escalao is open-ended, so Artigo 68.º publishes no taxa media for it "
+    "and the average-rate path has nothing to cross-check against. Only gross "
+    "errors are caught, via rate monotonicity. A top rate changed from 48% to, "
+    "say, 47.5% would pass every gate in this skill. Cover it by re-reading "
+    "Artigo 68.º n.º 1 directly whenever the bracket table is touched."
+)
+# Keyed (income_year, row, field). One entry per year the oracle carries: the open
+# top row is structural, so it is a blind spot in EVERY year, and adding a year
+# without declaring it here makes the mutation test fail as an undeclared survivor.
 BLIND_SPOTS = {
-    (9, "taxa_normal"): (
-        "The 9th escalao is open-ended, so Artigo 68.º publishes no taxa media for it "
-        "and the average-rate path has nothing to cross-check against. Only gross "
-        "errors are caught, via rate monotonicity. A top rate changed from 48% to, "
-        "say, 47.5% would pass every gate in this skill. Cover it by re-reading "
-        "Artigo 68.º n.º 1 directly whenever the bracket table is touched."
-    ),
+    (2025, 9, "taxa_normal"): _OPEN_TOP_ROW,
+    (2026, 9, "taxa_normal"): _OPEN_TOP_ROW,
 }
+
+# Income years the estimator computes that this oracle does NOT: no second path,
+# so a green selftest on them is a regression check, never a confirmation.
+BLIND_SPOTS_YEARS = {
+    2022: "constants-multiyear.json schema: no taxa-media column, no oracle path.",
+    2023: "constants-multiyear.json schema: no taxa-media column, no oracle path.",
+    2024: "constants-multiyear.json schema: no taxa-media column, no oracle path.",
+}
+
+# Every income year with the current-law schema. The oracle reads its own copy of
+# this list rather than the estimator's, so that a year the estimator forgets is
+# still cross-checked here.
+CURRENT_LAW_FILES = ("constants.json", "constants-2026.json")
 
 
 def D(x):
@@ -77,7 +106,8 @@ class TaxaMediaOracle:
 
     def __init__(self, constants):
         self.c = constants
-        self.rows = constants["brackets_2025"]["rows"]
+        self.year = int(constants["_meta"]["income_year"])
+        self.rows = constants["brackets_%d" % self.year]["rows"]
 
     # --- Artigo 68.º via the taxa-media split ---
     # Two variants, because they answer different questions:
@@ -156,14 +186,17 @@ class TaxaMediaOracle:
             return None
         limit = D(1000) if rc > hi else D(1000) + D(1500) * (hi - rc) / (hi - lo)
         limit = min(max(limit, D(1000)), D(2500))
-        maj = self.c["global_cap_2025"]["majoracao_dependentes"]
+        maj = self.c["global_cap_%d" % self.year]["majoracao_dependentes"]
         if n_dependentes >= int(maj["min_dependentes"]):
             limit = limit * (D(1) + D(maj["pct_por_dependente"]) * D(n_dependentes))
         return cents(limit)
 
     def liquidate(self, case):
-        """Independently written liquidation chain (2025 only — this is an oracle,
-        not a second product). Mirrors the statute, not validate.py's structure."""
+        """Independently written liquidation chain for this instance's income year
+        (an oracle, not a second product). Mirrors the statute, not estimator.py's
+        structure."""
+        if int(case.get("income_year", self.year)) != self.year:
+            raise ValueError("oracle for %d handed a %s case" % (self.year, case.get("income_year")))
         ded = case.get("deductions") or {}
         tps = case.get("taxpayers", [])
         joint = case.get("filing_status") == "joint"
@@ -179,7 +212,7 @@ class TaxaMediaOracle:
             sched[y] = D(jv["ten_year_schedule_exempt_pct"]["years_5_to_7"])
         for y in (8, 9, 10):
             sched[y] = D(jv["ten_year_schedule_exempt_pct"]["years_8_to_10"])
-        ceiling = D(jv["annual_ceiling"]["ceiling_2025_eur"])
+        ceiling = D(jv["annual_ceiling"]["ceiling_%d_eur" % self.year])
 
         rc, brutos, especs = Decimal("0"), [], []
         for tp in tps:
@@ -205,7 +238,8 @@ class TaxaMediaOracle:
         # Artigo 70.º n.º 2 a) only (see constants.json minimo_existencia).
         me = self.c["minimo_existencia"]
         ref, abat = D(me["valor_referencia_eur"]), Decimal("0")
-        ceil_n4 = D(me["exclusao_n4_multiplo_ias"]) * D(14) * D(self.c["ias_2025_eur"]["value"]) * D(n_sp)
+        ceil_n4 = (D(me["exclusao_n4_multiplo_ias"]) * D(14)
+                   * D(self.c["ias_%d_eur" % self.year]["value"]) * D(n_sp))
         if sum(brutos, Decimal("0")) <= ceil_n4:
             lim_dg = D(self.c["deducoes_a_coleta"]["despesas_gerais_familiares"]["cap_eur_per_taxpayer"])
             taxa1 = D(self.rows[0]["taxa_normal"])
@@ -274,88 +308,121 @@ class TaxaMediaOracle:
 
 
 def _load():
+    """Return (estimator module, {income_year: TaxaMediaOracle})."""
     sys.path.insert(0, str(HERE))
     import estimator as V  # noqa: E402
-    constants = json.load(open(ASSETS / "constants.json", encoding="utf-8"))
-    return V, TaxaMediaOracle(constants)
+    oracles = {}
+    for name in CURRENT_LAW_FILES:
+        constants = json.load(open(ASSETS / name, encoding="utf-8"))
+        o = TaxaMediaOracle(constants)
+        if o.year in oracles:
+            raise ValueError("income year %d defined twice (%s)" % (o.year, name))
+        oracles[o.year] = o
+    return V, oracles
+
+
+def _case_year(V, case):
+    return int(case.get("income_year", V.DEFAULT_INCOME_YEAR))
 
 
 def crosscheck():
-    V, oracle = _load()
+    V, oracles = _load()
     est = V._build_estimator()
-    fails = checked = 0
+    total = 0
 
-    # 0. Stored taxa-media column vs the marginal rates it must be derived from.
-    print("taxa-media column consistency (guards a stale rate edit)")
-    bad = oracle.column_consistency()
-    for n, stored, got in bad:
-        print("  STALE row %d: stored %s, marginal rates imply %.6f" % (n, stored, got))
-    print("  %d/%d rows consistent" % (8 - len(bad), 8))
+    missing = sorted(set(est.years) - set(oracles) - set(BLIND_SPOTS_YEARS))
+    if missing:
+        print("UNDECLARED single-path income year(s) %s: the estimator computes them, "
+              "this oracle does not, and BLIND_SPOTS_YEARS does not say so" % missing)
+        total += len(missing)
 
-    # 1. Dense RC sweep through every boundary, both filing shapes.
-    print("dual-path bracket sweep (marginal-cumulative vs taxa-media split)")
-    for gross in range(0, 300000, 337):
-        for joint in (False, True):
-            tps = [{"cat_a_gross": gross}] if not joint else \
-                  [{"cat_a_gross": gross}, {"cat_a_gross": 0}]
-            case = {"taxpayers": tps, "retention_total": 0,
-                    "filing_status": "joint" if joint else "single"}
-            a, b = est.compute(case), oracle.liquidate(case)
-            checked += 1
-            for k in ("rendimento_coletavel", "coleta_bruta", "coleta_liquida"):
-                if a[k] != b[k]:
-                    fails += 1
-                    print("  MISMATCH gross=%s joint=%s %s: engine=%s oracle=%s"
-                          % (gross, joint, k, a[k], b[k]))
-                    break
-    print("  %d profiles checked, %d mismatched" % (checked, fails))
+    for year in sorted(oracles):
+        oracle = oracles[year]
+        print("=" * 66)
+        print("INCOME YEAR %d" % year)
+        print("=" * 66)
+        # 0. Stored taxa-media column vs the marginal rates it must agree with.
+        print("taxa-media column consistency (guards a stale rate edit)")
+        bad = oracle.column_consistency()
+        n_cols = sum(1 for r in oracle.rows if r["taxa_media_at_ceiling"] is not None)
+        for n, stored, got in bad:
+            print("  STALE row %s: stored %s, marginal rates imply %s" % (n, stored, got))
+        print("  %d/%d rows consistent" % (n_cols - len(bad), n_cols))
 
-    # 2. Exact bracket boundaries (+/- 1 cent) — where an off-by-one lives.
-    print("\nboundary probes")
-    edges = [r["upper_eur"] for r in oracle.rows if r["upper_eur"]] + [80000.0, 250000.0]
-    bfail = 0
-    for edge in edges:
-        for delta in (Decimal("-0.01"), Decimal("0"), Decimal("0.01")):
-            rc = D(edge) + delta
-            gross = rc + D(oracle.c["categoria_a_specific_deduction_eur"]["value"])
-            case = {"taxpayers": [{"cat_a_gross": float(gross)}], "retention_total": 0}
-            a, b = est.compute(case), oracle.liquidate(case)
-            if a["coleta_bruta"] != b["coleta_bruta"]:
-                bfail += 1
-                print("  MISMATCH at RC=%s: engine=%s oracle=%s"
-                      % (rc, a["coleta_bruta"], b["coleta_bruta"]))
-    print("  %d edge probes, %d mismatched" % (len(edges) * 3, bfail))
+        # 1. Dense RC sweep through every boundary, both filing shapes.
+        print("dual-path bracket sweep (marginal-cumulative vs taxa-media split)")
+        fails = checked = 0
+        for gross in range(0, 300000, 337):
+            for joint in (False, True):
+                tps = [{"cat_a_gross": gross}] if not joint else \
+                      [{"cat_a_gross": gross}, {"cat_a_gross": 0}]
+                case = {"income_year": year, "taxpayers": tps, "retention_total": 0,
+                        "filing_status": "joint" if joint else "single"}
+                a, b = est.compute(case), oracle.liquidate(case)
+                checked += 1
+                for k in ("rendimento_coletavel", "coleta_bruta", "coleta_liquida"):
+                    if a[k] != b[k]:
+                        fails += 1
+                        print("  MISMATCH gross=%s joint=%s %s: engine=%s oracle=%s"
+                              % (gross, joint, k, a[k], b[k]))
+                        break
+        print("  %d profiles checked, %d mismatched" % (checked, fails))
 
-    # 3. Every bundled golden case, through both paths.
-    print("\ngolden corpus dual-path")
+        # 2. Exact bracket boundaries (+/- 1 cent) — where an off-by-one lives.
+        print("boundary probes")
+        edges = [r["upper_eur"] for r in oracle.rows if r["upper_eur"]] + [80000.0, 250000.0]
+        bfail = 0
+        for edge in edges:
+            for delta in (Decimal("-0.01"), Decimal("0"), Decimal("0.01")):
+                rc = D(edge) + delta
+                gross = rc + D(oracle.c["categoria_a_specific_deduction_eur"]["value"])
+                case = {"income_year": year, "taxpayers": [{"cat_a_gross": float(gross)}],
+                        "retention_total": 0}
+                a, b = est.compute(case), oracle.liquidate(case)
+                if a["coleta_bruta"] != b["coleta_bruta"]:
+                    bfail += 1
+                    print("  MISMATCH at RC=%s: engine=%s oracle=%s"
+                          % (rc, a["coleta_bruta"], b["coleta_bruta"]))
+        print("  %d edge probes, %d mismatched" % (len(edges) * 3, bfail))
+        total += fails + bfail + len(bad)
+
+    # 3. Every bundled golden case of a year the oracle carries, through both paths.
+    print("=" * 66)
+    print("golden corpus dual-path")
     golden = json.load(open(ASSETS / "golden-cases.json", encoding="utf-8"))
-    gfail = gchecked = 0
+    gfail = gchecked = sep = single_path = 0
     for case in golden["cases"]:
         if case.get("filing_status") == "separate":
+            sep += 1
             continue  # oracle models single/joint only, by design
+        year = _case_year(V, case)
+        if year not in oracles:
+            single_path += 1
+            continue
         gchecked += 1
-        a, b = est.compute(case), oracle.liquidate(case)
+        a, b = est.compute(case), oracles[year].liquidate(case)
         if a["coleta_liquida"] != b["coleta_liquida"] or a["apuramento"] != b["apuramento"]:
             gfail += 1
-            print("  MISMATCH %s: engine CL=%s oracle CL=%s"
-                  % (case["id"], a["coleta_liquida"], b["coleta_liquida"]))
-    skipped = len(golden["cases"]) - gchecked
+            print("  MISMATCH %s (y%d): engine CL=%s oracle CL=%s"
+                  % (case["id"], year, a["coleta_liquida"], b["coleta_liquida"]))
     print("  %d of %d cases dual-pathed, %d mismatched (%d tributação-separada cases "
-          "are single-path — the oracle models single/joint only)"
-          % (gchecked, len(golden["cases"]), gfail, skipped))
+          "are single-path — the oracle models single/joint only; %d are in a year "
+          "the oracle does not carry)"
+          % (gchecked, len(golden["cases"]), gfail, sep, single_path))
+    total += gfail + single_path
 
-    total = fails + bfail + gfail + len(bad)
     print("\n" + "=" * 66)
-    print("ORACLE CROSSCHECK: %s (%d disagreements)"
-          % ("PASS" if total == 0 else "FAIL", total))
+    print("ORACLE CROSSCHECK: %s (%d disagreements) — income years %s"
+          % ("PASS" if total == 0 else "FAIL", total, ", ".join(map(str, sorted(oracles)))))
     return 0 if total == 0 else 1
 
 
 def derive():
-    """Recompute every 2025 golden expected value through BOTH paths and rewrite
-    the corpus only where they agree. A case the two paths disagree on is left
-    untouched and reported — it is a finding, not a value to publish."""
-    V, oracle = _load()
+    """Recompute every golden expected value through BOTH paths and rewrite the
+    corpus only where they agree. A case the two paths disagree on is left
+    untouched and reported — it is a finding, not a value to publish. The
+    law_version stamp is written per income year, never across years."""
+    V, oracles = _load()
     est = V._build_estimator()
     path = ASSETS / "golden-cases.json"
     golden = json.load(open(path, encoding="utf-8"))
@@ -363,7 +430,12 @@ def derive():
     for case in golden["cases"]:
         got = est.compute(case)
         if case.get("filing_status") != "separate":
-            orc = oracle.liquidate(case)
+            year = _case_year(V, case)
+            if year not in oracles:
+                print("SKIP %s — no oracle for income year %d" % (case["id"], year))
+                skipped += 1
+                continue
+            orc = oracles[year].liquidate(case)
             if orc["coleta_liquida"] != got["coleta_liquida"]:
                 print("SKIP %s — dual-path disagreement (engine %s / oracle %s)"
                       % (case["id"], got["coleta_liquida"], orc["coleta_liquida"]))
@@ -377,53 +449,65 @@ def derive():
             for e_tp, g_tp in zip(exp["per_taxpayer"], got["per_taxpayer"]):
                 e_tp["coleta_liquida"] = float(g_tp["coleta_liquida"])
                 e_tp["apuramento"] = float(g_tp["apuramento"])
-        case["derivation"] = ("dual-path: scripts/validate.py (marginal-cumulative) and "
+        case["derivation"] = ("dual-path: scripts/estimator.py (marginal-cumulative) and "
                               "scripts/oracle.py (taxa-media split) agree to the cent")
         updated += 1
-    golden["_meta"]["law_version"] = "Artigo 68.º na redação da Lei n.º 55-A/2025, de 22 de julho"
-    golden["_meta"]["derived_on"] = "2026-07-24"
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(golden, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
-    print("derived %d case(s), skipped %d" % (updated, skipped))
+    print("derived %d case(s), skipped %d — restamp _meta.law_version_by_year for any "
+          "year whose law changed" % (updated, skipped))
     return 1 if skipped else 0
 
 
 def mutation_test():
-    """Prove the consistency guard CAN fail.
+    """Prove the consistency guard CAN fail, in every income year it guards.
 
     A gate that has only ever been observed green is not evidence. This injects
     each defect the guard claims to catch and asserts the guard reports it. If a
     mutation survives, the guard is decorative and the run exits non-zero.
     """
-    _, oracle = _load()
+    _, oracles = _load()
     survivors = []
     print("mutation test — injecting the defects the guard claims to catch")
-    for row in oracle.rows:
-        for field, delta in (("taxa_normal", 0.001), ("taxa_media_at_ceiling", 0.001)):
-            original = row[field]
-            if original is None:
-                continue
-            row[field] = round(original + delta, 6)
-            caught = bool(oracle.column_consistency())
-            row[field] = original
-            if not caught:
-                survivors.append((row["n"], field))
-            print("  row %d %-22s +0.001 -> %s"
-                  % (row["n"], field, "caught" if caught else "SURVIVED"))
-    assert not oracle.column_consistency(), "mutation test failed to restore state"
+    for year in sorted(oracles):
+        oracle = oracles[year]
+        # A baseline that is already red cannot tell a caught mutation from the
+        # existing defect. Say so and fail, rather than crash the sweep that calls
+        # this and take every later check down with it.
+        if oracle.column_consistency():
+            print("  y%d: the UNMUTATED table already fails column_consistency — fix the "
+                  "rates first; mutation testing a red baseline proves nothing" % year)
+            print("=" * 66)
+            print("MUTATION TEST: FAIL (baseline for %d is not green)" % year)
+            return 1
+        for row in oracle.rows:
+            for field, delta in (("taxa_normal", 0.001), ("taxa_media_at_ceiling", 0.001)):
+                original = row[field]
+                if original is None:
+                    continue
+                row[field] = round(original + delta, 6)
+                caught = bool(oracle.column_consistency())
+                row[field] = original
+                if not caught:
+                    survivors.append((year, row["n"], field))
+                print("  y%d row %d %-22s +0.001 -> %s"
+                      % (year, row["n"], field, "caught" if caught else "SURVIVED"))
+        assert not oracle.column_consistency(), "mutation test failed to restore state"
 
     registered = set(BLIND_SPOTS)
     found = set(survivors)
     unregistered = sorted(found - registered)
     stale = sorted(registered - found)
-    for n, field in unregistered:
-        print("  UNREGISTERED BLIND SPOT: row %d %s is unguarded and undeclared" % (n, field))
-    for n, field in stale:
-        print("  STALE REGISTER ENTRY: row %d %s is now caught — delete it from "
-              "BLIND_SPOTS so the register keeps meaning something" % (n, field))
-    for n, field in sorted(found & registered):
-        print("  known blind spot (declared): row %d %s — %s" % (n, field, BLIND_SPOTS[(n, field)]))
+    for year, n, field in unregistered:
+        print("  UNREGISTERED BLIND SPOT: y%d row %d %s is unguarded and undeclared"
+              % (year, n, field))
+    for year, n, field in stale:
+        print("  STALE REGISTER ENTRY: y%d row %d %s is now caught — delete it from "
+              "BLIND_SPOTS so the register keeps meaning something" % (year, n, field))
+    for year, n, field in sorted(found & registered):
+        print("  known blind spot (declared): y%d row %d %s — %s"
+              % (year, n, field, BLIND_SPOTS[(year, n, field)]))
     ok = not unregistered and not stale
     print("=" * 66)
     print("MUTATION TEST: %s (%d survivor(s), %d declared, %d undeclared, %d stale)"
