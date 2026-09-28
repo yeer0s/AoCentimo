@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-Portugal IRS estimator + golden-case validator (multi-year, income years 2022-2025).
+Portugal IRS estimator + golden-case validator (multi-year, income years 2022-2026).
 
 MOAT asset for the portugal-irs-estimator skill. Plain Python 3.10+ stdlib only:
 no network, no environment access, no eval/exec/subprocess, no writes outside the
 skill folder. Fiscal constants are loaded from:
   - assets/constants.json            (income year 2025, declared 2026)
+  - assets/constants-2026.json       (income year 2026, declared 2027)
   - assets/constants-multiyear.json  (income years 2022, 2023, 2024)
 
-The estimator is YEAR-PARAMETERIZED. A case with no "income_year" defaults to 2025
-and reproduces the original single-year behaviour exactly. A case with
-"income_year": 2022|2023|2024 is computed against that year's own bracket table,
+The estimator is YEAR-PARAMETERIZED. A case with no "income_year" defaults to
+DEFAULT_INCOME_YEAR (2025 — the year being filed in the current calendar year) and
+reproduces the original single-year behaviour exactly. A case with
+"income_year": 2022|2023|2024|2026 is computed against that year's own bracket table,
 IAS, specific deduction, rent cap, global-cap endpoints, and IRS Jovem schedule.
 
 Any year-value that could not be confirmed is stored in the constants as the literal
@@ -41,7 +43,18 @@ getcontext().prec = 34
 HERE = Path(__file__).resolve().parent
 ASSETS = HERE.parent / "assets"
 CONSTANTS_PATH = ASSETS / "constants.json"
+# Income years whose constants carry the full current-law schema (brackets with the
+# published taxa-média column, solidariedade, mínimo de existência, the 78.º-A
+# majorações). One file per income year; the year is read from the file's own
+# _meta.income_year, never from its name.
+CURRENT_LAW_PATHS = (CONSTANTS_PATH, ASSETS / "constants-2026.json")
 MULTIYEAR_PATH = ASSETS / "constants-multiyear.json"
+
+# The income year a case without "income_year" is computed for: the one being FILED
+# in the current calendar year (income 2025, filed April-June 2026). It is not the
+# newest year carried. sweep.py `constants-default-year` goes red on 1 January 2027,
+# when the filing season moves on to income year 2026 and this must be flipped.
+DEFAULT_INCOME_YEAR = 2025
 GOLDEN_PATH = ASSETS / "golden-cases.json"
 RETRO_PATH = ASSETS / "retro-cases.json"
 
@@ -104,16 +117,38 @@ class Estimator:
     chain is identical across years; only the numbers differ.
     """
 
-    def __init__(self, constants_2025, multiyear=None):
-        self.years = {2025: self._normalize_2025(constants_2025)}
+    def __init__(self, current_law, multiyear=None):
+        # `current_law`: one constants dict (constants.json schema) or a list of them,
+        # one per income year. A year appearing twice is refused, never merged.
+        if isinstance(current_law, dict):
+            current_law = [current_law]
+        self.years = {}
+        for c in current_law:
+            year = int(c["_meta"]["income_year"])
+            if year in self.years:
+                raise ValueError("income year %s is defined by two constants files" % year)
+            self.years[year] = self._normalize_current(c)
         if multiyear:
             for ystr, block in multiyear.get("years", {}).items():
+                if int(ystr) in self.years:
+                    raise ValueError("income year %s is defined by two constants files" % ystr)
                 self.years[int(ystr)] = self._normalize_multiyear(block, int(ystr))
 
-    # ---- normalisation: constants.json (2025) ----
-    def _normalize_2025(self, c):
-        brackets = [(D(r["lower_eur"]), r["upper_eur"], D(r["taxa_normal"]))
-                    for r in c["brackets_2025"]["rows"]]
+    # ---- normalisation: current-law schema (constants.json 2025, constants-2026.json) ----
+    def _normalize_current(self, c):
+        year = int(c["_meta"]["income_year"])
+        try:
+            return self._normalize_current_unchecked(c, year)
+        except UnknownValueError as exc:
+            return {"blocked": str(exc)}
+
+    def _normalize_current_unchecked(self, c, year):
+        # Year-keyed blocks carry the year in their NAME (brackets_2025, ias_2026_eur),
+        # so a file cannot be read as another year's by accident: the lookup fails.
+        brackets = []
+        for r in _require_known(c["brackets_%d" % year]["rows"], year, "brackets"):
+            brackets.append((D(r["lower_eur"]), r["upper_eur"],
+                             D(_require_known(r["taxa_normal"], year, "brackets.taxa_normal"))))
         jv = c["irs_jovem_current_law"]
         pct = {
             1: D(jv["ten_year_schedule_exempt_pct"]["year_1"]),
@@ -124,19 +159,24 @@ class Estimator:
             pct[y] = D(jv["ten_year_schedule_exempt_pct"]["years_5_to_7"])
         for y in (8, 9, 10):
             pct[y] = D(jv["ten_year_schedule_exempt_pct"]["years_8_to_10"])
-        ceiling = D(jv["annual_ceiling"]["ceiling_2025_eur"])
+        ceiling = D(_require_known(jv["annual_ceiling"]["ceiling_%d_eur" % year],
+                                   year, "irs_jovem.annual_ceiling"))
         cap = {y: ceiling for y in range(1, 11)}
         ded = c["deducoes_a_coleta"]
+        gc = c["global_cap_%d" % year]
+        me_ref = c["minimo_existencia"]["valor_referencia_eur"]
         return {
             "brackets": brackets,
-            "spec_a": D(c["categoria_a_specific_deduction_eur"]["value"]),
+            "spec_a": D(_require_known(c["categoria_a_specific_deduction_eur"]["value"],
+                                       year, "categoria_a_specific_deduction_eur")),
             "jovem_pct": pct,
             "jovem_cap": cap,
             "jovem_max_year": 10,
             "dep_fixed": D(ded["dependent_fixed_eur"]["value"]),
             "health": (D(ded["health"]["rate"]), D(ded["health"]["cap_eur"])),
             "edu": (D(ded["education"]["rate"]), D(ded["education"]["cap_eur"])),
-            "rent": (D(ded["rent_habitacao"]["rate"]), D(ded["rent_habitacao"]["cap_eur"])),
+            "rent": (D(ded["rent_habitacao"]["rate"]),
+                     D(_require_known(ded["rent_habitacao"]["cap_eur"], year, "rent.cap_eur"))),
             "ppr_rate": D(ded["ppr"]["rate"]),
             "ppr_bands": {k: D(v) for k, v in ded["ppr"]["cap_by_age_band_eur"].items()},
             "gen_rate": D(ded["despesas_gerais_familiares"]["rate"]),
@@ -158,17 +198,18 @@ class Estimator:
             "gc_slope": Decimal("1500"),
             "gc_clamp_low": Decimal("1000"),
             "gc_clamp_high": Decimal("2500"),
-            "gc_maj_min_deps": int(c["global_cap_2025"]["majoracao_dependentes"]["min_dependentes"]),
-            "gc_maj_pct": D(c["global_cap_2025"]["majoracao_dependentes"]["pct_por_dependente"]),
+            "gc_maj_min_deps": int(gc["majoracao_dependentes"]["min_dependentes"]),
+            "gc_maj_pct": D(gc["majoracao_dependentes"]["pct_por_dependente"]),
             "deps": {k: D(v) for k, v in c["deducoes_a_coleta"]["dependentes_ascendentes"].items()
                      if isinstance(v, (int, float)) and not isinstance(v, bool)},
             "dep_half_factor": D(c["deducoes_a_coleta"]["reducao_dependente_em_duas_declaracoes"]["factor"]),
             "solidarity": [(D(b["lower_eur"]), b["upper_eur"], D(b["rate"]))
                            for b in c["taxa_adicional_solidariedade"]["bands"]],
-            "me_ref": D(c["minimo_existencia"]["valor_referencia_eur"]),
+            # UNKNOWN here is not a refusal: minimo_existencia() flags the year instead.
+            "me_ref": me_ref if me_ref == UNKNOWN else D(me_ref),
             "me_excl_mult": D(c["minimo_existencia"]["exclusao_n4_multiplo_ias"]),
             "me_taper": c["minimo_existencia"]["taper_L_formula"],
-            "ias": D(c["ias_2025_eur"]["value"]),
+            "ias": D(_require_known(c["ias_%d_eur" % year]["value"], year, "ias")),
             "coeff_default": D(c["categoria_b_simplified"]["coefficient_services_151"]),
             "blocked": None,
         }
@@ -663,7 +704,7 @@ class Estimator:
         }
 
     def compute(self, case):
-        year = case.get("income_year", 2025)
+        year = case.get("income_year", DEFAULT_INCOME_YEAR)
         p = self._params_for(year)
 
         filing = case.get("filing_status", "single")
@@ -695,16 +736,17 @@ class Estimator:
 
 
 def _build_estimator():
-    constants = load_json(CONSTANTS_PATH)
+    current = [load_json(p) for p in CURRENT_LAW_PATHS]
     multiyear = load_json(MULTIYEAR_PATH) if MULTIYEAR_PATH.exists() else None
-    return Estimator(constants, multiyear)
+    return Estimator(current, multiyear)
 
 
 def run_golden_selftest(est):
     golden = load_json(GOLDEN_PATH)
     cases = golden["cases"]
     passed = failed = 0
-    print("2025 golden corpus (income year 2025, declared 2026)")
+    years = sorted({int(c.get("income_year", DEFAULT_INCOME_YEAR)) for c in cases})
+    print("Golden corpus (income years %s)" % ", ".join(map(str, years)))
     print("-" * 66)
     for case in cases:
         got = est.compute(case)
@@ -722,16 +764,17 @@ def run_golden_selftest(est):
                              and g_tp["apuramento"] == cents(e_tp["apuramento"]))
         if ok:
             passed += 1
-            print("PASS  %-34s CL=%s  apur=%s  %s"
-                  % (case["id"], got["coleta_liquida"], got["apuramento"], got["outcome"]))
+            print("PASS  %-34s y%s CL=%s  apur=%s  %s"
+                  % (case["id"], got["income_year"], got["coleta_liquida"],
+                     got["apuramento"], got["outcome"]))
         else:
             failed += 1
-            print("FAIL  %-34s" % case["id"])
+            print("FAIL  %-34s y%s" % (case["id"], got["income_year"]))
             print("      expected CL=%s apur=%s %s"
                   % (cents(exp["coleta_liquida"]), cents(exp["apuramento"]), exp["outcome"]))
             print("      got      CL=%s apur=%s %s"
                   % (got["coleta_liquida"], got["apuramento"], got["outcome"]))
-    print("2025 golden: %d/%d passed, %d failed (bar %s)."
+    print("golden: %d/%d passed, %d failed (bar %s)."
           % (passed, passed + failed, failed, golden["_meta"]["min_bar"]))
     return passed, failed
 
@@ -803,27 +846,47 @@ def run_unknown_guard_test(est):
         "categoria_b_simplified": {"coefficient_services_151": 0.75},
     }
     est.years[1900] = est._normalize_multiyear(synthetic, 1900)
+    fails = 0
     try:
         est.compute({"income_year": 1900, "taxpayers": [{"cat_a_gross": 20000.0}]})
+        print("FAIL  did NOT refuse an UNKNOWN-blocked year")
+        fails += 1
     except UnknownValueError:
         print("PASS  refused to compute UNKNOWN-blocked income year 1900")
-        del est.years[1900]
-        return 0
     del est.years[1900]
-    print("FAIL  did NOT refuse an UNKNOWN-blocked year")
-    return 1
+
+    # The current-law schema (constants.json, constants-2026.json) has its own
+    # normaliser; prove IT refuses too. The newest year's real file is loaded and
+    # one load-bearing figure — the rent limit, the cap that moved in 2026 — is
+    # replaced by UNKNOWN under a synthetic year.
+    newest = load_json(CURRENT_LAW_PATHS[-1])
+    newest["_meta"]["income_year"] = 1901
+    for base in ("brackets_%d", "ias_%d_eur", "global_cap_%d"):
+        newest[base % 1901] = newest.pop(base % max(est.years))
+    jv = newest["irs_jovem_current_law"]["annual_ceiling"]
+    jv["ceiling_1901_eur"] = jv.pop("ceiling_%d_eur" % max(est.years))
+    newest["deducoes_a_coleta"]["rent_habitacao"]["cap_eur"] = UNKNOWN
+    est.years[1901] = est._normalize_current(newest)
+    try:
+        est.compute({"income_year": 1901, "taxpayers": [{"cat_a_gross": 20000.0}]})
+        print("FAIL  did NOT refuse an UNKNOWN current-law value (rent.cap_eur)")
+        fails += 1
+    except UnknownValueError:
+        print("PASS  refused to compute current-law year 1901 with rent.cap_eur UNKNOWN")
+    del est.years[1901]
+    return 1 if fails else 0
 
 
 def run_selftest():
     est = _build_estimator()
-    print("IRS estimator self-test (multi-year 2022-2025)")
+    print("IRS estimator self-test (multi-year %d-%d)" % (min(est.years), max(est.years)))
     print("=" * 66)
     gp, gf = run_golden_selftest(est)
     rp, rf = run_retro_selftest(est)
     guard = run_unknown_guard_test(est)
     print("=" * 66)
     total_fail = gf + rf + guard
-    print("SUMMARY: 2025 golden %d passed/%d failed | retro %d passed/%d failed | "
+    print("SUMMARY: golden %d passed/%d failed | retro %d passed/%d failed | "
           "unknown-guard %s" % (gp, gf, rp, rf, "PASS" if guard == 0 else "FAIL"))
     return 0 if total_fail == 0 else 1
 
@@ -884,7 +947,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(
         description="IRS multi-year estimator: --selftest (gate) or score a candidate JSON.")
     parser.add_argument("--selftest", action="store_true",
-                        help="Validate the 2025 golden set + retro corpus + unknown-guard (gate).")
+                        help="Validate the golden set + retro corpus + unknown-guard (gate).")
     parser.add_argument("candidate", nargs="?", default=None,
                         help="Path to a candidate JSON output to score against the estimator.")
     args = parser.parse_args(argv)

@@ -1,6 +1,6 @@
 ---
 name: portugal-irs
-description: Portuguese personal income tax (IRS) — estimate the liquidação for income years 2022-2025, find recoverable money in already-filed returns, maximise deduções à coleta against the e-Fatura calendar, and organise a filing dossier with correct Modelo 3 field codes. Offline, deterministic, refuses to guess. Use when the user asks about IRS, Modelo 3, anexos A-J, deduções à coleta, e-Fatura validation, reembolso/nota de cobrança, escalões, IRS Jovem, recibos verdes, mínimo de existência, reclamação graciosa or declaração de substituição. NOT a substitute for a contabilista certificado (OCC).
+description: Portuguese personal income tax (IRS) — estimate the liquidação for income years 2022-2026, find recoverable money in already-filed returns, maximise deduções à coleta against the e-Fatura calendar, and organise a filing dossier with correct Modelo 3 field codes. Offline, deterministic, refuses to guess. Use when the user asks about IRS, Modelo 3, anexos A-J, deduções à coleta, e-Fatura validation, reembolso/nota de cobrança, escalões, IRS Jovem, recibos verdes, mínimo de existência, reclamação graciosa or declaração de substituição. NOT a substitute for a contabilista certificado (OCC).
 license: MIT
 homepage: https://mowei.pt
 ---
@@ -48,8 +48,9 @@ file, one gate.
 ## What this skill does
 
 1. **Estimate** the IRS liquidação — rendimento coletável → coleta → deduções →
-   apuramento — for income years 2022, 2023, 2024 and 2025, each against the law as
-   it actually stood that year.
+   apuramento — for income years 2022, 2023, 2024, 2025 and 2026, each against the law
+   as it actually stood (or, for 2026, stands so far) that year. A case that names no
+   income year is computed for 2025, the year being filed in 2026.
 2. **Recover** money from returns already filed: recompute a past year, quantify what
    was missed, and name the correction instrument and its deadline.
 3. **Maximise** deduções à coleta against the e-Fatura calendar, with the doutrina
@@ -71,9 +72,9 @@ it says so and routes to an OCC. That refusal is the feature; do not engineer ar
 Nothing ships from this skill until all of these pass. They are offline and stdlib-only.
 
 ```bash
-python scripts/estimator.py --selftest    # 19 golden + 9 retro cases + UNKNOWN-refusal guard
+python scripts/estimator.py --selftest    # 25 golden + 9 retro cases + UNKNOWN-refusal guards
 python scripts/oracle.py --crosscheck     # two independent implementations, cent-exact
-python scripts/sweep.py                   # 48 structural + numeric checks
+python scripts/sweep.py                   # 64 structural + numeric checks
 ```
 
 Plus the sub-corpora: `python scripts/deductions.py --selftest` and
@@ -83,9 +84,12 @@ Plus the sub-corpora: `python scripts/deductions.py --selftest` and
 
 `scripts/estimator.py` walks Artigo 68.º cumulatively on the marginal rates.
 `scripts/oracle.py` computes the same liquidação by the **taxa-média split** the
-article itself publishes. They must agree to the cent across 1 782 income profiles,
-30 probes sitting exactly on bracket boundaries (±1 cent) — including both global-cap
-taper endpoints — and every golden case.
+article itself publishes. For each income year the oracle carries (2025 and 2026) they
+must agree to the cent across 1 782 income profiles and 30 probes sitting exactly on
+bracket boundaries (±1 cent) — including both global-cap taper endpoints — and on every
+golden case of that year. For 2026 the taxa-média column is the statute's own column B,
+transcribed from Lei n.º 73-A/2025 rather than derived, so the cross-check compares two
+columns the law publishes.
 
 This exists because of a specific failure. Until 2026-07-24 every expected value in
 the golden corpus was hand-derived by the author of the engine, from that author's
@@ -105,10 +109,13 @@ survives must be declared in `oracle.BLIND_SPOTS`; an undeclared survivor fails 
 run, and so does a declared entry that has since become catchable — the register
 cannot rot into an alibi.
 
-One blind spot is currently declared and is real: **the 9th escalão is open-ended, so
-Artigo 68.º publishes no taxa média for it and the cross-check has nothing to compare
-against.** A top rate silently changed from 48% to 47.5% would pass every gate here.
-Re-read Artigo 68.º n.º 1 directly whenever the bracket table is touched.
+One blind spot is currently declared, once per income year the oracle covers, and is
+real: **the 9th escalão is open-ended, so Artigo 68.º publishes no taxa média for it and
+the cross-check has nothing to compare against.** For income year 2025 a top rate
+silently changed from 48% to 47.5% would still pass every gate here. For 2026 it would
+not: `constants-2026-values-match-law` renders every stored row back into the statute's
+wording and looks it up in the captured Artigo 68.º, so the sweep catches what the oracle
+cannot. Re-read Artigo 68.º n.º 1 directly whenever the 2025 table is touched.
 
 ## Refusal discipline
 
@@ -121,13 +128,15 @@ Re-read Artigo 68.º n.º 1 directly whenever the bracket table is touched.
   returned as a whole one.
 - Every gap in `constants.json → documented_approximations` carries a **direction of
   error** — whether it overstates or understates tax. The sweep fails if any entry
-  lacks one. Sixteen are currently declared.
+  lacks one. Sixteen are currently declared, plus three specific to income year 2026
+  in `constants-2026.json`, which inherits the rest.
 
 ## Modes
 
 **Research** — establish the income year and the law version for it. Never reuse a
-figure across income years; the 2026 table (Lei n.º 73-A/2025) is already live in the
-consolidated CIRS and is *not* the 2025 table.
+figure across income years; the 2026 table (Lei n.º 73-A/2025) is *not* the 2025
+table, and income year 2026 must be named explicitly (`"income_year": 2026`) until the
+default moves on 1 January 2027.
 **Plan** — find the binding constraint: the category where the household leaks most,
 or the year where recovery is still in time. Optimising a non-binding category is
 motion, not progress.
@@ -174,9 +183,10 @@ Loaded on demand — do not read all three for one question.
 |---|---|
 | `assets/law/` | Verbatim offline captures of CIRS arts. 12.º-B, 25.º, 31.º, 68.º, 68.º-A, 69.º, 70.º, 78.º, 78.º-A…78.º-F, 83.º-A, 84.º, 151.º, each with a recorded sha256 the sweep re-verifies; `law-cited-articles-captured` fails if the engine cites a CIRS article that is not here |
 | `assets/constants.json` | Income year 2025 — every figure cited, with `documented_approximations` |
+| `assets/constants-2026.json` | Income year 2026 (filed 2027) — every figure quoted from its instrument; each CIRS phrase re-checked against `assets/law/` by the sweep. **Provisional**: the year is still open |
 | `assets/constants-multiyear.json` | Income years 2022-2024, each on its own law |
-| `assets/golden-cases.json` | 19 cases, dual-path derived, stamped with `law_version` |
-| `assets/retro-cases.json` | 9 recovery cases with correction instrument and deadline. **Single-path** — the oracle is 2025-only, so a green retro run is a regression check, not confirmation |
+| `assets/golden-cases.json` | 25 cases (19 for 2025, 6 for 2026), dual-path, stamped with `law_version` per income year |
+| `assets/retro-cases.json` | 9 recovery cases with correction instrument and deadline. **Single-path** — the oracle covers 2025 and 2026 only, so a green retro run is a regression check, not confirmation |
 | `assets/deduction-matrix.json` | 27 deduction rows, every factual cell cited-or-UNKNOWN |
 | `assets/doutrina-index.json` | 25 AT rulings, all with source URLs |
 | `assets/field-codes.json` | 61 Modelo 3 field codes + 8 planted miscodings |
@@ -204,9 +214,17 @@ engine broke" from "the law changed", because the corpus carried no law version.
    a case they disagree on is reported, not published.
 5. Bump `_meta.law_version`.
 6. Restamp `_meta.declared_year` to the filing year the constants now describe, and
-   `_meta.as_of` to the date you verified them. `constants-declared-year` goes red on
-   1 January precisely so this step cannot be forgotten — it is the check telling you
-   the Orçamento do Estado has landed, not a fault in the engine.
+   `_meta.as_of` to the date you verified them. Two checks watch the calendar, because
+   it asks two questions. `constants-declared-year` goes red on 1 January when no
+   carried income year is filed that calendar year — add the next year's file.
+   `constants-default-year` goes red on 1 January whenever the default income year
+   (`estimator.DEFAULT_INCOME_YEAR`) is last season's — move it, and re-read that
+   year's law first, because a year is only closed on 31 December. Both are the gate
+   telling you the Orçamento do Estado has landed, not a fault in the engine.
+7. A new income year gets its own `constants-<year>.json`, listed in
+   `estimator.CURRENT_LAW_PATHS`, `oracle.CURRENT_LAW_FILES` and
+   `sweep.CURRENT_LAW_FILES`, its own `BLIND_SPOTS` entry for the open top row, and at
+   least six hand-derived golden cases carrying `income_year` and `law_version`.
 
 Never hand-edit an expected value to turn a test green.
 
@@ -226,6 +244,58 @@ Never hand-edit an expected value to turn a test green.
   reference; those years flag rather than compute them.
 
 ## Changelog
+
+- **v1.1.0 (2026-09-28)** — **income year 2026 (filed in 2027).** No 2022-2025 figure
+  changed; the default income year is still 2025, the one being filed this year.
+  - New `assets/constants-2026.json`. Every figure is quoted from the instrument that
+    fixed it: the Artigo 68.º table from **Lei n.º 73-A/2025, de 30 de dezembro** (OE
+    2026), the IAS of **537,13 €** from **Portaria n.º 480-A/2025/1, de 30 de
+    dezembro**, and the rent limit from **Decreto-Lei n.º 97/2026, de 20 de maio**. Each
+    CIRS phrase was checked verbatim against the live AT text and against the capture in
+    `assets/law/`; the new check `constants-2026-quotes-in-capture` re-reads the
+    captures on every run, so a figure edited without its law goes red.
+  - What moved for 2026: brackets 2-5 cut by a further 0,3 p.p. and every ceiling
+    raised (first 8 342, top 86 634); the dedução específica is 8,54 × IAS = 4 587,09;
+    the IRS Jovem ceiling 55 × IAS = 29 542,15; the mínimo de existência reference
+    stays at 12 880 € (1,5 × 14 × IAS is lower); the global-cap taper now starts at
+    8 342. **The rent limit rises from 700 € to 900 €** — Decreto-Lei n.º 97/2026 sets
+    1 000 € from 2027 and 900 € for 2026, overtaking the Lei n.º 36/2024 phase-in.
+    Everything else was re-read and is unchanged.
+  - For 2026 the taxa-média column is **the statute's own column B**, not a column
+    derived from the marginal rates. The oracle's consistency check therefore compares
+    two columns the law publishes, and a mistyped 2026 rate disagrees with a number
+    nobody computed from it. Reading column B literally, as Artigo 68.º n.º 2 does,
+    differs from the exact average by up to 0,23 € per quociente; that is now declared
+    with its sign per escalão rather than hidden inside "arredondamento".
+  - The oracle is no longer 2025-only: one instance per current-law year, each with its
+    own 1 782-profile sweep and 30 boundary probes, and the mutation test now corrupts
+    2026 rates too. The open 9th escalão is declared as a blind spot for each year.
+    2022-2024 remain single-path, and `oracle.BLIND_SPOTS_YEARS` now says so in code.
+  - Six hand-derived 2026 golden cases, arithmetic shown in each: a single earner, a
+    joint couple under the quociente, a high earner paying the adicional de
+    solidariedade, a filer exactly at the mínimo de existência reference, IRS Jovem at
+    the new ceiling, and the 900 € rent limit. Both engines agree with every one.
+  - **The year boundary now asks two questions.** `constants-declared-year` asks whether
+    the repo carries the income year being filed this calendar year at all — green on
+    1 January 2027, red on 1 January 2028. The new `constants-default-year` asks whether
+    a case that names no year gets that one — red on 1 January 2027, when the default
+    must move to 2026 and the 2026 law must be re-read, because a year is not closed
+    until 31 December (Lei n.º 55-A/2025 changed 2025's rates in July). `--self-test`
+    drives both dates and demands exactly those verdicts.
+  - `single-constants-source` is now a property — every income year defined by exactly
+    one file — instead of a list of two file names that a new year would have broken.
+  - Year-scoped checks carry the year in their name (`bracket-rows:2026`). A second
+    UNKNOWN-refusal guard proves the current-law schema refuses too.
+  - Income year 2026 is **provisional**: its constants are the law as in force on
+    2026-09-28, and `constants-2026.json` says so.
+  - `constants-2026-values-match-law` renders every stored 2026 bracket row — the open
+    9th included — and the rent limit, the mínimo de existência reference and the
+    solidariedade floor back into the statute's wording and requires them in the
+    capture. A 48 → 47,5 % top-rate edit, which the oracle declares it cannot see, now
+    turns the sweep red for 2026; `--self-test` plants exactly that edit.
+  - `oracle.py --mutation-test` reports a red baseline as a FAIL instead of crashing
+    the sweep that calls it.
+  - 48 → 64 checks.
 
 - **v1.0.4 (2026-09-28)** — **five articles the engine cites were not in the snapshot,
   and no check could tell.** Found by the weekly staleness sweep.

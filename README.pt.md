@@ -10,7 +10,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-green.svg" alt="MIT"></a>
   <img src="https://img.shields.io/badge/rede-zero%20chamadas-00a8a8" alt="offline">
   <img src="https://img.shields.io/badge/depend%C3%AAncias-s%C3%B3%20stdlib-00a8a8" alt="sem dependências">
-  <img src="https://img.shields.io/badge/anos-2022--2025-orange" alt="anos de rendimento">
+  <img src="https://img.shields.io/badge/anos-2022--2026-orange" alt="anos de rendimento">
   <a href="https://mowei.pt"><img src="https://img.shields.io/badge/por-mowei.pt-111111" alt="mowei.pt"></a>
   <a href="https://buymeacoffee.com/letsmoweis"><img src="https://img.shields.io/badge/%E2%98%95-paga--me%20um%20caf%C3%A9-FFDD00" alt="Paga-me um caf&eacute;"></a>
   <a href="https://ko-fi.com/letsmowei"><img src="https://img.shields.io/badge/ko--fi-apoiar-FF5E5B" alt="Ko-fi"></a>
@@ -33,6 +33,7 @@
 
 :fire: ***Novidades*** :fire:
 
+- **[Set 2026]** Ano de rendimento 2026 (entregue em 2027): escalões do OE 2026, o IAS de 2026, o novo limite de €900 para rendas — cada valor citado do seu diploma, os dois motores cruzados, seis novos casos derivados à mão
 - **[Jul 2026]** Primeira versão pública — nove defeitos fiscais encontrados e corrigidos, três deles por um modelo adversarial
 - **[Jul 2026]** Arquitetura de dois motores: `estimator.py` e `oracle.py` têm de concordar **ao cêntimo** em 1 782 perfis de rendimento
 - **[Jul 2026]** Testes de mutação — cada guarda tem de ser provado capaz de *falhar* antes de o seu verde ser acreditado
@@ -81,11 +82,11 @@ Sem `pip install`. Sem `requirements.txt`. Biblioteca padrão do Python 3.10+ e 
 
 ```bash
 cd AoCentimo
-python scripts/estimator.py --selftest       # 19 golden + 9 retro + guarda de recusa
-python scripts/oracle.py --crosscheck        # dois motores, ao cêntimo, 1782 perfis
+python scripts/estimator.py --selftest       # 25 golden + 9 retro + guardas de recusa
+python scripts/oracle.py --crosscheck        # dois motores, ao cêntimo, 1782 perfis por ano
 python scripts/oracle.py --mutation-test     # provar que os guardas conseguem falhar
 python scripts/offline_audit.py --selftest   # provar que a auditoria de privacidade falha
-python scripts/sweep.py                      # 48 verificações
+python scripts/sweep.py                      # 64 verificações
 ```
 
 Todos saem com `0`. Experimente com o Wi-Fi desligado.
@@ -95,7 +96,7 @@ Todos saem com `0`. Experimente com o Wi-Fi desligado.
 
 | Tarefa | O que obtém |
 |---|---|
-| **Estimar** | A liquidação completa — rendimento coletável → coleta → deduções → apuramento — para 2022-2025, cada ano na sua própria lei |
+| **Estimar** | A liquidação completa — rendimento coletável → coleta → deduções → apuramento — para 2022-2026, cada ano na sua própria lei (2026 ainda está em aberto: ver abaixo) |
 | **Recuperar** | Recalcular uma declaração entregue, quantificar o que ficou por deduzir, e obter o instrumento de correção *e o prazo* — declaração de substituição, reclamação graciosa, a janela de dois anos do art. 140.º |
 | **Maximizar** | [27 linhas de deduções](assets/deduction-matrix.json) com limites, mecânica do e-Fatura, [25 entendimentos da AT](assets/doutrina-index.json), e os casos-fronteira que decidem os difíceis |
 | **Organizar** | [61 códigos de campo do Modelo 3](assets/field-codes.json), 8 erros plantados, checklist de documentos, e as [divergências](assets/divergence-cases.json) que resultam do campo errado |
@@ -122,14 +123,21 @@ estavam €48 a €401 por ano acima do devido.
 
 | Garantia | Como é imposta |
 |---|---|
-| **Dois motores, ao cêntimo** | `estimator.py` percorre o art. 68.º cumulativamente pelas taxas marginais; `oracle.py` usa a divisão por taxa média que o próprio artigo publica. 1 782 perfis, 30 sondas a ±1 cêntimo sobre os limites dos escalões |
+| **Dois motores, ao cêntimo** | `estimator.py` percorre o art. 68.º cumulativamente pelas taxas marginais; `oracle.py` usa a divisão por taxa média que o próprio artigo publica. 1 782 perfis e 30 sondas a ±1 cêntimo sobre os limites dos escalões, para cada um dos anos de rendimento 2025 e 2026 |
 | **Guardas provados capazes de falhar** | O `--mutation-test` injeta cada defeito que um guarda diz apanhar. O que sobreviver tem de estar **declarado** num registo de pontos cegos — e uma entrada declarada que passe a ser detetável *também* faz falhar, para o registo nunca virar alibi |
 | **Recusa em vez de adivinhar** | Qualquer constante não confirmada é a string `UNKNOWN` e o motor **levanta exceção**. Provado por um teste-guarda, não afirmado aqui |
-| **Cada lacuna tem direção** | 16 aproximações declaradas, cada uma dizendo se sobrestima ou subestima o imposto. A bateria falha se alguma não tiver direção |
+| **Cada lacuna tem direção** | 16 aproximações declaradas, mais 3 próprias do ano de rendimento 2026, cada uma dizendo se sobrestima ou subestima o imposto. A bateria falha se alguma não tiver direção |
 
-Há um ponto cego declarado e real: o 9.º escalão é aberto, logo o art. 68.º não publica
-taxa média para ele e nada consegue cruzar-verificar a taxa de 48%. Está escrito em
-público em vez de escondido.
+Há um ponto cego declarado e real, nos dois anos que o oráculo cobre: o 9.º escalão é
+aberto, logo o art. 68.º não publica taxa média para ele e o oráculo não consegue
+cruzar-verificar a taxa de 48%. Está escrito em público em vez de escondido — e para 2026 o
+sweep fecha-o por outra via, comparando cada linha guardada com o texto capturado da lei.
+
+**O ano de rendimento 2026 ainda está em aberto.** As suas constantes são a lei em vigor a
+2026-09-28. Em 2025 uma lei de julho alterou retroativamente as taxas desse ano; o mesmo
+pode acontecer a 2026 até 31 de dezembro. O ano por omissão continua a ser 2025 — o que se
+entrega em 2026 — e o gate fica vermelho a 1 de janeiro de 2027 até o ano por omissão
+passar a 2026 e a respetiva lei ser relida.
 
 ## ⚠️ Não é aconselhamento financeiro, fiscal ou jurídico
 

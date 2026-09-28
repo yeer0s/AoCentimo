@@ -1,0 +1,248 @@
+{
+  "_meta": {
+    "asset": "IRS-2026 estimator constants",
+    "income_year": 2026,
+    "declared_year": 2027,
+    "legal_basis": "Lei n.º 73-A/2025, de 30 de dezembro (Orçamento do Estado para 2026), whose article 71 amends Artigos 12.º, 27.º, 68.º, 70.º and 78.º-F do Código do IRS; Decreto-Lei n.º 97/2026, de 20 de maio (rent-deduction limit for 2026); Portaria n.º 480-A/2025/1, de 30 de dezembro (IAS 2026).",
+    "as_of": "2026-09-28",
+    "provenance": "Every value below was read from a primary instrument on 2026-09-28: the Diário da República text of the instrument that fixed it, or the AT consolidated Código do IRS, whose own 'Redação da Lei n.º …' notes were checked to confirm the wording is the one in force for income year 2026. Each CIRS phrase in `provenance` was verified verbatim twice: live, with ~/.claude/tools/cirs/cirs.py --quote (exit 0), and offline, against the capture in assets/law/ — sweep.py re-checks the offline half on every run. Nothing here is taken from an aggregator.",
+    "provisional": "Income year 2026 is still OPEN on the as_of date. In 2025 a mid-year law (Lei n.º 55-A/2025, de 22 de julho) replaced the Artigo 68.º rates retroactively to 1 January; the same can happen to 2026 until 31 December 2026. Re-read Artigo 68.º, 70.º and 78.º-E before relying on these figures for a 2027 filing, and restamp as_of.",
+    "unknown_contract": "Same contract as constants-multiyear.json: a value that could not be confirmed is the literal string \"UNKNOWN\" and the estimator refuses any path that depends on it. Only minimo_existencia.taper_L_formula is UNKNOWN in this file, for the same reason as in income year 2025.",
+    "not_changed_from_2025": "Checked, not assumed: the AT consolidated text of Artigos 12.º-B, 25.º, 31.º, 68.º-A, 69.º, 78.º, 78.º-A, 78.º-B, 78.º-C and 78.º-D carries no amendment dated after 2025-07 that touches a figure used here, and article 71 of Lei n.º 73-A/2025 does not list any of them. Their figures are therefore re-verified for 2026 below, not copied."
+  },
+  "ias_2026_eur": {
+    "value": 537.13,
+    "note": "Indexante dos Apoios Sociais 2026. Drives the dedução específica (8,54 x IAS), the IRS Jovem ceiling (55 x IAS) and the Artigo 70.º thresholds (1,5 x 14 x IAS; 2,2 x 14 x IAS).",
+    "source": "Portaria n.º 480-A/2025/1, de 30 de dezembro (Diário da República n.º 250/2025, 1.º Suplemento, Série I), artigo 2: «O valor do IAS para o ano de 2026 é de € 537,13.»; produz efeitos a partir de 1 de janeiro de 2026 (artigo 4). Read from https://files.diariodarepublica.pt/1s/2025/12/25001/0000200002.pdf on 2026-09-28."
+  },
+  "categoria_a_specific_deduction_eur": {
+    "value": 4587.09,
+    "income_year": 2026,
+    "note": "Artigo 25.º n.º 1 a): «8,54 vezes o valor do IAS» = 8.54 x 537.13 = 4587.0902. The statute fixes a multiple, not a rounded figure; stored to the cent (4587.09) like every other euro amount here. The 0.0002 EUR dropped moves coleta by at most 0.0001 EUR.",
+    "source": "CIRS Artigo 25.º n.º 1 a), na redação da Lei n.º 45-A/2024, de 31 de dezembro (assets/law/irs25.md); IAS from Portaria n.º 480-A/2025/1."
+  },
+  "brackets_2026": {
+    "method": "Artigo 68.º CIRS. coleta = tax computed cumulatively on marginal rates (column A); equivalently the taxa-média split of n.º 2 (column B at the ceiling of the largest bracket that fits + excess at the next column-A rate).",
+    "confirmation": "Both columns transcribed verbatim from Artigo 68.º n.º 1 as amended by article 71 of Lei n.º 73-A/2025, de 30 de dezembro. Unlike brackets_2025, taxa_media_at_ceiling here is the STATUTE'S OWN column B (published to 0.001 percentage points), not a column derived from column A — so oracle.column_consistency() compares two columns the law publishes independently. All 8 published averages agree with the marginal rates to within 5e-6 (largest gap: row 7, 4.99e-6).",
+    "sources": [
+      "Lei n.º 73-A/2025, de 30 de dezembro, article 71 (amendment to Artigo 68.º n.º 1): rows 2-5 and all column-B values restated; rows 1, 6-9 column A '[...]' = unchanged from the Lei n.º 55-A/2025 table.",
+      "AT consolidated CIRS Artigo 68.º (assets/law/irs68.md, retrieved 2026-07-10; re-fetched 2026-09-28): full table, '(Redação da Lei n.º 73-A/2025, de 30/12)'; prior wording 'em vigor até dezembro de 2025'."
+    ],
+    "rows": [
+      {"n": 1, "lower_eur": 0.0, "upper_eur": 8342.0, "taxa_normal": 0.125, "taxa_media_at_ceiling": 0.125, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «Até 8 342 12,50 12,500»"},
+      {"n": 2, "lower_eur": 8342.0, "upper_eur": 12587.0, "taxa_normal": 0.157, "taxa_media_at_ceiling": 0.13579, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «De mais de 8 342 até 12 587 15,70 13,579»"},
+      {"n": 3, "lower_eur": 12587.0, "upper_eur": 17838.0, "taxa_normal": 0.212, "taxa_media_at_ceiling": 0.15823, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «De mais de 12 587 até 17 838 21,20 15,823»"},
+      {"n": 4, "lower_eur": 17838.0, "upper_eur": 23089.0, "taxa_normal": 0.241, "taxa_media_at_ceiling": 0.17705, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «De mais de 17 838 até 23 089 24,10 17,705»"},
+      {"n": 5, "lower_eur": 23089.0, "upper_eur": 29397.0, "taxa_normal": 0.311, "taxa_media_at_ceiling": 0.20579, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «De mais de 23 089 até 29 397 31,10 20,579»"},
+      {"n": 6, "lower_eur": 29397.0, "upper_eur": 43090.0, "taxa_normal": 0.349, "taxa_media_at_ceiling": 0.2513, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «De mais de 29 397 até 43 090 34,90 25,130»"},
+      {"n": 7, "lower_eur": 43090.0, "upper_eur": 46566.0, "taxa_normal": 0.431, "taxa_media_at_ceiling": 0.26472, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «De mais de 43 090 até 46 566 43,10 26,472»"},
+      {"n": 8, "lower_eur": 46566.0, "upper_eur": 86634.0, "taxa_normal": 0.446, "taxa_media_at_ceiling": 0.34856, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «De mais de 46 566 até 86 634 44,60 34,856»"},
+      {"n": 9, "lower_eur": 86634.0, "upper_eur": null, "taxa_normal": 0.48, "taxa_media_at_ceiling": null, "status": "CONFIRMED", "source": "Artigo 68.º n.º 1, Lei n.º 73-A/2025: «Superior a 86 634 48,00 –» (open bracket: the law publishes no column-B average — see oracle.BLIND_SPOTS)"}
+    ],
+    "stale_text_note": "Artigo 68.º n.º 2 in the AT consolidated text still reads «quando superior a 8059 €» (Redação da Lei n.º 45-A/2024), the 2025 first ceiling. It has no effect on the result: between 8 059 and 8 342 no escalão ceiling fits inside the rendimento coletável, so the split reduces to the 12,5 % first-bracket rate either way."
+  },
+  "taxa_adicional_solidariedade": {
+    "bands": [
+      {"lower_eur": 80000.0, "upper_eur": 250000.0, "rate": 0.025},
+      {"lower_eur": 250000.0, "upper_eur": null, "rate": 0.05}
+    ],
+    "joint_divisor_applies": true,
+    "note": "Artigo 68.º-A CIRS, unchanged since Lei n.º 7-A/2016 (n.º 3) — not listed in article 71 of Lei n.º 73-A/2025. Applied after the Artigo 69.º divisor and multiplied back (n.º 3).",
+    "source": "Artigo 68.º-A n.os 1-3 CIRS (assets/law/irs68a.md)."
+  },
+  "minimo_existencia": {
+    "valor_referencia_eur": 12880.0,
+    "valor_referencia_rule": "max(12880, 1.5 x 14 x IAS) — Artigo 70.º n.º 1 as amended by article 71 of Lei n.º 73-A/2025. For 2026: 1.5 x 14 x 537.13 = 11279.73 < 12880, so the valor de referência is 12880. (The AT consolidated page labels this n.º 1 'Redação da Lei n.º 73-A/2024, de 30 de dezembro' — no such law exists; the article's own amendment list and the OE 2026 text both show it is Lei n.º 73-A/2025. The wording in force until December 2025 read 12 180 €, from Lei n.º 45-A/2024.)",
+    "exclusao_n4_multiplo_ias": 2.2,
+    "exclusao_n4_rule": "Artigo 70.º n.º 4 a): no abatimento for any titular when household rendimentos brutos exceed 2,2 x 14 x IAS x n.º de sujeitos passivos. For 2026: 2.2 x 14 x 537.13 = 16543.604 per sujeito passivo.",
+    "taper_L_formula": "UNKNOWN",
+    "taper_L_note": "Same as income year 2025 (see constants.json minimo_existencia.taper_L_note): n.os 2 b)/c) and 3 are unchanged, the offline capture's formula formatting is degraded, and a literal reconstruction gives an absurd cliff. Not guessed; the engine flags affected cases.",
+    "modelled_branch": "Artigo 70.º n.º 2 a) only, as for 2025.",
+    "source": "Artigo 70.º CIRS (assets/law/irs70.md); Lei n.º 73-A/2025, article 71."
+  },
+  "quociente": {
+    "single_divisor": 1,
+    "joint_divisor": 2,
+    "note": "Tributação conjunta: rendimento coletável / 2 -> Artigo 68.º -> coleta x 2.",
+    "source": "Artigo 69.º n.os 1 e 3 CIRS (assets/law/irs69.md), unchanged since Lei n.º 7-A/2016."
+  },
+  "deducoes_a_coleta": {
+    "dependent_fixed_eur": {
+      "value": 600.0,
+      "note": "Artigo 78.º-A n.º 1 a). Outside the global limit.",
+      "source": "Artigo 78.º-A CIRS (assets/law/irs78a.md); last amended by Lei n.º 24-D/2022."
+    },
+    "dependentes_ascendentes": {
+      "dependent_fixed_eur": 600.0,
+      "dependent_shared_residence_eur": 300.0,
+      "ascendant_fixed_eur": 525.0,
+      "ascendant_single_uplift_eur": 110.0,
+      "maj_n2_dependent_under3_eur": 126.0,
+      "maj_n2_shared_under3_eur": 63.0,
+      "maj_n3_second_plus_under6_eur": 300.0,
+      "maj_n3_shared_second_plus_under6_eur": 150.0,
+      "maj_cumulative": false,
+      "note": "Artigo 78.º-A n.os 1-4, identical to income year 2025.",
+      "source": "Artigo 78.º-A CIRS (assets/law/irs78a.md)."
+    },
+    "reducao_dependente_em_duas_declaracoes": {
+      "factor": 0.5,
+      "source": "Artigo 78.º n.º 9 CIRS (assets/law/irs78.md)."
+    },
+    "health": {
+      "rate": 0.15,
+      "cap_eur": 1000.0,
+      "inside_global_cap": true,
+      "source": "Artigo 78.º-C n.º 1 CIRS (assets/law/irs78c.md); last amended by Decreto-Lei n.º 49/2025, which did not touch the rate or limit."
+    },
+    "education": {
+      "rate": 0.3,
+      "cap_eur": 800.0,
+      "inside_global_cap": true,
+      "note": "Base cap only; the displaced-student uplift is not modelled (see documented_approximations in constants.json).",
+      "source": "Artigo 78.º-D n.º 1 CIRS, na redação da Lei n.º 82/2023 (assets/law/irs78d.md)."
+    },
+    "rent_habitacao": {
+      "rate": 0.15,
+      "cap_eur": 900.0,
+      "inside_global_cap": true,
+      "note": "THE CAP THAT MOVED IN 2026: 700 (2025) -> 900 (2026). Decreto-Lei n.º 97/2026, de 20 de maio, adds n.º 10 to Artigo 78.º-E (limit of n.º 1 a) raised to 1000 EUR) and, by its transitional norm (article 15, n.º 1), applies 1000 only from 2027, «aplicando-se no ano de 2026 o limite de 900,00 €». Its article 18, n.º 2 makes the CIRS amendments produce effects from 1 January 2026. This supersedes the Lei n.º 36/2024 phase-in (50 % in 2025, 75 % in 2026), which on its own would have given 750 for 2026. The n.º 4 low-income uplift ('sem prejuízo da aplicação do n.º 4, quando o limite de dedução daí resultante seja superior') is NOT modelled — see additional_documented_approximations.",
+      "source": "Decreto-Lei n.º 97/2026, de 20 de maio, article 15 n.º 1 and article 18 n.º 2 (https://files.diariodarepublica.pt/1s/2026/05/09700/0001400040.pdf, read 2026-09-28; Declaração de Retificação n.º 26/2026/1 checked — it corrects only the EBF article 24.º-A table); AT consolidated Artigo 78.º-E n.º 10 and its transcribed norma transitória (assets/law/irs78e.md)."
+    },
+    "ppr": {
+      "rate": 0.2,
+      "cap_by_age_band_eur": {
+        "under_35": 400.0,
+        "from_35_to_50": 350.0,
+        "over_50": 300.0
+      },
+      "inside_global_cap": true,
+      "source": "Estatuto dos Benefícios Fiscais art. 21.º n.º 2 a)-c), AT consolidated text fetched 2026-09-28 (https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/bf_rep/Pages/ebf-artigo-21-ordm-.aspx): 20 % with limits (euro) 400 / 350 / 300. Not an Artigo of the CIRS, so not in assets/law/; article 71 of Lei n.º 73-A/2025 does not touch the EBF (its EBF amendments are to other articles), nor does Decreto-Lei n.º 97/2026."
+    },
+    "despesas_gerais_familiares": {
+      "rate": 0.35,
+      "cap_eur_per_taxpayer": 250.0,
+      "monoparental_rate": 0.45,
+      "monoparental_cap_eur": 335.0,
+      "inside_global_cap": false,
+      "source": "Artigo 78.º-B n.os 1 e 9 CIRS (assets/law/irs78b.md)."
+    }
+  },
+  "global_cap_2026": {
+    "formula": "limit = 1000 + 1500 * (80000 - RC) / (80000 - 8342), clamped to [1000, 2500]",
+    "rc_used": "AFTER_ARTIGO_69_DIVISOR",
+    "rc_used_note": "Artigo 78.º n.º 7 corpo, unchanged: «no caso de tributação conjunta, após aplicação do divisor previsto no artigo 69.º».",
+    "applies_to": "health + education + rent_habitacao + ppr (alíneas c), d), e) and k) of Artigo 78.º n.º 1 among those this engine models).",
+    "majoracao_dependentes": {
+      "min_dependentes": 3,
+      "pct_por_dependente": 0.05,
+      "source": "Artigo 78.º n.º 8 CIRS (assets/law/irs78.md)."
+    },
+    "regimes": {
+      "rc_le_first_bracket": "No global limit for RC (after divisor) <= 8 342 (Artigo 78.º n.º 7 a)).",
+      "rc_between": "8 342 < RC <= 80 000: tapered formula in [1000, 2500].",
+      "rc_gt_80000": "RC > 80 000: 1 000 EUR (Artigo 78.º n.º 7 c))."
+    },
+    "source": "Artigo 78.º n.º 7 a)-c) and n.º 8 CIRS (assets/law/irs78.md). The n.º 7 b) formula is published by the AT only as an image (irs78_Lei_12_2022.PNG, 'Redação da Lei n.º 12/2022'), read 2026-09-28: € 1000 + [(€2500 − €1000) × (valor mín. 1.º escalão art. 68.º-A − Rendimento Coletável) / (valor mín. 1.º escalão art. 68.º-A − valor 1.º escalão art. 68.º)]. Being an image, it cannot be --quote verified; its surrounding text and n.º 7 c) «o montante de 1000 (euro)» can, and are.",
+    "endpoints_source": "Derived, never stored: lower = Artigo 68.º 1st ceiling (8 342 in 2026), upper = Artigo 68.º-A n.º 1 floor (80 000). Both engines read them from brackets_2026 and taxa_adicional_solidariedade."
+  },
+  "irs_jovem_current_law": {
+    "age_window_inclusive": [18, 35],
+    "tested_on": "31 December of the tax year",
+    "applies_to_categories": ["A", "B"],
+    "ten_year_schedule_exempt_pct": {
+      "year_1": 1.0,
+      "years_2_to_4": 0.75,
+      "years_5_to_7": 0.5,
+      "years_8_to_10": 0.25
+    },
+    "annual_ceiling": {
+      "multiplier_of_ias": 55,
+      "ias_2026_eur": 537.13,
+      "ceiling_2026_eur": 29542.15,
+      "note": "55 x 537.13 = 29542.15 EUR (exact; no rounding)."
+    },
+    "source": "CIRS Artigo 12.º-B n.os 1 e 5, na redação da Lei n.º 45-A/2024, de 31 de dezembro (assets/law/irs12b.md); unchanged for 2026 (12.º-B is not among the articles that article 71 of Lei n.º 73-A/2025 amends). IAS from Portaria n.º 480-A/2025/1."
+  },
+  "categoria_b_simplified": {
+    "coefficient_services_151": 0.75,
+    "coefficient_other_services": 0.35,
+    "source": "Artigo 31.º n.º 1 b) e c) CIRS (assets/law/irs31.md)."
+  },
+  "rounding": {
+    "mode": "ROUND_HALF_UP to 2 decimal places",
+    "points": "Same points as income year 2025 (constants.json rounding)."
+  },
+  "documented_approximations": {
+    "_intro": "Every approximation declared in constants.json documented_approximations applies to income year 2026 unchanged, with the same direction of error; it is not copied here (one register, not two). The items below are the ones that are NEW or DIFFERENT for 2026.",
+    "inherits": "constants.json",
+    "items": [
+      {
+        "item": "Artigo 78.º-E n.º 4 low-income uplift of the rent limit, and its interaction with n.º 10",
+        "modeled": false,
+        "direction": "UNDERSTATES the rent deduction (OVERSTATES tax) only for households whose rendimento coletável (after the Artigo 69.º divisor) does not exceed 30 000 EUR AND whose n.º 4 limit exceeds the 900 EUR base; n.º 10 says the higher of the two applies. The n.º 4 figures for 2026 depend on how the Lei n.º 36/2024 phase-in (75 % in 2026) combines with Decreto-Lei n.º 97/2026, which this repo has not settled from primary text — so it is not computed rather than guessed. Above 30 000 EUR there is no error."
+      },
+      {
+        "item": "Artigo 68.º n.º 2 read literally, with column B as published (rounded to 0.001 percentage points), versus the exact average both engines use",
+        "modeled": "exact cumulative tax (equivalently the taxa-média split at full precision)",
+        "direction": "Up to a few tens of cents per quociente, sign depending on the escalão. Because the 2026 column B is the statute's own rounded figure, n.º 2 applied literally gives, relative to this engine: bracket 3 -0.03, bracket 4 +0.08, bracket 5 -0.01, bracket 6 -0.10, bracket 7 -0.05, bracket 8 +0.23, bracket 9 +0.10 EUR (x2 in tributação conjunta). Where the literal figure is higher (brackets 4, 8, 9) this engine UNDERSTATES tax by that amount, elsewhere it OVERSTATES it. Which reading the AT applies is not settled by the statute text; the same effect exists in 2025 and is covered there only by the generic 'official-engine arredondamento' entry, which understates its size."
+      },
+      {
+        "item": "Income year 2026 is still open",
+        "modeled": "constants as in force on 2026-09-28",
+        "direction": "Indeterminate. A law published before 31 December 2026 may still change a 2026 figure retroactively (precedent: Lei n.º 55-A/2025 for 2025). sweep.py constants-default-year forces a re-read before 2026 becomes the default income year."
+      }
+    ]
+  },
+  "provenance": {
+    "_intro": "Each entry: a figure used above, the capture in assets/law/ that holds it, and the verbatim phrase (whitespace-normalised) sweep.py checks is present in that capture. Every phrase was also verified live on 2026-09-28 with cirs.py <art> --quote (exit 0). Entries with capture null are from instruments outside the CIRS; their URL and retrieval date are given instead.",
+    "entries": [
+      {"constant": "brackets_2026 row 1", "capture": "irs68.md", "quote": "Até 8 342 12,50 12,500"},
+      {"constant": "brackets_2026 row 2", "capture": "irs68.md", "quote": "De mais de 8 342 até 12 587 15,70 13,579"},
+      {"constant": "brackets_2026 row 3", "capture": "irs68.md", "quote": "De mais de 12 587 até 17 838 21,20 15,823"},
+      {"constant": "brackets_2026 row 4", "capture": "irs68.md", "quote": "De mais de 17 838 até 23 089 24,10 17,705"},
+      {"constant": "brackets_2026 row 5", "capture": "irs68.md", "quote": "De mais de 23 089 até 29 397 31,10 20,579"},
+      {"constant": "brackets_2026 row 6", "capture": "irs68.md", "quote": "De mais de 29 397 até 43 090 34,90 25,130"},
+      {"constant": "brackets_2026 row 7", "capture": "irs68.md", "quote": "De mais de 43 090 até 46 566 43,10 26,472"},
+      {"constant": "brackets_2026 row 8", "capture": "irs68.md", "quote": "De mais de 46 566 até 86 634 44,60 34,856"},
+      {"constant": "brackets_2026 row 9", "capture": "irs68.md", "quote": "Superior a 86 634 48,00"},
+      {"constant": "brackets_2026 wording in force", "capture": "irs68.md", "quote": "(Redação da Lei n.º 73-A/2025, de 30/12)"},
+      {"constant": "taxa_adicional_solidariedade floor", "capture": "irs68a.md", "quote": "ao quantitativo do rendimento coletável superior a (euro) 80 000 incidem as taxas adicionais de solidariedade"},
+      {"constant": "taxa_adicional_solidariedade band 1", "capture": "irs68a.md", "quote": "à qual se aplica a taxa de 2,5 %"},
+      {"constant": "taxa_adicional_solidariedade band 2", "capture": "irs68a.md", "quote": "que exceda (euro) 250 000, à qual se aplica a taxa de 5 %"},
+      {"constant": "quociente joint_divisor", "capture": "irs69.md", "quote": "as taxas aplicáveis são as correspondentes ao rendimento coletável dividido por dois"},
+      {"constant": "minimo_existencia.valor_referencia_eur", "capture": "irs70.md", "quote": "igual ao maior valor entre 12 880 € e 1,5 × 14 × IAS"},
+      {"constant": "minimo_existencia.exclusao_n4_multiplo_ias", "capture": "irs70.md", "quote": "é superior a 2,2 x 14 x IAS multiplicado pelo número de sujeitos passivos"},
+      {"constant": "categoria_a_specific_deduction_eur", "capture": "irs25.md", "quote": "8,54 vezes o valor do IAS"},
+      {"constant": "irs_jovem age", "capture": "irs12b.md", "quote": "auferidos por sujeito passivo que tenha até 35 anos de idade"},
+      {"constant": "irs_jovem ceiling multiplier", "capture": "irs12b.md", "quote": "com o limite de 55 vezes o valor do IAS"},
+      {"constant": "irs_jovem year_1", "capture": "irs12b.md", "quote": "100 % no primeiro ano de obtenção de rendimentos"},
+      {"constant": "irs_jovem years_2_to_4", "capture": "irs12b.md", "quote": "75 % do segundo ao quarto ano de obtenção de rendimentos"},
+      {"constant": "irs_jovem years_5_to_7", "capture": "irs12b.md", "quote": "50 % do quinto ao sétimo ano de obtenção de rendimentos"},
+      {"constant": "irs_jovem years_8_to_10", "capture": "irs12b.md", "quote": "25 % do oitavo ao décimo ano de obtenção de rendimentos"},
+      {"constant": "categoria_b coefficient_services_151", "capture": "irs31.md", "quote": "0,75 aos rendimentos das atividades profissionais especificamente previstas na tabela a que se refere o artigo 151.º"},
+      {"constant": "categoria_b coefficient_other_services", "capture": "irs31.md", "quote": "0,35 aos rendimentos de prestações de serviços não previstos nas alíneas anteriores"},
+      {"constant": "global_cap clamp_low", "capture": "irs78.md", "quote": "o montante de 1000 (euro)"},
+      {"constant": "global_cap majoracao_dependentes", "capture": "irs78.md", "quote": "majorados em 5 % por cada dependente"},
+      {"constant": "global_cap rc_used", "capture": "irs78.md", "quote": "após aplicação do divisor previsto no artigo 69.º, os limites constantes das seguintes alíneas"},
+      {"constant": "reducao_dependente_em_duas_declaracoes", "capture": "irs78.md", "quote": "é reduzido para metade, por sujeito passivo"},
+      {"constant": "dependent_fixed_eur", "capture": "irs78a.md", "quote": "Por cada dependente o montante fixo de € 600"},
+      {"constant": "dependent_shared_residence_eur", "capture": "irs78a.md", "quote": "é deduzido o montante fixo de € 300"},
+      {"constant": "ascendant_fixed_eur", "capture": "irs78a.md", "quote": "o montante fixo de € 525"},
+      {"constant": "maj_n2 126 / 63", "capture": "irs78a.md", "quote": "€ 126 por cada dependente referido na alínea a) e € 63 a cada sujeito passivo"},
+      {"constant": "ascendant_single_uplift_eur", "capture": "irs78a.md", "quote": "€ 110 no caso de existir apenas um ascendente"},
+      {"constant": "maj_n3 300 / 150", "capture": "irs78a.md", "quote": "somam-se os montantes de € 300 e € 150"},
+      {"constant": "maj_cumulative false", "capture": "irs78a.md", "quote": "As deduções referidas nos n.os 2 e 3 não são cumulativas"},
+      {"constant": "despesas_gerais_familiares", "capture": "irs78b.md", "quote": "35 % do valor suportado por qualquer membro do agregado familiar, com o limite global de € 250 para cada sujeito passivo"},
+      {"constant": "despesas_gerais_familiares monoparental", "capture": "irs78b.md", "quote": "45 % do valor suportado por qualquer membro do agregado familiar, com o limite global de (euro) 335"},
+      {"constant": "health", "capture": "irs78c.md", "quote": "15 % do valor suportado a título de despesas de saúde por qualquer membro do agregado familiar, com o limite global de (euro) 1 000"},
+      {"constant": "education", "capture": "irs78d.md", "quote": "30 % do valor suportado a título de despesas de formação e educação, incluindo formação profissional, por qualquer membro do agregado familiar, com o limite global de 800 €"},
+      {"constant": "rent_habitacao rate", "capture": "irs78e.md", "quote": "dedutível um montante correspondente a 15 % do valor suportado por qualquer membro do agregado familiar"},
+      {"constant": "rent_habitacao cap_eur 2026", "capture": "irs78e.md", "quote": "aplica-se a partir do ano de 2027, inclusive, aplicando-se no ano de 2026 o limite de 900,00 €"},
+      {"constant": "ias_2026_eur", "capture": null, "instrument": "Portaria n.º 480-A/2025/1, de 30 de dezembro, article 2", "quote": "O valor do IAS para o ano de 2026 é de € 537,13.", "url": "https://files.diariodarepublica.pt/1s/2025/12/25001/0000200002.pdf", "retrieved": "2026-09-28"},
+      {"constant": "rent_habitacao cap_eur 2026 (instrument)", "capture": null, "instrument": "Decreto-Lei n.º 97/2026, de 20 de maio, article 15 n.º 1", "quote": "aplica-se a partir do ano de 2027, inclusive, aplicando-se no ano de 2026 o limite de 900,00 €.", "url": "https://files.diariodarepublica.pt/1s/2026/05/09700/0001400040.pdf", "retrieved": "2026-09-28"},
+      {"constant": "ppr", "capture": null, "instrument": "Estatuto dos Benefícios Fiscais art. 21.º n.º 2 (AT consolidated text)", "quote": "20 % dos valores aplicados no respectivo ano por sujeito passivo não casado", "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/bf_rep/Pages/ebf-artigo-21-ordm-.aspx", "retrieved": "2026-09-28"},
+      {"constant": "brackets_2026 + minimo_existencia (instrument)", "capture": null, "instrument": "Lei n.º 73-A/2025, de 30 de dezembro, article 71", "quote": "O valor de referência do mínimo de existência é igual ao maior valor entre 12 880 € e 1,5 × 14 × IAS.", "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/legislacao/diplomas_legislativos/Documents/lei-73-a-2025.pdf", "retrieved": "2026-09-28"}
+    ]
+  }
+}

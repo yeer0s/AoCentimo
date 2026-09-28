@@ -1,6 +1,6 @@
 ---
 name: portugal-irs-estimator
-description: Use when a Portugal resident (native or expat) wants to estimate their IRS (personal income tax) liability, refund, or amount owed from salary/freelance/other income plus withholding and deductions, understand WHY the number comes out that way, decide between joint vs separate filing, IRS Jovem opt-in, or a year-end PPR contribution, OR audit an already-filed PAST return (2022-2024) to recover money left on the table. Scope-outs: does not file the Modelo 3, does not connect to Portal das Financas, does not replace a contabilista certificado (OCC) for complex cases (multiple property sales, foreign income treaties, business restructuring). Ships with a stdlib year-parameterized IRS estimator (income years 2022-2025: brackets, quociente, deduction caps, global-cap formula, and the year-by-year IRS Jovem regime) plus a retro-refund engine validated against 14 current-year + 9 hand-computed retro-audit golden cases with cited correction-path deadlines, distilled from production Portuguese fiscal-engine operating experience.
+description: Use when a Portugal resident (native or expat) wants to estimate their IRS (personal income tax) liability, refund, or amount owed from salary/freelance/other income plus withholding and deductions, understand WHY the number comes out that way, decide between joint vs separate filing, IRS Jovem opt-in, or a year-end PPR contribution, OR audit an already-filed PAST return (2022-2024) to recover money left on the table. Scope-outs: does not file the Modelo 3, does not connect to Portal das Financas, does not replace a contabilista certificado (OCC) for complex cases (multiple property sales, foreign income treaties, business restructuring). Ships with a stdlib year-parameterized IRS estimator (income years 2022-2026: brackets, quociente, deduction caps, global-cap formula, and the year-by-year IRS Jovem regime) plus a retro-refund engine validated against 14 current-year + 9 hand-computed retro-audit golden cases with cited correction-path deadlines, distilled from production Portuguese fiscal-engine operating experience.
 version: 4.1.0
 ---
 
@@ -424,7 +424,7 @@ This skill maintains a per-user memory file at `MEMORY.md` in its own folder.
 This skill is fully operable with zero network access — an explicit design contract:
 
 - The estimate is computed entirely by the bundled stdlib engine against bundled, cited,
-  income-year-labeled constants (2022-2025). No step of the computation ever needs a
+  income-year-labeled constants (2022-2026). No step of the computation ever needs a
   network.
 - **The cross-check step ("the trust step") applies only when online.** Offline, the
   independent checks are: the engine's own golden corpus (selftest), the sweep's
@@ -439,9 +439,9 @@ This skill is fully operable with zero network access — an explicit design con
 
 | Status | Scope |
 |---|---|
-| **SUPPORTED** | Categoria A; Categoria B simplified regime (0.75 services coefficient); single / joint / separate filing (separate = two individual assessments, summed); IRS Jovem (all regime versions 2022-2025); PPR scenarios; deducoes a coleta with per-category and global caps; retro passes over 2022-2024 with correction-instrument routing |
+| **SUPPORTED** | Categoria A; Categoria B simplified regime (0.75 services coefficient); single / joint / separate filing (separate = two individual assessments, summed); IRS Jovem (all regime versions 2022-2026); PPR scenarios; deducoes a coleta with per-category and global caps; retro passes over 2022-2024 with correction-instrument routing |
 | **PARTIAL** (documented approximations, each with direction of error) | Solidarity surtax not modeled; IRS Jovem exemption-with-progression not modeled; Categoria B 15% justified-expenses rule not modeled; rent-cap taper not modeled; withholding tables not simulated |
-| **UNSUPPORTED → STOP + route to OCC** | Categoria G capital-gains computation; Anexo J treaty math; englobamento elections on capital income; organized accounting; any income year outside 2022-2025 (the engine refuses rather than extrapolates) |
+| **UNSUPPORTED → STOP + route to OCC** | Categoria G capital-gains computation; Anexo J treaty math; englobamento elections on capital income; organized accounting; any income year outside 2022-2026 (the engine refuses rather than extrapolates) |
 
 The engine hard-refuses out-of-scope inputs (UNKNOWN-guard) — it never extrapolates a
 missing year or an unmodeled regime.
