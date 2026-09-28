@@ -24,7 +24,7 @@
 
 <p align="center">
   <b>Um motor de IRS offline e determinístico para agentes de IA.</b><br>
-  Doze artigos do Código do IRS capturados literalmente · dois motores independentes<br>
+  Dezassete artigos do Código do IRS capturados literalmente · dois motores independentes<br>
   cruzados ao cêntimo · uma bateria de testes construída para falhar.<br>
   <sub><a href="README.md">🇬🇧 Read in English</a></sub>
 </p>
@@ -58,7 +58,7 @@ isso para o servidor de outra pessoa.
   import de rede, `subprocess` ou `ctypes`, e perante qualquer `eval`/`exec` nativo. O CI
   ainda corre **todos os gates com a camada de sockets desativada** — se alguma coisa
   tentasse ligar-se ao exterior, o build rebentava.
-- **A lei viaja com o código.** Doze artigos do CIRS em `assets/law/`, cada um com um
+- **A lei viaja com o código.** Dezassete artigos do CIRS em `assets/law/`, cada um com um
   SHA-256 que a bateria reverifica. Desligue o cabo de rede; continua a calcular.
 - **Corre num modelo local.** Ollama, llama.cpp, LM Studio, uma máquina isolada. O seu
   NIF, o seu salário e as suas despesas médicas nunca saem da máquina.
@@ -85,7 +85,7 @@ python scripts/estimator.py --selftest       # 19 golden + 9 retro + guarda de r
 python scripts/oracle.py --crosscheck        # dois motores, ao cêntimo, 1782 perfis
 python scripts/oracle.py --mutation-test     # provar que os guardas conseguem falhar
 python scripts/offline_audit.py --selftest   # provar que a auditoria de privacidade falha
-python scripts/sweep.py                      # 47 verificações
+python scripts/sweep.py                      # 48 verificações
 ```
 
 Todos saem com `0`. Experimente com o Wi-Fi desligado.

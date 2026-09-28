@@ -24,7 +24,7 @@
 
 <p align="center">
   <b>An offline, deterministic Portuguese income-tax engine for AI agents.</b><br>
-  Twelve articles of the Código do IRS captured verbatim · two independent engines<br>
+  Seventeen articles of the Código do IRS captured verbatim · two independent engines<br>
   cross-checked to the cent · a test suite built to fail.<br>
   <sub><a href="README.pt.md">🇵🇹 Ler em português</a></sub>
 </p>
@@ -56,7 +56,7 @@ ages, your rent, your health expenses — and it ships all of it to somebody els
   every shipped file and fails on any networking, subprocess or `ctypes` import and on any
   builtin `eval`/`exec`. CI additionally re-runs **every gate with the socket layer
   disabled at runtime** — if anything tried to phone home, the build would crash.
-- **The law travels with the code.** Twelve CIRS articles in `assets/law/`, each with a
+- **The law travels with the code.** Seventeen CIRS articles in `assets/law/`, each with a
   SHA-256 the suite re-verifies. Pull the ethernet cable; it still computes.
 - **Runs on a local model.** Ollama, llama.cpp, LM Studio, an air-gapped box. Your NIF,
   your salary and your medical spending never leave the machine.
@@ -83,7 +83,7 @@ python scripts/estimator.py --selftest       # 19 golden + 9 retro + refusal gua
 python scripts/oracle.py --crosscheck        # two engines, cent-exact, 1782 profiles
 python scripts/oracle.py --mutation-test     # prove the guards can fail
 python scripts/offline_audit.py --selftest   # prove the privacy audit can fail
-python scripts/sweep.py                      # 47 checks
+python scripts/sweep.py                      # 48 checks
 ```
 
 All exit `0`. Try it with your Wi-Fi off.
