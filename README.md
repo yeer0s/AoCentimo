@@ -80,7 +80,7 @@ No `pip install`. No `requirements.txt`. Python 3.10+ standard library and nothi
 
 ```bash
 cd AoCentimo
-python scripts/estimator.py --selftest       # 25 golden + 9 retro + refusal guards
+python scripts/estimator.py --selftest       # 26 golden + 9 retro + refusal guards
 python scripts/oracle.py --crosscheck        # two engines, cent-exact, 1782 profiles per year
 python scripts/oracle.py --mutation-test     # prove the guards can fail
 python scripts/offline_audit.py --selftest   # prove the privacy audit can fail

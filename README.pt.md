@@ -82,7 +82,7 @@ Sem `pip install`. Sem `requirements.txt`. Biblioteca padrão do Python 3.10+ e 
 
 ```bash
 cd AoCentimo
-python scripts/estimator.py --selftest       # 25 golden + 9 retro + guardas de recusa
+python scripts/estimator.py --selftest       # 26 golden + 9 retro + guardas de recusa
 python scripts/oracle.py --crosscheck        # dois motores, ao cêntimo, 1782 perfis por ano
 python scripts/oracle.py --mutation-test     # provar que os guardas conseguem falhar
 python scripts/offline_audit.py --selftest   # provar que a auditoria de privacidade falha

@@ -72,7 +72,7 @@ it says so and routes to an OCC. That refusal is the feature; do not engineer ar
 Nothing ships from this skill until all of these pass. They are offline and stdlib-only.
 
 ```bash
-python scripts/estimator.py --selftest    # 25 golden + 9 retro cases + UNKNOWN-refusal guards
+python scripts/estimator.py --selftest    # 26 golden + 9 retro cases + UNKNOWN-refusal guards
 python scripts/oracle.py --crosscheck     # two independent implementations, cent-exact
 python scripts/sweep.py                   # 64 structural + numeric checks
 ```
@@ -185,7 +185,7 @@ Loaded on demand — do not read all three for one question.
 | `assets/constants.json` | Income year 2025 — every figure cited, with `documented_approximations` |
 | `assets/constants-2026.json` | Income year 2026 (filed 2027) — every figure quoted from its instrument; each CIRS phrase re-checked against `assets/law/` by the sweep. **Provisional**: the year is still open |
 | `assets/constants-multiyear.json` | Income years 2022-2024, each on its own law |
-| `assets/golden-cases.json` | 25 cases (19 for 2025, 6 for 2026), dual-path, stamped with `law_version` per income year |
+| `assets/golden-cases.json` | 26 cases (20 for 2025, 6 for 2026), dual-path, stamped with `law_version` per income year |
 | `assets/retro-cases.json` | 9 recovery cases with correction instrument and deadline. **Single-path** — the oracle covers 2025 and 2026 only, so a green retro run is a regression check, not confirmation |
 | `assets/deduction-matrix.json` | 27 deduction rows, every factual cell cited-or-UNKNOWN |
 | `assets/doutrina-index.json` | 25 AT rulings, all with source URLs |
@@ -244,6 +244,24 @@ Never hand-edit an expected value to turn a test green.
   reference; those years flag rather than compute them.
 
 ## Changelog
+
+- **v1.1.1 (2026-09-28)** — **the 2025 mínimo de existência used the 2026 reference value.**
+  Found while deriving income year 2026 (v1.1.0).
+  - `minimo_existencia.valor_referencia_eur` for 2025 was **12 880 €**. The wording of
+    Artigo 70.º n.º 1 in force until December 2025 — Lei n.º 45-A/2024, published by the AT
+    as the article's *redação anterior* — says **12 180 €** (which is the 2025 RMMG, 870 × 14).
+    12 880 € arrived with artigo 71.º da Lei n.º 73-A/2025, for 2026. The offline capture
+    `assets/law/irs70.md` was taken in July 2026 and already carries the 2026 wording; it
+    was read as if it applied to 2025. The constant's own citation, "Lei n.º 73-A/2024",
+    names a law that does not exist.
+  - **Direction: UNDERSTATED 2025 tax.** A filer on exactly the 2025 minimum wage got
+    €162.50 of coleta where the article gives **€250.00**; filers with gross between
+    12 180 € and 12 880 € received the full n.º 2 a) abatimento they are not entitled to.
+    The "€162.50" in the v1.0.0 entry below was computed on the 2026 reference.
+  - Both engines read the one constant, so the crosscheck agreed on the wrong answer, and
+    no 2025 golden case sat near the reference. New golden case 26 (gross 12 180 €, 2025)
+    pins it: it goes red with 12 880 restored.
+  - 25 → 26 golden cases.
 
 - **v1.1.0 (2026-09-28)** — **income year 2026 (filed in 2027).** No 2022-2025 figure
   changed; the default income year is still 2025, the one being filed this year.
