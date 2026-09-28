@@ -130,14 +130,14 @@
     "source": "Artigo 68.º-A CIRS (taxa adicional de solidariedade); endpoints stable since Lei 82-B/2014."
   },
   "minimo_existencia": {
-    "valor_referencia_eur": 12880.0,
-    "valor_referencia_rule": "max(12880, 1.5 x 14 x IAS) — Artigo 70.º n.º 1, redação da Lei n.º 73-A/2024, de 30 de dezembro. Para 2025: 1.5 x 14 x 522.50 = 10972.50 < 12880, logo o valor de referência é 12880.",
+    "valor_referencia_eur": 12180.0,
+    "valor_referencia_rule": "max(12180, 1.5 x 14 x IAS) — Artigo 70.º n.º 1, redação da Lei n.º 45-A/2024, de 31 de dezembro, em vigor até dezembro de 2025 (AT, redação anterior: info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/ra/Pages/irs70ra_202512.aspx, verificada 2026-09-28: «maior valor entre 12 180 € e 1,5 × 14 × IAS»). Para 2025: 1.5 x 14 x 522.50 = 10972.50 < 12180, logo o valor de referência é 12180 — igual à RMMG de 2025 (870 x 14). ATÉ 2026-09-28 ESTE CAMPO DIZIA 12880, que é o valor de 2026 (artigo 71.º da Lei n.º 73-A/2025): a captura assets/law/irs70.md já traz a redação de 2026, e foi lida como se valesse para 2025.",
     "exclusao_n4_multiplo_ias": 2.2,
     "exclusao_n4_rule": "Artigo 70.º n.º 4 a): o abatimento não se aplica a nenhum titular quando a soma dos rendimentos brutos de todos os titulares excede 2,2 x 14 x IAS x n.º de sujeitos passivos. Para 2025: 2.2 x 14 x 522.50 = 16093.00 por sujeito passivo.",
     "taper_L_formula": "UNKNOWN",
     "taper_L_note": "Artigo 70.º n.º 3 define L = valor de referência - (Limite despesas gerais/Taxa 1.º escalão x 3,60) + (Limite 1.º escalão / 3,60). A captura offline do artigo (assets/law/irs70.md) está com a formatação das fórmulas degradada pela remoção de tags, e a reconstrução literal produz L < valor de referência, o que tornaria a alínea b) um conjunto vazio e criaria um penhasco de ~800 EUR a 1 EUR de rendimento — resultado absurdo, logo a leitura está errada. O n.º 6 do mesmo artigo manda a AT publicar anualmente as fórmulas simplificadas: é essa a fonte a usar. Até lá o taper fica UNKNOWN e o motor NÃO o modela (ver documented_approximations).",
     "modelled_branch": "Artigo 70.º n.º 2 a) apenas — titulares com rendimentos brutos <= valor de referência. Abatimento = valor de referência - (deduções específicas + Limite despesas gerais / Taxa 1.º escalão), truncado a [0, brutos - deduções específicas] por força da alínea d).",
-    "source": "Artigo 70.º CIRS (assets/law/irs70.md, sha256/16 12c915665ba74091); Lei n.º 73-A/2024."
+    "source": "Artigo 70.º CIRS na redação da Lei n.º 45-A/2024 (redação anterior publicada pela AT, irs70ra_202512); assets/law/irs70.md é a redação de 2026 e serve para o n.º 2-5, que não mudaram."
   },
   "quociente": {
     "single_divisor": 1,
@@ -323,7 +323,7 @@
       {
         "item": "Mínimo de existência (Artigo 70.º) — abatimento ao rendimento coletável",
         "modeled": "Artigo 70.º n.º 2 a) and the n.º 4 a) household exclusion only",
-        "direction": "PARTIALLY MODELLED (2026-07-24). Previously absent AND undeclared, which OVERSTATED tax for every low-income filer — a taxpayer on the 2025 minimum wage was assessed 1003.32 EUR of coleta where the article gives 162.50 EUR. Now: titulares whose rendimentos brutos do not exceed the valor de referência (12880 EUR) receive the full n.º 2 a) abatimento. The n.º 2 b)/c) TAPER IS NOT MODELLED because the n.º 3 variable L could not be reconstructed from the offline capture without producing an absurd result — see minimo_existencia.taper_L_note. Direction where the taper would apply: OVERSTATES tax (understates refund). The engine emits minimo_existencia_taper_nao_modelado_brutos_acima_da_referencia so the affected case is never silently wrong, and the resulting discontinuity at the valor de referência is a KNOWN ARTEFACT of the partial implementation, not a feature of the law."
+        "direction": "PARTIALLY MODELLED (2026-07-24). Previously absent AND undeclared, which OVERSTATED tax for every low-income filer — a taxpayer on the 2025 minimum wage was assessed 1003.32 EUR of coleta where the article gives 250.00 EUR (the 162.50 EUR first published here used the 2026 valor de referência — corrected 2026-09-28). Now: titulares whose rendimentos brutos do not exceed the valor de referência (12180 EUR in 2025) receive the full n.º 2 a) abatimento. The n.º 2 b)/c) TAPER IS NOT MODELLED because the n.º 3 variable L could not be reconstructed from the offline capture without producing an absurd result — see minimo_existencia.taper_L_note. Direction where the taper would apply: OVERSTATES tax (understates refund). The engine emits minimo_existencia_taper_nao_modelado_brutos_acima_da_referencia so the affected case is never silently wrong, and the resulting discontinuity at the valor de referência is a KNOWN ARTEFACT of the partial implementation, not a feature of the law."
       },
       {
         "item": "Dedução específica categoria A when social-security contributions exceed the flat limit (Artigo 25.º n.º 2)",

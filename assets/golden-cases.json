@@ -2,7 +2,7 @@
   "_meta": {
     "asset": "IRS-2025 estimator golden cases",
     "income_year": 2025,
-    "count": 25,
+    "count": 26,
     "min_bar": 12,
     "method": "DUAL-PATH DERIVATION (from 2026-07-24). Every expected value is produced by TWO independently written implementations that must agree to the cent: scripts/validate.py walks Artigo 68.º cumulatively on the marginal rates, scripts/oracle.py uses the taxa-média split the article itself publishes. A case the two paths disagree on is NOT written to this file — it is reported as a finding. Run `python scripts/oracle.py --crosscheck` to reproduce.",
     "separate_filing_note": "Cases 15-19 exercise tributação separada: each spouse is assessed INDIVIDUALLY (own rendimento coletável, quociente divisor 1, own coleta, own deduções à coleta with own global-cap limit on their own RC, own retenção) and the household figure is the SUM of the individual liquidações. Cases carrying a per_taxpayer expected block additionally verify the decomposition, not just the sum. Cases 15/16 and 17/18 are separada/conjunta twins on identical inputs so the euro delta is harness-derived, not asserted. Attribution conventions (household deductions split 50/50; case-level retention split pro-rata to gross) are documented in constants.json documented_approximations.",
@@ -765,6 +765,32 @@
       "derivation_check": {
         "coleta_liquida": 7249.26,
         "apuramento": 250.74,
+        "method": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent; expected values hand-derived FIRST (workings), then confirmed by both engines"
+      }
+    },
+    {
+      "id": "minimo_existencia_2025_minimum_wage_26",
+      "label": "2025: mínimo de existência — gross exactly at the valor de referência 12 180 (= RMMG 870 x 14)",
+      "income_year": 2025,
+      "law_version": "Artigo 68.º na redação da Lei n.º 55-A/2025; Artigo 70.º n.º 1 na redação da Lei n.º 45-A/2024 (em vigor até dezembro de 2025: «maior valor entre 12 180 € e 1,5 × 14 × IAS»); IAS 522,50",
+      "filing_status": "single",
+      "taxpayers": [
+        {
+          "cat_a_gross": 12180.0
+        }
+      ],
+      "deductions": {},
+      "retention_total": 300.0,
+      "workings": "spec_A = 8.54 x 522.50 = 4462.15. Artigo 70.º n.º 1 (Lei n.º 45-A/2024): valor de referência = max(12180, 1,5 x 14 x 522.50 = 10972.50) = 12180. Gross 12180 <= 12180, so n.º 2 a) applies; n.º 4 a) ceiling 2,2 x 14 x 522.50 = 16093.00 not exceeded. Abatimento = 12180 - (4462.15 + 250/0,125) = 12180 - 6462.15 = 5717.85, within [0, 12180 - 4462.15 = 7717.85] (n.º 2 d)). RC = 7717.85 - 5717.85 = 2000.00 <= 8059 (1.º escalão, 12,5 %). tax = 2000.00 x 0.125 = 250.00. coleta_liquida = 250.00. apuramento = 300 - 250.00 = 50.00 (REEMBOLSO). Until 2026-09-28 the engine used the 2026 reference 12 880 here and returned 162.50 — this case pins the correction and was absent before it, which is how the wrong reference stayed green.",
+      "expected": {
+        "coleta_liquida": 250.0,
+        "apuramento": 50.0,
+        "outcome": "REEMBOLSO"
+      },
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent; expected values hand-derived FIRST (workings), then confirmed by both engines",
+      "derivation_check": {
+        "coleta_liquida": 250.0,
+        "apuramento": 50.0,
         "method": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent; expected values hand-derived FIRST (workings), then confirmed by both engines"
       }
     }
