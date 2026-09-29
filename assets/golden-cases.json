@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "asset": "IRS-2025 estimator golden cases",
+    "asset": "IRS-2025 and 2026 estimator golden cases (income_year below is the default; see income_year_note)",
     "income_year": 2025,
     "count": 26,
     "min_bar": 12,
-    "method": "DUAL-PATH DERIVATION (from 2026-07-24). Every expected value is produced by TWO independently written implementations that must agree to the cent: scripts/validate.py walks Artigo 68.º cumulatively on the marginal rates, scripts/oracle.py uses the taxa-média split the article itself publishes. A case the two paths disagree on is NOT written to this file — it is reported as a finding. Run `python scripts/oracle.py --crosscheck` to reproduce.",
+    "method": "DUAL-PATH DERIVATION (from 2026-07-24). Every single/joint expected value is produced by TWO independently written implementations that must agree to the cent: scripts/estimator.py walks Artigo 68.º cumulatively on the marginal rates, scripts/oracle.py uses the taxa-média split the article itself publishes. A case the two paths disagree on is NOT written to this file — it is reported as a finding. Run `python scripts/oracle.py --crosscheck` to reproduce. Tributação-separada cases (filing_status \"separate\") are estimator-only: scripts/oracle.py does not model separate filing (see separate_filing_note) and skips them in --crosscheck/--derive.",
     "separate_filing_note": "Cases 15-19 exercise tributação separada: each spouse is assessed INDIVIDUALLY (own rendimento coletável, quociente divisor 1, own coleta, own deduções à coleta with own global-cap limit on their own RC, own retenção) and the household figure is the SUM of the individual liquidações. Cases carrying a per_taxpayer expected block additionally verify the decomposition, not just the sum. Cases 15/16 and 17/18 are separada/conjunta twins on identical inputs so the euro delta is harness-derived, not asserted. Attribution conventions (household deductions split 50/50; case-level retention split pro-rata to gross) are documented in constants.json documented_approximations.",
     "rounding": "ROUND_HALF_UP to cents at coleta_bruta (after quociente multiply-back), each dedução, the global-cap limit, coleta_liquida, and apuramento.",
     "conventions": {
@@ -448,12 +448,12 @@
           }
         ]
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "estimator-only: scripts/estimator.py (marginal-cumulative). Not dual-pathed — scripts/oracle.py does not model tributação separada (see _meta.method / separate_filing_note).",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] SEPARADA = two individual assessments, divisor 1 each, summed. Household deductions {health 2000} split 50/50 -> 1000 each. Retention 5000 split pro-rata to gross (equal gross) -> 2500 each. PER SPOUSE (both identical): net_A = 20000-4462.15 = 15537.85 = RC. Bracket 3 (12160-17233 @0.22). coleta = T(12160)+(15537.85-12160)*0.22 = 1724.335 + 3377.85*0.22 = 1724.335 + 743.127 = 2467.462 -> 2467.46. health ded = min(0.15*1000=150, 1000)=150; global limit at RC 15537.85 = 1000+1500*(83696-15537.85)/75637 = 2351.68 (non-binding, 150<2351.68). total_deducoes=150. coleta_liquida = 2467.46-150 = 2317.46. apuramento = 2500-2317.46 = 182.54 -> REEMBOLSO. COMBINED: coleta_liquida = 2*2317.46 = 4634.92; apuramento = 2*182.54 = 365.08 -> REEMBOLSO. WHY separada==conjunta here (see twin case 16, delta 0.00): both spouses share ONE bracket (3), where tax(x) is affine, so tax(a)+tax(b) = 2*tax((a+b)/2); and 0.15*1000*2 = 0.15*2000 with neither hitting the 1000 cap, so the split health deduction totals the same as the joint one. Symmetric incomes in the same bracket => the divide-by-2/multiply-by-2 mechanism reproduces two individual assessments exactly (at most a 1-cent rounding artifact when a boundary is crossed).",
       "derivation_check": {
         "coleta_liquida": 4479.54,
         "apuramento": 520.46,
-        "method": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent"
+        "method": "estimator-only: scripts/estimator.py (marginal-cumulative). Not dual-pathed — scripts/oracle.py does not model tributação separada."
       }
     },
     {
@@ -514,12 +514,12 @@
           }
         ]
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "estimator-only: scripts/estimator.py (marginal-cumulative). Not dual-pathed — scripts/oracle.py does not model tributação separada (see _meta.method / separate_filing_note).",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] SEPARADA = two individual assessments summed. Retention 12000 split pro-rata to gross: 45000/60000=0.75 -> 9000; 15000/60000=0.25 -> 3000. SPOUSE1: net = 45000-4462.15 = 40537.85 = RC1. Bracket 6 (28400-41629 @0.355). coleta = T(28400)+(40537.85-28400)*0.355 = 6058.725 + 12137.85*0.355 = 6058.725 + 4308.93675 = 10367.66175 -> 10367.66. no deductions -> coleta_liquida1 = 10367.66. apuramento1 = 9000-10367.66 = -1367.66 -> A PAGAR. SPOUSE2: net = 15000-4462.15 = 10537.85 = RC2. Bracket 2 (8059-12160 @0.165). coleta = T(8059)+(10537.85-8059)*0.165 = 1047.67 + 2478.85*0.165 = 1047.67 + 409.010250 = 1456.68025 -> 1456.68. coleta_liquida2 = 1456.68. apuramento2 = 3000-1456.68 = 1543.32 -> REEMBOLSO. COMBINED: coleta_liquida = 10367.66 + 1456.68 = 11824.34; apuramento = -1367.66 + 1543.32 = 175.66 -> REEMBOLSO. CONJUNTA twin (case 18): coleta_liquida 10285.67 -> conjunta WINS by 11824.34 - 10285.67 = 1538.67 euros, because pooling ÷2 pulls the high earner out of the 35.5% band (bracket 6) down to a base of 25537.85 in the 32% band (bracket 5), and the low earner's unused lower-bracket room absorbs the high earner's income.",
       "derivation_check": {
         "coleta_liquida": 11545.66,
         "apuramento": 454.34,
-        "method": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent"
+        "method": "estimator-only: scripts/estimator.py (marginal-cumulative). Not dual-pathed — scripts/oracle.py does not model tributação separada."
       }
     },
     {
@@ -587,12 +587,12 @@
           }
         ]
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "estimator-only: scripts/estimator.py (marginal-cumulative). Not dual-pathed — scripts/oracle.py does not model tributação separada (see _meta.method / separate_filing_note).",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] Each taxpayer carries OWN deductions and OWN retention (these OVERRIDE any household split / pro-rata). SPOUSE1: net = 35000-4462.15 = 30537.85 = RC1. Bracket 6 (28400-41629 @0.355). coleta = T(28400)+(30537.85-28400)*0.355 = 6058.725 + 2137.85*0.355 = 6058.725 + 758.93675 = 6817.66175 -> 6817.66. own health ded = min(0.15*3000=450,1000)=450; global limit at RC1 30537.85 = 1000+1500*(83696-30537.85)/75637 = 2054.21 (non-binding). total_deducoes=450. coleta_liquida1 = 6817.66-450 = 6367.66. apuramento1 = 6000-6367.66 = -367.66 -> A PAGAR. SPOUSE2: net = 18000-4462.15 = 13537.85 = RC2. Bracket 3 (12160-17233 @0.22). coleta = T(12160)+(13537.85-12160)*0.22 = 1724.335 + 1377.85*0.22 = 1724.335 + 303.127 = 2027.462 -> 2027.46. own ppr ded = min(0.20*1000=200, under_35 cap 400)=200; global limit at RC2 13537.85 = 2391.35 (non-binding). total_deducoes=200. coleta_liquida2 = 2027.46-200 = 1827.46. apuramento2 = 2200-1827.46 = 372.54 -> REEMBOLSO. COMBINED: coleta_liquida = 6367.66 + 1827.46 = 8195.12; apuramento = -367.66 + 372.54 = 4.88 -> REEMBOLSO. Note the two spouses land in different brackets and each deduction is capped against its OWN RC's global limit — the whole point of assessing separately.",
       "derivation_check": {
         "coleta_liquida": 7961.44,
         "apuramento": 238.56,
-        "method": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent"
+        "method": "estimator-only: scripts/estimator.py (marginal-cumulative). Not dual-pathed — scripts/oracle.py does not model tributação separada."
       }
     },
     {
