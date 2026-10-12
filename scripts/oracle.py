@@ -197,6 +197,11 @@ class TaxaMediaOracle:
         structure."""
         if int(case.get("income_year", self.year)) != self.year:
             raise ValueError("oracle for %d handed a %s case" % (self.year, case.get("income_year")))
+        if case.get("filing_status") == "separate":
+            raise ValueError(
+                "oracle.py does not model tributação separada (filing_status "
+                "'separate') — this case must go through scripts/estimator.py only; "
+                "see golden-cases.json _meta.method / separate_filing_note")
         ded = case.get("deductions") or {}
         tps = case.get("taxpayers", [])
         joint = case.get("filing_status") == "joint"
