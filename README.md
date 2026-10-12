@@ -33,6 +33,7 @@
 
 :fire: ***News*** :fire:
 
+- **[Oct 2026]** Correction: income-year 2025 estimates made before 28 Sep 2026 used the 2026 mínimo de existência reference (€12 880 instead of €12 180) and could understate tax on low incomes — a filer on the 2025 minimum wage was shown €162.50 of coleta where Art. 70.º gives €250.00. If you ran one, run it again
 - **[Sep 2026]** Income year 2026 (filed in 2027): OE 2026 brackets, the IAS for 2026, the new €900 rent limit — every figure quoted from its instrument, both engines cross-checked, six new hand-derived cases
 - **[Jul 2026]** First public release — nine fiscal defects found and fixed, three of them by an adversarial model
 - **[Jul 2026]** Dual-engine architecture: `estimator.py` and `oracle.py` must agree **to the cent** across 1 782 income profiles
