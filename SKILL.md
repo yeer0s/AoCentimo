@@ -240,8 +240,9 @@ Never hand-edit an expected value to turn a test green.
   encargos com lares, pensões de alimentos or dedução por exigência de fatura in the
   engine (the deduction matrix documents them; the calculator does not compute them).
 - Retenção na fonte is an input, never simulated.
-- The 2022-2024 sets do not carry the solidariedade bands or a mínimo de existência
-  reference; those years flag rather than compute them.
+- The 2022-2024 sets do not carry a mínimo de existência reference; those years flag
+  rather than compute it. (They do carry the Artigo 68.º-A solidariedade bands, and the
+  engine applies them.)
 
 ## Changelog
 
