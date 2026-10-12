@@ -33,6 +33,7 @@
 
 :fire: ***Novidades*** :fire:
 
+- **[Out 2026]** Correção: as estimativas do ano de rendimento 2025 feitas antes de 28 set 2026 usavam o valor de referência do mínimo de existência de 2026 (€12 880 em vez de €12 180) e podiam subestimar o imposto em rendimentos baixos — um contribuinte com o salário mínimo de 2025 via €162,50 de coleta onde o art. 70.º dá €250,00. Se fez uma, repita-a
 - **[Set 2026]** Ano de rendimento 2026 (entregue em 2027): escalões do OE 2026, o IAS de 2026, o novo limite de €900 para rendas — cada valor citado do seu diploma, os dois motores cruzados, seis novos casos derivados à mão
 - **[Jul 2026]** Primeira versão pública — nove defeitos fiscais encontrados e corrigidos, três deles por um modelo adversarial
 - **[Jul 2026]** Arquitetura de dois motores: `estimator.py` e `oracle.py` têm de concordar **ao cêntimo** em 1 782 perfis de rendimento
