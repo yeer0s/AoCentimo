@@ -46,7 +46,7 @@
         "apuramento": -560.61,
         "outcome": "A_PAGAR"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net_A = 25000 - 4462.15 = 20537.85 = RC. N=1. RC in bracket 4 (17233-22306 @0.25). coleta = T(17233) + (20537.85-17233)*0.25 = 2840.395 + 3304.85*0.25 = 2840.395 + 826.2125 = 3666.6075 -> 3666.61. No deductions. coleta_liquida = 3666.61. apuramento = 3000 - 3666.61 = -666.61 -> A PAGAR 666.61.",
       "derivation_check": {
         "coleta_liquida": 3560.61,
@@ -73,7 +73,7 @@
         "apuramento": 878.77,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net1 = 40000-4462.15 = 35537.85; net2 = 10000-4462.15 = 5537.85; RC = 41075.70. N=2 -> RC/2 = 20537.85 (bracket 4). tax(20537.85) = 3666.6075. coleta_bruta = 3666.6075 * 2 = 7333.215 -> 7333.22. No deductions. coleta_liquida = 7333.22. apuramento = 8000 - 7333.22 = 666.78 -> REEMBOLSO 666.78.",
       "derivation_check": {
         "coleta_liquida": 7121.23,
@@ -103,7 +103,7 @@
         "apuramento": 1500.0,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "derivation_check": {
         "coleta_liquida": 0.0,
         "apuramento": 1500.0,
@@ -131,7 +131,7 @@
         "apuramento": 495.27,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] Exempt E = min(0.50*25000, 28737.50) = 12500. cat A after = 25000-12500 = 12500. net_A = 12500-4462.15 = 8037.85 = RC. Bracket 1 (0-8059 @0.13). coleta = 8037.85*0.13 = 1044.9205 -> 1044.92. coleta_liquida = 1044.92. apuramento = 1500 - 1044.92 = 455.08 -> REEMBOLSO 455.08. (Contrast year 1 = 1500 refund vs year 5 = 455.08 refund on identical gross.)",
       "derivation_check": {
         "coleta_liquida": 1004.73,
@@ -156,7 +156,7 @@
         "apuramento": -52.96,
         "outcome": "A_PAGAR"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net_B = 0.75 * 30000 = 22500 = RC (coefficient IS the presumed-expense deduction; no cat-A specific deduction). Bracket 5 (22306-28400 @0.32). coleta = T(22306) + (22500-22306)*0.32 = 4108.645 + 194*0.32 = 4108.645 + 62.08 = 4170.725 -> 4170.73. coleta_liquida = 4170.73. apuramento = 4000 - 4170.73 = -170.73 -> A PAGAR 170.73.",
       "derivation_check": {
         "coleta_liquida": 4052.96,
@@ -180,7 +180,7 @@
         "apuramento": 77.69,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net_A = 20000-4462.15 = 15537.85 = RC. Bracket 3 (12160-17233 @0.22). coleta = T(12160) + (15537.85-12160)*0.22 = 1724.335 + 3377.85*0.22 = 1724.335 + 743.127 = 2467.462 -> 2467.46. coleta_liquida = 2467.46. Retention set exactly at 2467.46. apuramento = 2467.46 - 2467.46 = 0.00 -> NEUTRO (nada a pagar nem a receber).",
       "derivation_check": {
         "coleta_liquida": 2389.77,
@@ -212,7 +212,7 @@
         "apuramento": 1684.59,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net_A = 60000-4462.15 = 55537.85 = RC. Bracket 8 (44987-83696 @0.45). coleta = T(44987) + (55537.85-44987)*0.45 = 12215.75 + 10550.85*0.45 = 12215.75 + 4747.8825 = 16963.6325 -> 16963.63. Subject deductions: health min(0.15*10000=1500,1000)=1000; education min(0.30*3000=900,800)=800; rent min(0.15*6000=900,700)=700; ppr min(0.20*2000=400, cap under_35 400)=400. subject_sum = 2900. Global limit at RC 55537.85 = 1000 + 1500*(83696-55537.85)/(83696-8059) = 1000 + 1500*(28158.15/75637) = 1000 + 558.4223 = 1558.42. capped_subject = min(2900, 1558.42) = 1558.42. Outside cap: general min(0.35*3000=1050,250)=250; dependents 1*600=600. total_deducoes = 1558.42 + 250 + 600 = 2408.42. coleta_liquida = 16963.63 - 2408.42 = 14555.21. apuramento = 16000 - 14555.21 = 1444.79 -> REEMBOLSO 1444.79.",
       "derivation_check": {
         "coleta_liquida": 14315.41,
@@ -240,7 +240,7 @@
         "apuramento": 343.16,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net_A = 30000-4462.15 = 25537.85 = RC. Bracket 5 (22306-28400 @0.32). coleta = T(22306) + (25537.85-22306)*0.32 = 4108.645 + 3231.85*0.32 = 4108.645 + 1034.192 = 5142.837 -> 5142.84. Subject: health min(0.15*2000=300,1000)=300; education min(0.30*1000=300,800)=300. subject_sum=600. Global limit at RC 25537.85 = 1000 + 1500*(83696-25537.85)/75637 = 1000 + 1153.35 = 2153.35. capped_subject = min(600, 2153.35) = 600 (non-binding). general min(0.35*1000=350,250)=250. total_deducoes = 600 + 250 = 850. coleta_liquida = 5142.84 - 850 = 4292.84. apuramento = 4500 - 4292.84 = 207.16 -> REEMBOLSO 207.16.",
       "derivation_check": {
         "coleta_liquida": 4156.84,
@@ -264,7 +264,7 @@
         "apuramento": 7.96,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net_A = 26768.15 - 4462.15 = 22306.00 = RC, exactly the bracket-4 ceiling. coleta = T(22306) = 4108.645 -> 4108.65 (HALF_UP on .645). No bracket-5 marginal applies at the exact edge. coleta_liquida = 4108.65. apuramento = 4000 - 4108.65 = -108.65 -> A PAGAR 108.65.",
       "derivation_check": {
         "coleta_liquida": 3992.04,
@@ -291,7 +291,7 @@
         "apuramento": 293.16,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net_A = 30000-4462.15 = 25537.85 = RC. coleta = 5142.84 (as case 08). PPR: 0.20*1500 = 300, over_50 band cap = 300 -> ppr_ded = min(300,300) = 300 exactly at the boundary (under_35 would need 2000 to reach its 400 cap). subject_sum = 300, global limit 2153.35 non-binding. total_deducoes = 300. coleta_liquida = 5142.84 - 300 = 4842.84. apuramento = 5000 - 4842.84 = 157.16 -> REEMBOLSO 157.16.",
       "derivation_check": {
         "coleta_liquida": 4706.84,
@@ -323,7 +323,7 @@
         "apuramento": 495.45,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] Spouse1 (jovem yr2, 75%): E = min(0.75*20000, 28737.50) = 15000. after = 20000-15000 = 5000. net1 = max(0, 5000-4462.15) = 537.85. Spouse2: net2 = 30000-4462.15 = 25537.85. RC = 537.85 + 25537.85 = 26075.70. N=2 -> RC/2 = 13037.85 (bracket 3). tax = T(12160) + (13037.85-12160)*0.22 = 1724.335 + 877.85*0.22 = 1724.335 + 193.127 = 1917.462. coleta_bruta = 1917.462*2 = 3834.924 -> 3834.92. coleta_liquida = 3834.92. apuramento = 4200 - 3834.92 = 365.08 -> REEMBOLSO 365.08.",
       "derivation_check": {
         "coleta_liquida": 3704.55,
@@ -348,7 +348,7 @@
         "apuramento": 0.0,
         "outcome": "NEUTRO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "derivation_check": {
         "coleta_liquida": 0.0,
         "apuramento": 0.0,
@@ -378,7 +378,7 @@
         "apuramento": 1000.0,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "derivation_check": {
         "coleta_liquida": 0.0,
         "apuramento": 1000.0,
@@ -409,7 +409,7 @@
         "apuramento": 1143.47,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] net_A = 100000-4462.15 = 95537.85 = RC (> 83696). Bracket 9 (>83696 @0.48). coleta = T(83696) + (95537.85-83696)*0.48 = 29634.80 + 11841.85*0.48 = 29634.80 + 5684.088 = 35318.888 -> 35318.89. Subject deductions: health 1000 + education 800 + rent 700 + ppr 400 = 2900. RC > 83696 -> global limit flat 1000. capped_subject = min(2900, 1000) = 1000. Outside cap: general 250; dependents 2*600 = 1200. total_deducoes = 1000 + 250 + 1200 = 2450. coleta_liquida = 35318.89 - 2450 = 32868.89. apuramento = 34000 - 32868.89 = 1131.11 -> REEMBOLSO 1131.11. NOTE: adicional de solidariedade on RC > 80000 is NOT modeled -> this coleta is understated (refund overstated); see constants documented_approximations.",
       "derivation_check": {
         "coleta_liquida": 32856.53,
@@ -477,7 +477,7 @@
         "apuramento": 520.45,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] CONJUNTA on identical inputs to case 15. net1=net2=15537.85; RC = 31075.70. N=2 -> RC/2 = 15537.85 (bracket 3). tax = 2467.462. coleta_bruta = 2467.462*2 = 4934.924 -> 4934.92. health (case-level 2000) = min(0.15*2000=300,1000)=300; global limit at RC 31075.70 = 1000+1500*(83696-31075.70)/75637 = 2043.54 (non-binding). total_deducoes=300. coleta_liquida = 4934.92-300 = 4634.92. apuramento = 5000-4634.92 = 365.08 -> REEMBOLSO. DELTA vs separada (case 15): 4634.92 - 4634.92 = 0.00 -> for symmetric same-bracket incomes the two regimes are equivalent; the election turns on deduction-allocation flexibility, not bracket arithmetic.",
       "derivation_check": {
         "coleta_liquida": 4479.55,
@@ -541,7 +541,7 @@
         "apuramento": 1986.31,
         "outcome": "REEMBOLSO"
       },
-      "derivation": "dual-path: scripts/validate.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
+      "derivation": "dual-path: scripts/estimator.py (marginal-cumulative) and scripts/oracle.py (taxa-media split) agree to the cent",
       "workings_historical": "[PRE-CORRECTION — computed on the superseded Artigo 68.o rates that Lei n.o 55-A/2025 replaced. Retained as the audit trail of the original hand-derivation; it does NOT describe the current expected values.] CONJUNTA on identical inputs to case 17. net1 = 40537.85; net2 = 10537.85; RC = 51075.70. N=2 -> RC/2 = 25537.85 (bracket 5, 22306-28400 @0.32). tax = T(22306)+(25537.85-22306)*0.32 = 4108.645 + 3231.85*0.32 = 4108.645 + 1034.192 = 5142.837. coleta_bruta = 5142.837*2 = 10285.674 -> 10285.67. no deductions -> coleta_liquida = 10285.67. apuramento = 12000-10285.67 = 1714.33 -> REEMBOLSO. DELTA vs separada (case 17): separada 11824.34 - conjunta 10285.67 = 1538.67 euros saved by filing jointly (asymmetric incomes => conjunta wins).",
       "derivation_check": {
         "coleta_liquida": 10013.69,

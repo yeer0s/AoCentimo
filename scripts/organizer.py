@@ -6,22 +6,22 @@ Plain Python 3.10+ standard library only. No network access, no environment
 reads, no eval/exec/subprocess, no writes outside this skill's own folder.
 
 Modes:
-  python validate.py --selftest
+  python scripts/organizer.py --selftest
       Re-derives every case's expected dossier output from its input using
       the deterministic mapping rules below, and compares that derivation
       against the case's stored "expected" block. Prints one PASS/FAIL line
       per case plus a summary line. Exits 0 only if every case passes -- this
       is the hard gate referenced by SKILL.md's Validate mode.
 
-  python validate.py <candidate.json>
+  python scripts/organizer.py <candidate.json>
       Scores a candidate dossier output (produced by a person or an LLM
       working the same cases) against the golden "expected" values stored in
-      cases.json. Prints a per-case, per-field match report and a summary.
+      assets/organizer-cases.json. Prints a per-case, per-field match report and a summary.
       Exits 0 whenever scoring completes without a structural error --
       exit code is not a proxy for "candidate was correct", read the report.
 
 Candidate JSON shape for mode 2 -- a dict keyed by case id, each value the
-same shape as that case's "expected" block in cases.json:
+same shape as that case's "expected" block in assets/organizer-cases.json:
   {
     "C01": {
       "income_annex_map": [...],

@@ -4,7 +4,7 @@
     "count": 9,
     "min_bar": 8,
     "as_of": "today's reference date for the deadline commentary is 2026-07-10",
-    "method": "Each case was hand-computed FIRST against that year's confirmed constants in constants-multiyear.json (see workings), then confirmed reproducible by scripts/validate.py --selftest. The harness recomputes scenario_original and scenario_corrected for the case's income_year and checks: coleta_liquida of each scenario, and recoverable = cl_original - cl_corrected, against the hand-derived expected values. Expected values are NEVER edited to match code; on a mismatch the workings are re-derived by hand.",
+    "method": "Each case was hand-computed FIRST against that year's confirmed constants in constants-multiyear.json (see workings), then confirmed reproducible by scripts/estimator.py --selftest. The harness recomputes scenario_original and scenario_corrected for the case's income_year and checks: coleta_liquida of each scenario, and recoverable = cl_original - cl_corrected, against the hand-derived expected values. Expected values are NEVER edited to match code; on a mismatch the workings are re-derived by hand.",
     "recoverable_definition": "recoverable_eur = coleta_liquida_original - coleta_liquida_corrected = the extra IRS refund (or reduced amount owed) that recomputing the past return with the missed item would have produced, assuming retenções/pagamentos are unchanged.",
     "flags": {
       "recoverable": "Arithmetic recovery > 0 AND a live correction instrument still exists.",
