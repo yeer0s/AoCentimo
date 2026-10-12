@@ -103,7 +103,7 @@ def t_deadlines(year):
 def t_validation():
     return """# 09 — Validation record
 
-- Selftest: <<FILL: paste the final summary line of `python scripts/validate.py --selftest`>>
+- Selftest: <<FILL: paste the final summary line of `python scripts/organizer.py --selftest`>>
 - Sweep: <<FILL: paste the final summary line of `python scripts/sweep.py`>>
 - Host-model qualification: <<FILL: qualified / downgraded mode, date, model>>
 - Income-year labels: <<FILL: confirm every euro figure in this dossier carries its income year>>
