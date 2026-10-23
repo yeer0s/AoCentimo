@@ -12,15 +12,15 @@ This skill helps a Portuguese tax household organize its own IRS (Imposto sobre 
 
 ## The moat asset
 
-This skill ships a **golden-corpus regression harness**: `assets/golden/cases.json` holds 12 fully-worked fictional household cases (household profile + document inventory + e-Fatura category state as input; income-to-annex map rows, a per-member deduction inventory with Present/Missing/NotApplicable statuses, a missing-document list, and a flag list as expected output), and `scripts/validate.py` encodes the same deterministic mapping rules the Domain playbook describes (income type → annex, deduction eligibility conditions) as executable Python so the golden set can be re-derived and checked, not just eyeballed.
+This skill ships a **golden-corpus regression harness**: `assets/organizer-cases.json` holds 12 fully-worked fictional household cases (household profile + document inventory + e-Fatura category state as input; income-to-annex map rows, a per-member deduction inventory with Present/Missing/NotApplicable statuses, a missing-document list, and a flag list as expected output), and `scripts/organizer.py` encodes the same deterministic mapping rules the Domain playbook describes (income type → annex, deduction eligibility conditions) as executable Python so the golden set can be re-derived and checked, not just eyeballed.
 
 This is hard to reproduce, not impossible — a competitor would need to independently work through the same annex-mapping and deduction-eligibility edge cases (the post-2011 mortgage cutoff, the Categoria B 15%-justification floor, the propinas/pensão-de-alimentos mutual exclusivity, the shared-custody wrong-NIF trap, the IFICI/ex-NHR OCC-routing boundary, the unmapped-income STOP condition, and more) and encode them as a matching set of deterministic rules and golden answers, all field-lesson-sourced and cross-checked against the same mapping table this skill's own Execute mode uses. Every case names the specific trap it exercises, so the corpus doubles as documentation of exactly where a naive dossier-assembly attempt goes wrong.
 
 How each mode uses it:
-- **Execute** consults `assets/golden/cases.json`'s `_schema` block (status vocabulary, flag codes, annex letters) as the canonical modeling convention when classifying documents and building the Income-to-Annex Map and Deduction Inventory, so a live household dossier uses the same status/flag vocabulary the golden corpus is scored against.
-- **Validate** runs the hard gate: `python scripts/validate.py --selftest` must exit 0 before a dossier is presented as complete. A failing or unrun selftest is treated the same as a failed rubric dimension — present the output as a draft-with-gaps, not as ready.
+- **Execute** consults `assets/organizer-cases.json`'s `_schema` block (status vocabulary, flag codes, annex letters) as the canonical modeling convention when classifying documents and building the Income-to-Annex Map and Deduction Inventory, so a live household dossier uses the same status/flag vocabulary the golden corpus is scored against.
+- **Validate** runs the hard gate: `python scripts/organizer.py --selftest` must exit 0 before a dossier is presented as complete. A failing or unrun selftest is treated the same as a failed rubric dimension — present the output as a draft-with-gaps, not as ready.
 
-Score a real dossier output against the golden corpus the same way: `python scripts/validate.py <candidate.json>` (candidate JSON shaped like the `expected` block per case id) prints a per-case, per-field match report.
+Score a real dossier output against the golden corpus the same way: `python scripts/organizer.py <candidate.json>` (candidate JSON shaped like the `expected` block per case id) prints a per-case, per-field match report.
 
 ### Post-filing divergências-defense corpus (assets/divergence-cases.json)
 
@@ -29,7 +29,7 @@ The second moat asset is the **post-filing defense layer** — where competing o
 How each mode uses it:
 - **Execute** builds the Deadline Map and the handoff dossier's post-filing outlier class from this corpus's deadline table and trigger catalog, so a live household's post-filing watch uses the same cited clocks the corpus is gated on.
 - **Monitor** drives its July–December post-filing watch (below) off the corpus's trigger catalog and 15-day/120-day deadlines.
-- **Validate** runs the integrity gate: `python scripts/validate.py --selftest` re-checks the divergence corpus (schema, ≥10 cases, ≥1 negative control, ≥1 escalate case, every deadline_basis non-empty, every trap named) in the same run that checks the 12 dossier cases — a failure in either blocks delivery.
+- **Validate** runs the integrity gate: `python scripts/organizer.py --selftest` re-checks the divergence corpus (schema, ≥10 cases, ≥1 negative control, ≥1 escalate case, every deadline_basis non-empty, every trap named) in the same run that checks the 12 dossier cases — a failure in either blocks delivery.
 
 ### Offline law snapshot (assets/law/)
 
@@ -99,7 +99,7 @@ A second deterministic gate that runs alongside the golden-corpus selftest:
 
 **When it runs (automatic triggers):** at session start whenever Monitor mode opens a
 check-in; before ANY Validate-mode delivery; and after any edit to assets (including a
-yearly refresh). **The Validate hard gate is dual:** `python scripts/validate.py --selftest`
+yearly refresh). **The Validate hard gate is dual:** `python scripts/organizer.py --selftest`
 exit 0 AND `python scripts/sweep.py` exit 0 — a run failing either is presented as
 draft-with-gaps, never as done.
 
@@ -147,7 +147,7 @@ This skill runs as five explicit modes. A session normally moves Research → Pl
 2. **Run onboarding if no profile exists** (see dedicated section below).
 3. **Save the fiscal profile locally** so this and other suite skills (salary/net-pay tools, deduction planners) can reuse it without re-asking.
 4. **Intake documents.** Ask the user to point to a folder or paste/upload documents one category at a time. Confirm receipt of each category out loud ("got 3 payslips, 1 e-Fatura export").
-5. **Classify each document to a Modelo 3 annex and category** using the Domain playbook mapping table, cross-checked against the `income_type_to_annex_map` and `_schema.status_vocabulary`/`flag_codes` in `assets/golden/cases.json` so classifications use the same conventions the golden corpus is scored against. Flag anything ambiguous (e.g., a payment that could be Category B or a hobby) instead of guessing silently.
+5. **Classify each document to a Modelo 3 annex and category** using the Domain playbook mapping table, cross-checked against the `income_type_to_annex_map` and `_schema.status_vocabulary`/`flag_codes` in `assets/organizer-cases.json` so classifications use the same conventions the golden corpus is scored against. Flag anything ambiguous (e.g., a payment that could be Category B or a hobby) instead of guessing silently.
 6. **Build the per-member deduction inventory.** For each household member, list applicable deduction types (health, education, general/family, housing, PPR, dependents, disability) and mark each as Document Present / Document Missing / Not Applicable, citing the specific document that supports it.
 7. **Run the e-Fatura validation audit.** Ask the user for their e-Fatura category export (or a screenshot of "Faturas com necessidade de ação"/pending invoices) and produce a fix list: which invoices are pending validation, which look mis-categorized, and what the deadline is this cycle.
 8. **Assemble the annex-mapping table** — one row per income/deduction item, with the annex it belongs to, the household member, and the amount status (confirmed from a document vs. estimated vs. missing). Where `assets/field-codes.json` covers the item, also emit the **quadro and campo/benefit code** (e.g. a salary → `A / Q4 / 401`; a PPR contribution → `H / Q6B / 601`; foreign dividends → `J / Q4D`), and surface that entry's `common_error` as a one-line check so an easy miscoding (pension under the employment campo, alojamento local under the professional-services campo, foreign income left in the domestic annex) is caught before handoff. Leave the code column as "—" for any item the lexicon does not cover — never invent a campo number.
@@ -178,7 +178,7 @@ This skill runs as five explicit modes. A session normally moves Research → Pl
 
 **Outputs:** a pass/fail note against the Reproducibility & QA rubric, with every failed dimension listed as a named remaining gap (not silently fixed by fabricating a value).
 
-**Failable check:** apply the "do NOT deliver unless" hard gate in the Reproducibility & QA rubric verbatim — if any condition there fails, do not present the dossier as complete; present it as a draft-with-gaps and name the gaps. This includes the golden-corpus gate: run `python scripts/validate.py --selftest` — a failing or unrun selftest is treated as a failed rubric dimension; do not deliver the dossier as complete until it exits 0. The same `--selftest` run now also gates the post-filing divergências-defense corpus (`assets/divergence-cases.json`) and the Modelo 3 field-code lexicon (`assets/field-codes.json`): the OVERALL line must show `divergence-corpus PASS` AND `field-code-lexicon PASS` (60+ codes, no duplicate annex+code pairs, ≥6 planted miscoding checks) alongside `dossier-corpus PASS`, or the run is draft-with-gaps.
+**Failable check:** apply the "do NOT deliver unless" hard gate in the Reproducibility & QA rubric verbatim — if any condition there fails, do not present the dossier as complete; present it as a draft-with-gaps and name the gaps. This includes the golden-corpus gate: run `python scripts/organizer.py --selftest` — a failing or unrun selftest is treated as a failed rubric dimension; do not deliver the dossier as complete until it exits 0. The same `--selftest` run now also gates the post-filing divergências-defense corpus (`assets/divergence-cases.json`) and the Modelo 3 field-code lexicon (`assets/field-codes.json`): the OVERALL line must show `divergence-corpus PASS` AND `field-code-lexicon PASS` (60+ codes, no duplicate annex+code pairs, ≥6 planted miscoding checks) alongside `dossier-corpus PASS`, or the run is draft-with-gaps.
 
 ## Onboarding (first run)
 
@@ -580,7 +580,7 @@ mechanisms enforce this:
 1. Sample 3 cases from the bundled golden corpus (inputs only — do not read expected
    outputs) and have the assistant solve them blind.
 2. Write its answers as a candidate file and score them with the bundled harness:
-   `python scripts/validate.py <candidate.json>` (measurement mode).
+   `python scripts/organizer.py <candidate.json>` (measurement mode).
 3. **Gate:** all 3 cases substantially correct -> the model is qualified for full Execute
    mode. Any material miss -> run in **downgraded mode**: document organization,
    checklists, deadline tracking, and walkthroughs of the external calculators only — the
@@ -616,10 +616,10 @@ mechanisms enforce this:
   exports, receipts) plus this skill's own folder (MEMORY.md, the shared household
   fiscal-profile file, assets/, scripts/). Never system paths, SSH keys, or the home
   directory at large.
-- **Commands & code:** the only executables shipped are `scripts/validate.py`, `scripts/sweep.py` (the automatic correctness sweep), `scripts/dossier.py` (handoff-dossier scaffolder/linter/sealer), and `scripts/scan.py` (STRICTLY read-only document-folder inventory: hashes, types, duplicate detection, suggested categories — never moves or modifies a user file) — all plain Python
+- **Commands & code:** the only executables shipped are `scripts/organizer.py`, `scripts/sweep.py` (the automatic correctness sweep), `scripts/dossier.py` (handoff-dossier scaffolder/linter/sealer), and `scripts/scan.py` (STRICTLY read-only document-folder inventory: hashes, types, duplicate detection, suggested categories — never moves or modifies a user file) — all plain Python
   3.10+ standard library, no eval/exec/subprocess, no network, no environment access, no
   writes outside the skill folder. The only instructed commands are
-  `python scripts/validate.py --selftest` (and candidate scoring via the same script),
+  `python scripts/organizer.py --selftest` (and candidate scoring via the same script),
   `python scripts/sweep.py`, and `python scripts/dossier.py --init/--check <folder>` —
   dossier.py writes ONLY inside the user-designated dossier folder passed as its argument,
   never anywhere else.
@@ -650,7 +650,7 @@ This skill produces draft organizational outputs for the user's own review — i
 - v2.0.0 (2026-07) — wave-2 practice depth: restructured into five failable Modes (Research/Plan/Execute/Monitor/Validate; the standalone Workflow section is now Execute); added field lessons throughout the Domain playbook (e-Fatura recovery/correction paths, expat first-filing access-password gotcha, Anexo J dormant-account trap, first-year Categoria B reduction, 16–31 March reclamação window) sourced from Portuguese personal-finance publications (Reddit/practitioner-forum search came up empty for this niche — see RESEARCH.md); added file-level-only Integrations table; added Reproducibility & QA rubric with named artifacts, a 0–2 scoring grid, and a hard pre-delivery gate.
 - v3.0.0 (2026-07) — wave-3 context depth: added a Strategic canon subsection (Nudge, Thinking in Bets, High Output Management, applied to onboarding defaults, premortem-style pre-filing review, and Monitor-mode leading indicators); added an Adjacent disciplines section covering upstream standards (SAF-T (PT), ATCUD/QR Portaria 195/2020, e-Fatura DL 198/2012 pipeline, bank-export practices), downstream consumers (OCC professional standards, Modelo 3/AT divergência workflow, 10-year LGT/CIVA records-retention duty, ISO 15489), and horizontal sibling crafts (Todos Contam financial-literacy plan, GDPR data-minimization as the practiced discipline, Open Banking/PSD2 as the deliberately-rejected capability); added a Value-chain positioning section with household-adapted top-down KPIs/sponsor-questions and bottom-up pattern-to-signal escalation rules. All standards search-confirmed July 2026 — see RESEARCH.md's new Adjacent disciplines & sourcing map section.
 - 2026-07-10 v3.1.0 — persistent per-user memory layer (MEMORY.md: Preferences / Lessons / Run log) wired into the Validate hard gate; hard no-PII rule.
-- 2026-07-10 v3.2.0 — wave-4 moat asset: 12-case fictional-household golden corpus (`assets/golden/cases.json`) covering the post-2011 mortgage-interest trap, the Categoria B 15%-justification floor, displaced-student rent without AT communication, forgotten foreign dividends (Anexo J), the propinas/pensão-de-alimentos mutual exclusivity, shared-custody wrong-NIF invoices, the ex-NHR/IFICI OCC-routing boundary, unmapped-income STOP handling, the conjunta filing-status default, first-year Categoria B reduction, e-Fatura miscategorization, and one negative control — plus a stdlib-only `scripts/validate.py` regression harness (`--selftest` re-derives and checks every case; `<candidate.json>` scores a produced dossier against the golden set). Wired into Execute (annex/status-vocabulary cross-check) and Validate (hard gate: unrun/failing selftest blocks delivery).
+- 2026-07-10 v3.2.0 — wave-4 moat asset: 12-case fictional-household golden corpus (`assets/golden/cases.json` (now `assets/organizer-cases.json`)) covering the post-2011 mortgage-interest trap, the Categoria B 15%-justification floor, displaced-student rent without AT communication, forgotten foreign dividends (Anexo J), the propinas/pensão-de-alimentos mutual exclusivity, shared-custody wrong-NIF invoices, the ex-NHR/IFICI OCC-routing boundary, unmapped-income STOP handling, the conjunta filing-status default, first-year Categoria B reduction, e-Fatura miscategorization, and one negative control — plus a stdlib-only `scripts/validate.py` (now `scripts/organizer.py`) regression harness (`--selftest` re-derives and checks every case; `<candidate.json>` scores a produced dossier against the golden set). Wired into Execute (annex/status-vocabulary cross-check) and Validate (hard gate: unrun/failing selftest blocks delivery).
 - 2026-07-10 v3.3.0 — marketplace security & permissions disclosure block (network scope, env-none, file scope, stdlib-only validate.py, no irreversible actions); packaging pass.
 - 2026-07-10 v3.4.0 — offline CIRS law snapshot (10 dated verbatim articles) + host-model qualification exam (golden-corpus mode-2 scoring) + weak-model operating contract (no mental arithmetic, echo-before-use, verbatim-law rule).
 - 2026-07-10 v3.5.0 — automatic correctness sweep (scripts/sweep.py): asset re-hashing, staleness age-gates, cross-skill value-agreement, code-enforced PII hygiene; Validate gate is now dual (selftest AND sweep).

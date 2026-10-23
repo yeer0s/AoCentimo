@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "income_year": 2025,
     "filed_year": 2026,
-    "purpose": "Post-filing divergencias defense corpus. Each case is a fictional AT 'Divergencia na declaracao Mod. 3' scenario with the correct response path, the cited deadline basis, the documents that actually rebut the flag, the trap a naive response falls into, and a severity. Used by scripts/validate.py --selftest for schema + integrity gating. Figures/rules dated to income year 2025 (filed 2026); re-verify against info.portaldasfinancas.gov.pt before a live filing.",
+    "purpose": "Post-filing divergencias defense corpus. Each case is a fictional AT 'Divergencia na declaracao Mod. 3' scenario with the correct response path, the cited deadline basis, the documents that actually rebut the flag, the trap a naive response falls into, and a severity. Used by scripts/organizer.py --selftest for schema + integrity gating. Figures/rules dated to income year 2025 (filed 2026); re-verify against info.portaldasfinancas.gov.pt before a live filing.",
     "flag_type_vocabulary": [
       "informational_only",
       "deduction_mismatch",

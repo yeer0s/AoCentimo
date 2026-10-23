@@ -16,14 +16,14 @@ This skill ships a machine-readable, individually cited operationalization of th
 
 - **`assets/deduction-matrix.json`** - the 9+ CIRS art. 78 categories expanded into 27 rows, one per distinct rate/cap/uplift/income-year combination (e.g. education splits into base / displaced-student uplift / displaced-student rent / interior majoracao; the IVA-por-exigencia-de-fatura sectors each get their own row). Every row carries: legal basis, rate, cap with unit and per-household-vs-per-member scope, income-year label (2025-filed-2026 rows kept separate from confirmed OE2026 income-year-2026 rows), e-Fatura category mapping, boundary conditions, a manual-registration flag, an `as_of` date, and a citation. **Every factual cell is either backed by a source URL or set to the literal string `UNKNOWN`** - an honest UNKNOWN (currently on the interior-majoracao rate/cap and the public-transport-pass rate) outranks a guessed value.
 - **`assets/planted-cases.json`** - nine golden expense-set cases, including a clean negative control, that pin the scanner's behaviour.
-- **`scripts/validate.py`** - stdlib-only harness. It reads its fiscal numbers *from the matrix* rather than hard-coding them, so the matrix stays the single source of truth.
+- **`scripts/deductions.py`** - stdlib-only harness. It reads its fiscal numbers *from the matrix* rather than hard-coding them, so the matrix stays the single source of truth.
 - **`assets/doutrina-index.json`** (v4.0.0) - 25 curated AT binding rulings (informacoes vinculativas / fichas doutrinarias) cross-linked to the specific matrix rows they clarify (see "### Doutrina layer" below).
 
 **Why it is hard to reproduce (not impossible):** the value is not the category list - every Portuguese finance site publishes that. It is the per-row income-year separation, the per-cell citation-or-UNKNOWN discipline, and the executable scanner that catches the specific miscategorization/allocation traps from the field lessons. Re-deriving that from scratch, with honest sourcing, is the work.
 
-**How each mode uses it:** Execute reads the matrix to place every expense in a specific row with a stated cap and to run the scanner's trap checks; Validate runs `scripts/validate.py --selftest` as a hard gate before any deliverable is released.
+**How each mode uses it:** Execute reads the matrix to place every expense in a specific row with a stated cap and to run the scanner's trap checks; Validate runs `scripts/deductions.py --selftest` as a hard gate before any deliverable is released.
 
-**Hard-gate wiring:** a run may not deliver its Output-format deliverables unless `python scripts/validate.py --selftest` has been run and exited 0 - a failing or unrun selftest blocks delivery.
+**Hard-gate wiring:** a run may not deliver its Output-format deliverables unless `python scripts/deductions.py --selftest` has been run and exited 0 - a failing or unrun selftest blocks delivery.
 
 ### Doutrina layer
 
@@ -32,7 +32,7 @@ This skill ships a machine-readable, individually cited operationalization of th
 - Each entry carries the **processo/identifier as published** (or the literal `UNKNOWN` when the source copy did not print it), the date, the legal basis, a faithful 1-2 sentence holding, the matrix row ids it touches, a `source_url` that was actually read, and a `confidence` flag - `primary` (the AT ficha text itself was read: portaldasfinancas.gov.pt or a verbatim mirror) or `secondary` (a press/OCC/law-firm summary). 23 of 25 are primary.
 - Coverage spans the household-money boundaries: estudante deslocado (residencia universitaria, Pousada de Juventude, landlord invoice-marking, foreign/Erasmus), pensao de alimentos (adult child, retroactive payments, propinas summed in), health-service eligibility (electric stairlift CAE rule, reabilitacao psicomotora / pilates clinico / terapeuticas nao convencionais IVA-exemption gating art.78-C), explicacoes and extracurricular IVA-exemption gating art.78-D, shared-custody 15-Feb harmonisation, veterinary rate, PPR early-resgate reversal, donativos recibo elements, and the art.87 deficiencia-status gate.
 - **Why hard to reproduce:** these holdings are scattered across individual PDF fichas on the AT portal (and mirror hosts); assembling them, reading each, and pinning each faithfully to the right cap row - with honest primary/secondary provenance and honest `UNKNOWN`s - is the work.
-- **How the gate uses it:** `scripts/validate.py --selftest` now includes a **Doutrina layer** integrity section - every index entry must be schema-complete with a real `source_url`, every `matrix_row_ids` must resolve to a real matrix row, and every matrix-row `doutrina` ref must resolve back to an index entry (bars: >=25 entries, 100% with source_url, >=10 rows annotated - currently 15 rows annotated).
+- **How the gate uses it:** `scripts/deductions.py --selftest` now includes a **Doutrina layer** integrity section - every index entry must be schema-complete with a real `source_url`, every `matrix_row_ids` must resolve to a real matrix row, and every matrix-row `doutrina` ref must resolve back to an index entry (bars: >=25 entries, 100% with source_url, >=10 rows annotated - currently 15 rows annotated).
 
 ### Offline law snapshot (assets/law/)
 
@@ -70,7 +70,7 @@ A second deterministic gate that runs alongside the golden-corpus selftest:
 
 **When it runs (automatic triggers):** at session start whenever Monitor mode opens a
 check-in; before ANY Validate-mode delivery; and after any edit to assets (including a
-yearly refresh). **The Validate hard gate is dual:** `python scripts/validate.py --selftest`
+yearly refresh). **The Validate hard gate is dual:** `python scripts/deductions.py --selftest`
 exit 0 AND `python scripts/sweep.py` exit 0 — a run failing either is presented as
 draft-with-gaps, never as done.
 
@@ -138,7 +138,7 @@ This skill runs in five modes. Pick the mode that matches what the user is askin
 - **Inputs:** the draft category capture table and action checklist.
 - **Outputs:** either a pass (deliverables released as-is) or a blocked deliverable with the specific gap named.
 - **Failable check (do NOT deliver unless all of the following hold):**
-  - The moat-asset selftest has been run and passed: `python scripts/validate.py --selftest` exits 0. A failing or unrun selftest = do not deliver - it means the matrix, the scanner, or the doutrina index the Execute pass relied on is not in a known-good state. (The selftest's **Doutrina layer** section fails delivery if any ruling entry is incomplete, any `source_url` is missing, or any `matrix_row_ids`/`doutrina` cross-reference dangles.)
+  - The moat-asset selftest has been run and passed: `python scripts/deductions.py --selftest` exits 0. A failing or unrun selftest = do not deliver - it means the matrix, the scanner, or the doutrina index the Execute pass relied on is not in a known-good state. (The selftest's **Doutrina layer** section fails delivery if any ruling entry is incomplete, any `source_url` is missing, or any `matrix_row_ids`/`doutrina` cross-reference dangles.)
   - Any AT ruling surfaced to the user in Execute step 1a was quoted from a real `doutrina-index.json` entry with its `ruling_ref` and `source_url`, and attributed by `confidence` - no processo number was invented and no boundary was asserted as "AT-ruled" without an index entry to back it.
   - Every euro figure in the table carries an explicit income-year label (see Reproducibility & QA rubric).
   - No PII (NIF, full name, exact euro amounts tied to a specific invoice, account numbers) appears in any artifact that will be saved to a persistent note - category labels and rounded/bucketed amounts or counts only.
@@ -433,7 +433,7 @@ mechanisms enforce this:
 1. Sample 3 cases from the bundled golden corpus (inputs only — do not read expected
    outputs) and have the assistant solve them blind.
 2. Write its answers as a candidate file and score them with the bundled harness:
-   `python scripts/validate.py <candidate.json>` (measurement mode).
+   `python scripts/deductions.py <candidate.json>` (measurement mode).
 3. **Gate:** all 3 cases substantially correct -> the model is qualified for full Execute
    mode. Any material miss -> run in **downgraded mode**: document organization,
    checklists, deadline tracking, and walkthroughs of the external calculators only — the
@@ -469,10 +469,10 @@ mechanisms enforce this:
   exports, receipts) plus this skill's own folder (MEMORY.md, the shared household
   fiscal-profile file, assets/, scripts/). Never system paths, SSH keys, or the home
   directory at large.
-- **Commands & code:** the only executables shipped are `scripts/validate.py` and `scripts/sweep.py` (the automatic correctness sweep) — both plain Python
+- **Commands & code:** the only executables shipped are `scripts/deductions.py` and `scripts/sweep.py` (the automatic correctness sweep) — both plain Python
   3.10+ standard library, no eval/exec/subprocess, no network, no environment access, no
   writes outside the skill folder. The only instructed commands are
-  `python scripts/validate.py --selftest` (and candidate scoring via the same script) and
+  `python scripts/deductions.py --selftest` (and candidate scoring via the same script) and
   `python scripts/sweep.py`.
 - **Irreversible actions:** none. The skill produces local draft files and analysis only —
   it never files, submits, e-signs, pays, or logs in on the user's behalf.
@@ -500,7 +500,7 @@ Outputs produced by this skill are drafts for the user's own review, not a filed
 - v2.0.0 (2026-07-10): wave-2 practice depth - restructured into five Modes (Research/Plan/Execute/Monitor/Validate) with a failable check per mode; Workflow section folded into Execute; added six field-lesson entries sourced from targeted web research (vet-invoice miscategorization, health-receipt-to-general-expense downgrade, displaced-student landlord-then-student registration sequence, propinas-as-pensao-de-alimentos AT ruling, reclamacao window's two-category-only scope, missed-deadline declaracao-de-substituicao fallback), new §12 (reclamacao window scope); added Integrations table (file-level only, no credentials); added Reproducibility & QA rubric (named artifacts, 0-2 scoring, hard delivery gate, as-of assumptions); disclosed thin forum-sourcing for this niche rather than padding with unverifiable anecdotes.
 - v3.0.0 (2026-07-10): wave-3 context depth - added "Strategic canon" subsection to Domain playbook (Atomic Habits, Nudge, The Goal - adjacent operator wisdom, applied to habit-stacked NIF capture, defaults-as-audit-target, and constraint-thinking on the biggest leak category); added "Adjacent disciplines" section (Upstream: SAF-T (PT), ATCUD/QR code Portaria 195/2020, e-Fatura pipeline DL 198/2012, bank statement exports; Downstream: contabilistas certificados/OCC, Modelo 3 filing and AT divergencias workflow, 10-year fiscal document retention, ISO 15489; Horizontal: Todos Contam financial-literacy infrastructure, GDPR data-minimization, Open Banking/PSD2 as a deliberately rejected capability); added "Value-chain positioning" section (top-down household KPIs and sponsor questions mapped to modes, bottom-up pattern-to-signal escalation rules with real thresholds, household-to-AT chain statement). All standards fresh-confirmed via web search this wave; no other section modified.
 - 2026-07-10 v3.1.0 — persistent per-user memory layer (MEMORY.md: Preferences / Lessons / Run log) wired into the Validate hard gate; hard no-PII rule.
-- 2026-07-10 v3.2.0 — wave-4 MOAT asset: added `assets/deduction-matrix.json` (27 rows expanding the 9+ CIRS art. 78 categories, per-row income-year labels and as-of dates, per-cell citation-or-UNKNOWN discipline, IVA-por-exigencia-de-fatura sector rows), `assets/planted-cases.json` (9 golden expense-set cases incl. a clean negative control), and `scripts/validate.py` (stdlib-only schema-validator + planted-case scanner; `--selftest` gate exits 0 on the bundled golden set). Wired the asset into Execute (new step 1 consulting the matrix) and Validate (selftest hard gate); added a "The moat asset" section; appended the USP to the frontmatter description. No Domain-playbook figures changed.
+- 2026-07-10 v3.2.0 — wave-4 MOAT asset: added `assets/deduction-matrix.json` (27 rows expanding the 9+ CIRS art. 78 categories, per-row income-year labels and as-of dates, per-cell citation-or-UNKNOWN discipline, IVA-por-exigencia-de-fatura sector rows), `assets/planted-cases.json` (9 golden expense-set cases incl. a clean negative control), and `scripts/validate.py` (now `scripts/deductions.py`) (stdlib-only schema-validator + planted-case scanner; `--selftest` gate exits 0 on the bundled golden set). Wired the asset into Execute (new step 1 consulting the matrix) and Validate (selftest hard gate); added a "The moat asset" section; appended the USP to the frontmatter description. No Domain-playbook figures changed.
 - 2026-07-10 v3.3.0 — marketplace security & permissions disclosure block (network scope, env-none, file scope, stdlib-only validate.py, no irreversible actions); packaging pass.
 - 2026-07-10 v3.4.0 — offline CIRS law snapshot (10 dated verbatim articles) + host-model qualification exam (golden-corpus mode-2 scoring) + weak-model operating contract (no mental arithmetic, echo-before-use, verbatim-law rule).
 - 2026-07-10 v3.5.0 — automatic correctness sweep (scripts/sweep.py): asset re-hashing, staleness age-gates, cross-skill value-agreement, code-enforced PII hygiene; Validate gate is now dual (selftest AND sweep).
