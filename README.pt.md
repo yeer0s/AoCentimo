@@ -33,6 +33,7 @@
 
 :fire: ***Novidades*** :fire:
 
+- **[Out 2026]** Atenção: a Lei n.º 64-B/2026 (22 out) autoriza o Governo a baixar as taxas do art. 68.º dos escalões 1 a 6 para 12,2 / 15,2 / 20,7 / 23,6 / 30,6 / 34,6 %. Nada muda até ser publicado o decreto-lei, por isso o motor mantém as taxas em vigor (OE 2026) e acompanha o decreto quando sair. Se o decreto aplicar a descida aos rendimentos de 2026, uma estimativa de 2026 feita antes dele sairá um pouco acima do imposto final
 - **[Out 2026]** Correção: as estimativas do ano de rendimento 2025 feitas antes de 28 set 2026 usavam o valor de referência do mínimo de existência de 2026 (€12 880 em vez de €12 180) e podiam subestimar o imposto em rendimentos baixos — um contribuinte com o salário mínimo de 2025 via €162,50 de coleta onde o art. 70.º dá €250,00. Se fez uma, repita-a
 - **[Set 2026]** Ano de rendimento 2026 (entregue em 2027): escalões do OE 2026, o IAS de 2026, o novo limite de €900 para rendas — cada valor citado do seu diploma, os dois motores cruzados, seis novos casos derivados à mão
 - **[Jul 2026]** Primeira versão pública — nove defeitos fiscais encontrados e corrigidos, três deles por um modelo adversarial
