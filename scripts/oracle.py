@@ -4,14 +4,14 @@
 WHY THIS FILE EXISTS
 --------------------
 Until 2026-07-24 every expected value in assets/golden-cases.json was hand-derived
-by the same author who wrote scripts/validate.py, from the same reading of the same
+by the same author who wrote scripts/estimator.py, from the same reading of the same
 law. A corpus built that way detects *changes* but cannot detect a *shared mistake* —
 and one had been sitting in it for a year (the income-year-2025 bracket table still
 carried the pre-Lei-55-A/2025 rates, and all 19 cases agreed with it).
 
 This module recomputes the same liquidation by a deliberately different route:
 
-  * validate.py walks the brackets CUMULATIVELY on the marginal rates (taxa normal).
+  * estimator.py walks the brackets CUMULATIVELY on the marginal rates (taxa normal).
   * oracle.py uses the TAXA-MEDIA SPLIT that Artigo 68.º n.º 1 itself publishes:
         coleta = (limite do escalao anterior x taxa media desse escalao)
                + (excedente x taxa normal do escalao)

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-validate.py - schema-validate the cited CIRS art. 78 deduction matrix and run the
+deductions.py - schema-validate the cited CIRS art. 78 deduction matrix and run the
 planted-case expense scanner for the Portugal IRS Deductions Maximizer skill.
 
 Stdlib only. No network, no environment access, no eval/exec/subprocess, no writes.
 
 Modes
 -----
-  python scripts/validate.py --selftest
+  python scripts/deductions.py --selftest
       Schema-check assets/deduction-matrix.json + run every bundled planted case
       through the scanner. Prints per-item PASS/FAIL and a summary line.
       Exit 0 ONLY if every schema check and every planted case passes. This is the gate.
 
-  python scripts/validate.py <candidate.json>
+  python scripts/deductions.py <candidate.json>
       Score a user-produced expense set against the matrix (measurement).
       Prints the findings the scanner detects. Exit 0 on successful scoring.
 
